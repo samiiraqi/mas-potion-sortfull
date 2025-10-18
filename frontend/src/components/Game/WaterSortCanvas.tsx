@@ -200,7 +200,6 @@ export default function WaterSortCanvas() {
     }
   };
 
-  // Multiplayer handlers
   const handleJoinRoom = (data: any) => {
     setMultiplayerData(data);
     setShowMultiplayerLobby(false);
@@ -210,7 +209,6 @@ export default function WaterSortCanvas() {
     setMultiplayerData(null);
   };
 
-  // Show multiplayer game if in multiplayer mode
   if (multiplayerData) {
     return (
       <MultiplayerGame 
@@ -297,148 +295,16 @@ export default function WaterSortCanvas() {
         />
       )}
 
-      <div style={{
-        position: "fixed",
-        top: "15px",
-        right: "15px",
-        display: "flex",
-        gap: "10px",
-        zIndex: 9999
-      }}>
-        <button
-          onClick={() => setShowMultiplayerLobby(true)}
-          style={{
-            padding: "10px 20px",
-            background: "linear-gradient(135deg, #f093fb, #f5576c)",
-            color: "white",
-            border: "none",
-            borderRadius: "25px",
-            cursor: "pointer",
-            fontSize: "1rem",
-            fontWeight: "bold",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px"
-          }}
-        >
-          🎮 MULTIPLAYER
-        </button>
-
-        <button
-          onClick={toggleMusic}
-          style={{
-            padding: "10px",
-            background: "rgba(255,255,255,0.25)",
-            color: "white",
-            border: "3px solid rgba(255,255,255,0.5)",
-            borderRadius: "50%",
-            cursor: "pointer",
-            fontSize: "1.3rem",
-            width: "50px",
-            height: "50px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
-          }}
-        >
-          {musicEnabled ? '🎵' : '🔇'}
-        </button>
-
-        <button
-          onClick={() => setShowMenu(!showMenu)}
-          style={{
-            padding: "10px",
-            background: "rgba(255,255,255,0.25)",
-            color: "white",
-            border: "3px solid rgba(255,255,255,0.5)",
-            borderRadius: "50%",
-            cursor: "pointer",
-            fontSize: "1.3rem",
-            width: "50px",
-            height: "50px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
-          }}
-        >
-          🎨
-        </button>
-
-        {message && (
-          <button
-            onClick={shareScore}
-            style={{
-              padding: "10px 20px",
-              background: "linear-gradient(135deg, #11998e, #38ef7d)",
-              color: "white",
-              border: "none",
-              borderRadius: "25px",
-              cursor: "pointer",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px"
-            }}
-          >
-            📤 SHARE
-          </button>
-        )}
-      </div>
-
-      {showMenu && (
-        <div style={{
-          position: "fixed",
-          top: "80px",
-          right: "15px",
-          background: "rgba(255,255,255,0.95)",
-          borderRadius: "15px",
-          padding: "15px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-          zIndex: 9998,
-          backdropFilter: "blur(10px)"
-        }}>
-          <div style={{ fontWeight: "bold", marginBottom: "10px", color: "#333" }}>Choose Theme:</div>
-          {themeManager.getAllThemes().map(themeName => (
-            <button
-              key={themeName}
-              onClick={() => changeTheme(themeName)}
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "10px 20px",
-                margin: "5px 0",
-                background: currentTheme === themeName 
-                  ? "linear-gradient(135deg, #667eea, #764ba2)" 
-                  : "#f0f0f0",
-                color: currentTheme === themeName ? "white" : "#333",
-                border: "none",
-                borderRadius: "10px",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                fontWeight: "bold",
-                textTransform: "capitalize"
-              }}
-            >
-              {themeName === currentTheme ? '✓ ' : ''}{themeName}
-            </button>
-          ))}
-        </div>
-      )}
-
+      {/* FIXED: Buttons now in separate row below title */}
       <div style={{ 
-        padding: "15px",
+        padding: isMobile ? "10px" : "15px",
         textAlign: "center",
         color: theme.text,
         flexShrink: 0
       }}>
         <h1 style={{ 
-          fontSize: isMobile ? "2rem" : "3.5rem", 
-          margin: "10px 0",
+          fontSize: isMobile ? "1.8rem" : "3rem", 
+          margin: "5px 0",
           textShadow: "3px 3px 6px rgba(0,0,0,0.4)",
           background: "linear-gradient(to right, #FFD700, #FFA500, #FFD700)",
           WebkitBackgroundClip: "text",
@@ -448,6 +314,138 @@ export default function WaterSortCanvas() {
           💧 WATER SORT 💧
         </h1>
 
+        {/* Action Buttons Row - Below Title */}
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "10px",
+          marginBottom: "15px",
+          flexWrap: "wrap"
+        }}>
+          <button
+            onClick={() => setShowMultiplayerLobby(true)}
+            style={{
+              padding: isMobile ? "8px 15px" : "10px 20px",
+              background: "linear-gradient(135deg, #f093fb, #f5576c)",
+              color: "white",
+              border: "none",
+              borderRadius: "20px",
+              cursor: "pointer",
+              fontSize: isMobile ? "0.85rem" : "1rem",
+              fontWeight: "bold",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+            }}
+          >
+            🎮 MULTIPLAYER
+          </button>
+
+          {message && (
+            <button
+              onClick={shareScore}
+              style={{
+                padding: isMobile ? "8px 15px" : "10px 20px",
+                background: "linear-gradient(135deg, #11998e, #38ef7d)",
+                color: "white",
+                border: "none",
+                borderRadius: "20px",
+                cursor: "pointer",
+                fontSize: isMobile ? "0.85rem" : "1rem",
+                fontWeight: "bold",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+              }}
+            >
+              📤 SHARE
+            </button>
+          )}
+
+          <button
+            onClick={toggleMusic}
+            style={{
+              padding: "8px",
+              background: "rgba(255,255,255,0.25)",
+              color: "white",
+              border: "3px solid rgba(255,255,255,0.5)",
+              borderRadius: "50%",
+              cursor: "pointer",
+              fontSize: "1.2rem",
+              width: isMobile ? "40px" : "45px",
+              height: isMobile ? "40px" : "45px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+            }}
+          >
+            {musicEnabled ? '🎵' : '🔇'}
+          </button>
+
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            style={{
+              padding: "8px",
+              background: "rgba(255,255,255,0.25)",
+              color: "white",
+              border: "3px solid rgba(255,255,255,0.5)",
+              borderRadius: "50%",
+              cursor: "pointer",
+              fontSize: "1.2rem",
+              width: isMobile ? "40px" : "45px",
+              height: isMobile ? "40px" : "45px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+            }}
+          >
+            🎨
+          </button>
+        </div>
+
+        {/* Theme Menu */}
+        {showMenu && (
+          <div style={{
+            position: "absolute",
+            top: isMobile ? "140px" : "160px",
+            right: "50%",
+            transform: "translateX(50%)",
+            background: "rgba(255,255,255,0.95)",
+            borderRadius: "15px",
+            padding: "15px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+            zIndex: 9998,
+            backdropFilter: "blur(10px)"
+          }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px", color: "#333" }}>Choose Theme:</div>
+            {themeManager.getAllThemes().map(themeName => (
+              <button
+                key={themeName}
+                onClick={() => changeTheme(themeName)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  padding: "10px 20px",
+                  margin: "5px 0",
+                  background: currentTheme === themeName 
+                    ? "linear-gradient(135deg, #667eea, #764ba2)" 
+                    : "#f0f0f0",
+                  color: currentTheme === themeName ? "white" : "#333",
+                  border: "none",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                  fontWeight: "bold",
+                  textTransform: "capitalize"
+                }}
+              >
+                {themeName === currentTheme ? '✓ ' : ''}{themeName}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Stats Display */}
         <div style={{
           display: "flex",
           gap: "15px",
@@ -516,6 +514,7 @@ export default function WaterSortCanvas() {
         )}
       </div>
 
+      {/* Game Area */}
       <div 
         style={{ 
           flex: 1,
@@ -572,6 +571,7 @@ export default function WaterSortCanvas() {
         </div>
       </div>
 
+      {/* Bottom Navigation */}
       <div
         style={{
           position: "fixed",
