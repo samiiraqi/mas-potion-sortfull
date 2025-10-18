@@ -5,6 +5,7 @@ import axios from "axios";
 import RealisticBottle from "./RealisticBottle";
 import Fireworks from "./Fireworks";
 import { soundManager } from "../../utils/sounds";
+import { storage } from "../../utils/storage";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
@@ -25,6 +26,10 @@ export default function WaterSortCanvas() {
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [fireworks, setFireworks] = useState<FireworkData[]>([]);
+  const [timer, setTimer] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [bestMoves, setBestMoves] = useState(0);
+  const [bestTime, setBestTime] = useState(0);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -34,6 +39,17 @@ export default function WaterSortCanvas() {
     loadLevel(currentLevelId);
   }, [currentLevelId]);
 
+  // Timer effect
+  useEffect(() => {
+    let interval: any;
+    if (timerRunning) {
+      interval = setInterval(() => {
+        setTimer(t => t + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerRunning]);
+
   const loadLevel = async (levelId: number) => {
     try {
       setLoading(true);
@@ -41,14 +57,27 @@ export default function WaterSortCanvas() {
       setLevel(data);
       setBottles(data.bottles);
       setMoves(0);
+      setTimer(0);
+      setTimerRunning(false);
       setMessage("");
       setSelectedBottle(null);
       setFireworks([]);
+      
+      // Load best scores
+      const stats = storage.getLevelStats(levelId);
+      setBestMoves(stats.bestMoves);
+      setBestTime(stats.bestTime);
     } catch (err) {
       console.error("Error:", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const testSound = () => {
@@ -80,6 +109,11 @@ export default function WaterSortCanvas() {
   };
 
   const handleBottleClick = async (bottleIdx: number) => {
+    // Start timer on first move
+    if (moves === 0 && !timerRunning) {
+      setTimerRunning(true);
+    }
+
     if (selectedBottle === null) {
       if (bottles[bottleIdx].length === 0) {
         return;
@@ -107,7 +141,6 @@ export default function WaterSortCanvas() {
         setMoves((m) => m + 1);
         setSelectedBottle(null);
 
-        // Check if target bottle is now full
         const targetBottle = res.data.bottles[bottleIdx];
         if (checkBottleFull(targetBottle)) {
           triggerFireworks(bottleIdx, targetBottle[0]);
@@ -115,7 +148,17 @@ export default function WaterSortCanvas() {
         }
 
         if (res.data.is_completed) {
+          setTimerRunning(false);
           setMessage("🎉 LEVEL COMPLETE! 🎉");
+          
+          // Save stats
+          storage.saveLevelStats(currentLevelId, moves + 1, timer);
+          
+          // Update best scores
+          const newStats = storage.getLevelStats(currentLevelId);
+          setBestMoves(newStats.bestMoves);
+          setBestTime(newStats.bestTime);
+          
           setTimeout(() => soundManager.play("success"), 300);
         }
       }
@@ -167,7 +210,11 @@ export default function WaterSortCanvas() {
     yellow: '#FBBF24',
     orange: '#F97316',
     cyan: '#06B6D4',
-    pink: '#EC4899'
+    pink: '#EC4899',
+    lime: '#84CC16',
+    magenta: '#D946EF',
+    teal: '#14B8A6',
+    coral: '#FB7185'
   };
 
   return (
@@ -185,7 +232,6 @@ export default function WaterSortCanvas() {
         overflow: "hidden"
       }}
     >
-      {/* Fireworks */}
       {fireworks.map(fw => (
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
@@ -230,21 +276,61 @@ export default function WaterSortCanvas() {
           WebkitTextFillColor: "transparent",
           fontWeight: "900"
         }}>
-          💧 WATER SORT PUZZLE 💧
+          💧 WATER SORT 💧
         </h1>
 
         <div style={{
-          fontSize: isMobile ? "1.1rem" : "1.5rem",
-          fontWeight: "bold",
-          marginTop: "8px",
-          background: "rgba(255,255,255,0.2)",
-          display: "inline-block",
-          padding: "8px 25px",
-          borderRadius: "20px",
-          backdropFilter: "blur(10px)",
-          border: "2px solid rgba(255,255,255,0.3)"
+          display: "flex",
+          gap: "15px",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          marginTop: "10px"
         }}>
-          Level {currentLevelId} • Moves {moves}
+          <div style={{
+            background: "rgba(255,255,255,0.2)",
+            padding: "10px 20px",
+            borderRadius: "15px",
+            backdropFilter: "blur(10px)",
+            border: "2px solid rgba(255,255,255,0.3)",
+            minWidth: "100px"
+          }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>LEVEL</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{currentLevelId}/20</div>
+          </div>
+
+          <div style={{
+            background: "rgba(255,255,255,0.2)",
+            padding: "10px 20px",
+            borderRadius: "15px",
+            backdropFilter: "blur(10px)",
+            border: "2px solid rgba(255,255,255,0.3)",
+            minWidth: "100px"
+          }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>⏱️ TIME</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{formatTime(timer)}</div>
+            {bestTime > 0 && (
+              <div style={{ fontSize: "0.7rem", color: "#FFD700" }}>
+                Best: {formatTime(bestTime)}
+              </div>
+            )}
+          </div>
+
+          <div style={{
+            background: "rgba(255,255,255,0.2)",
+            padding: "10px 20px",
+            borderRadius: "15px",
+            backdropFilter: "blur(10px)",
+            border: "2px solid rgba(255,255,255,0.3)",
+            minWidth: "100px"
+          }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>MOVES</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{moves}</div>
+            {bestMoves > 0 && (
+              <div style={{ fontSize: "0.7rem", color: "#FFD700" }}>
+                Best: {bestMoves}
+              </div>
+            )}
+          </div>
         </div>
 
         {message && (
@@ -334,7 +420,10 @@ export default function WaterSortCanvas() {
         }}
       >
         <button
-          onClick={() => setCurrentLevelId((p) => Math.max(1, p - 1))}
+          onClick={() => {
+            soundManager.play("click");
+            setCurrentLevelId((p) => Math.max(1, p - 1));
+          }}
           disabled={currentLevelId === 1}
           style={{
             flex: 1,
@@ -357,7 +446,10 @@ export default function WaterSortCanvas() {
           ← PREV
         </button>
         <button
-          onClick={() => loadLevel(currentLevelId)}
+          onClick={() => {
+            soundManager.play("click");
+            loadLevel(currentLevelId);
+          }}
           style={{
             flex: 1,
             maxWidth: "120px",
@@ -376,17 +468,24 @@ export default function WaterSortCanvas() {
           ↻ RESTART
         </button>
         <button
-          onClick={() => setCurrentLevelId((p) => p + 1)}
+          onClick={() => {
+            soundManager.play("click");
+            setCurrentLevelId((p) => Math.min(20, p + 1));
+          }}
+          disabled={currentLevelId === 20}
           style={{
             flex: 1,
             maxWidth: "140px",
             padding: "16px 12px",
-            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+            background: currentLevelId === 20
+              ? "rgba(100,100,100,0.5)"
+              : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
             border: "none",
             borderRadius: "15px",
             fontSize: "1rem",
             fontWeight: "bold",
-            cursor: "pointer",
+            cursor: currentLevelId === 20 ? "not-allowed" : "pointer",
+            opacity: currentLevelId === 20 ? 0.5 : 1,
             color: "white",
             boxShadow: "0 6px 15px rgba(0,0,0,0.3)",
             transition: "all 0.2s"
