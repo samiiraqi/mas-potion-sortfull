@@ -32,8 +32,8 @@ async def get_level(level_id: int):
 @router.post("/make-move", response_model=MoveResponse)
 async def make_move(move: MoveRequest):
     """Execute a move - pours ALL matching colors at once!"""
-    print(f"\n🔵 MOVE REQUEST: from bottle {move.from_bottle} to {move.to_bottle}")
-    print(f"   Bottles state: {move.bottles}")
+    print(f"\nMOVE REQUEST: from {move.from_bottle} to {move.to_bottle}")
+    print(f"   Bottles: {move.bottles}")
     
     # Validate indices
     if move.from_bottle < 0 or move.from_bottle >= len(move.bottles):
@@ -53,11 +53,12 @@ async def make_move(move: MoveRequest):
     if len(move.bottles[move.to_bottle]) >= 4:
         raise HTTPException(status_code=400, detail="Target bottle is full")
     
-    # Check color match
+    # ALLOW POURING INTO EMPTY BOTTLES - Remove color match check for empty targets!
     source_color = move.bottles[move.from_bottle][-1]
-    if move.bottles[move.to_bottle]:
+    if move.bottles[move.to_bottle]:  # Only check color match if target is NOT empty
         target_color = move.bottles[move.to_bottle][-1]
         if source_color != target_color:
+            print(f"   Color mismatch: {source_color} vs {target_color}")
             raise HTTPException(status_code=400, detail="Colors don't match")
     
     # Execute move - POUR ALL MATCHING COLORS AT ONCE!
@@ -65,7 +66,7 @@ async def make_move(move: MoveRequest):
     
     # Get top color
     color_to_pour = new_bottles[move.from_bottle][-1]
-    print(f"   🎨 Color to pour: {color_to_pour}")
+    print(f"   Color to pour: {color_to_pour}")
     
     # Count how many matching colors are stacked on top
     count = 0
@@ -75,14 +76,14 @@ async def make_move(move: MoveRequest):
         else:
             break
     
-    print(f"   📊 Found {count} matching colors on top")
+    print(f"   Found {count} matching colors on top")
     
     # Limit by available space in target
     available_space = 4 - len(new_bottles[move.to_bottle])
     colors_to_pour = min(count, available_space)
     
-    print(f"   📦 Available space: {available_space}")
-    print(f"   ✅ Pouring {colors_to_pour} colors")
+    print(f"   Available space: {available_space}")
+    print(f"   Pouring {colors_to_pour} colors")
     
     # Pour all matching colors!
     for i in range(colors_to_pour):
@@ -99,5 +100,5 @@ async def make_move(move: MoveRequest):
         success=True,
         bottles=new_bottles,
         is_completed=is_completed,
-        message="🎉 Level Complete!" if is_completed else f"Poured {colors_to_pour} colors!"
+        message="Level Complete!" if is_completed else f"Poured {colors_to_pour} colors!"
     )
