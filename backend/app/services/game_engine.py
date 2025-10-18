@@ -3,42 +3,42 @@ from app.models.game import Level
 
 class GameEngine:
     def generate_level(self, level_id: int) -> Level:
-        """Generate levels with fewer bottles - better for mobile"""
+        """Generate levels with FULL bottles"""
         
         levels = {
             1: {
                 "bottles": [
-                    ["red", "blue", "red"],
-                    ["blue", "red", "blue"],
+                    ["red", "red", "blue", "blue"],
+                    ["blue", "blue", "red", "red"],
                     [],
                     []
                 ]
             },
             2: {
                 "bottles": [
-                    ["red", "red", "blue", "green"],
-                    ["blue", "blue", "green", "red"],
-                    ["green", "green", "red", "blue"],
+                    ["red", "red", "red", "blue"],
+                    ["blue", "blue", "blue", "green"],
+                    ["green", "green", "green", "red"],
                     [],
                     []
                 ]
             },
             3: {
                 "bottles": [
-                    ["red", "blue", "green"],
-                    ["green", "red", "blue"],
-                    ["blue", "green", "red"],
-                    ["red", "blue", "green"],
+                    ["red", "blue", "green", "yellow"],
+                    ["green", "red", "blue", "yellow"],
+                    ["yellow", "green", "red", "blue"],
+                    ["blue", "yellow", "green", "red"],
                     [],
                     []
                 ]
             },
             4: {
                 "bottles": [
-                    ["purple", "orange", "cyan"],
-                    ["cyan", "purple", "orange"],
-                    ["orange", "cyan", "purple"],
-                    ["purple", "orange", "cyan"],
+                    ["purple", "orange", "cyan", "pink"],
+                    ["cyan", "purple", "orange", "pink"],
+                    ["pink", "cyan", "purple", "orange"],
+                    ["orange", "pink", "cyan", "purple"],
                     [],
                     []
                 ]
@@ -49,6 +49,7 @@ class GameEngine:
                     ["yellow", "red", "blue", "green"],
                     ["green", "yellow", "red", "blue"],
                     ["blue", "green", "yellow", "red"],
+                    ["red", "blue", "green", "yellow"],
                     [],
                     [],
                     []

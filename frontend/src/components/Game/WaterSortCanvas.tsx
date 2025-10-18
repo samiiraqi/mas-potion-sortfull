@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { gameAPI } from "../../services/api";
 import type { Level } from "../../types/game.tsx";
 import axios from "axios";
@@ -7,33 +7,19 @@ import { soundManager } from "../../utils/sounds";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
-interface DragState {
-  bottleIdx: number;
-  startX: number;
-  startY: number;
-  currentX: number;
-  currentY: number;
-}
-
 export default function WaterSortCanvas() {
   const [level, setLevel] = useState<Level | null>(null);
   const [bottles, setBottles] = useState<string[][]>([]);
-  const [displayBottles, setDisplayBottles] = useState<string[][]>([]);
   const [loading, setLoading] = useState(true);
   const [currentLevelId, setCurrentLevelId] = useState(1);
   const [moves, setMoves] = useState(0);
   const [message, setMessage] = useState("");
-  const [dragState, setDragState] = useState<DragState | null>(null);
-  const [hoverBottle, setHoverBottle] = useState<number | null>(null);
+  const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [debugMsg, setDebugMsg] = useState("");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -46,10 +32,10 @@ export default function WaterSortCanvas() {
       const data = await gameAPI.getLevel(levelId);
       setLevel(data);
       setBottles(data.bottles);
-      setDisplayBottles(data.bottles);
       setMoves(0);
       setMessage("");
       setDebugMsg("");
+      setSelectedBottle(null);
     } catch (err) {
       console.error("Error:", err);
     } finally {
@@ -61,142 +47,57 @@ export default function WaterSortCanvas() {
     soundManager.play("click");
   };
 
-  const canPour = (fromBottle: string[], toBottle: string[]): boolean => {
-    if (fromBottle.length === 0) return false;
-    if (toBottle.length >= 4) return false;
-    if (toBottle.length === 0) return true;
-    return fromBottle[fromBottle.length - 1] === toBottle[toBottle.length - 1];
-  };
-
-  const handleStart = (e: any, bottleIdx: number) => {
-    e.preventDefault();
-    if (bottles[bottleIdx].length === 0) {
-      setDebugMsg("❌ Can't drag empty bottle!");
-      return;
-    }
-    
-    const touch = e.touches ? e.touches[0] : e;
-    soundManager.play("select");
-    setDebugMsg(`✅ Dragging bottle ${bottleIdx}`);
-    
-    setDragState({
-      bottleIdx,
-      startX: touch.clientX,
-      startY: touch.clientY,
-      currentX: touch.clientX,
-      currentY: touch.clientY,
-    });
-  };
-
-  const handleMove = (e: any) => {
-    e.preventDefault();
-    if (!dragState) return;
-    
-    const touch = e.touches ? e.touches[0] : e;
-    const scrollTop = scrollContainerRef.current?.scrollTop || 0;
-    
-    setDragState({
-      ...dragState,
-      currentX: touch.clientX,
-      currentY: touch.clientY,
-    });
-
-    const COLS = isMobile ? 3 : 7;
-    const scale = isMobile ? 0.65 : 1;
-    const bottleSpacing = isMobile ? 90 : 100;
-    const containerWidth = isMobile ? window.innerWidth : 800;
-    const startX = (containerWidth - (COLS * bottleSpacing)) / 2;
-    const startY = isMobile ? 10 : 20;
-    const headerHeight = 120;
-    
-    let foundHover = false;
-    let debugInfo: string[] = [];
-    
-    bottles.forEach((bottleColors, idx) => {
-      if (idx === dragState.bottleIdx) return;
-      
-      const row = Math.floor(idx / COLS);
-      const col = idx % COLS;
-      const bottleX = startX + col * bottleSpacing + 30;
-      const bottleY = headerHeight + startY + row * 130 - scrollTop;
-      
-      const distance = Math.sqrt(
-        Math.pow(touch.clientX - bottleX, 2) + 
-        Math.pow(touch.clientY - bottleY, 2)
-      );
-      
-      debugInfo.push(`B${idx}:${Math.round(distance)}px`);
-      
-      // VERY LARGE hitbox - 150px!
-      if (distance < 150) {
-        const fromBottle = bottles[dragState.bottleIdx];
-        const toBottle = bottles[idx];
-        const allowed = canPour(fromBottle, toBottle);
-        
-        const isEmpty = toBottle.length === 0;
-        setDebugMsg(`Bottle ${idx} (${isEmpty ? 'EMPTY' : toBottle.length} colors) dist:${Math.round(distance)}px → ${allowed ? '✅ CAN POUR' : '❌ BLOCKED'}`);
-        
-        if (allowed) {
-          setHoverBottle(idx);
-          foundHover = true;
-        }
-      }
-    });
-    
-    if (!foundHover) {
-      setDebugMsg(`No target | ${debugInfo.slice(0, 4).join(' ')}`);
-      setHoverBottle(null);
-    }
-  };
-
-  const handleEnd = async (e: any) => {
-    e.preventDefault();
-    if (!dragState) return;
-    
-    const fromIdx = dragState.bottleIdx;
-    const toIdx = hoverBottle;
-
-    if (toIdx !== null && toIdx !== fromIdx) {
-      const fromBottle = bottles[fromIdx];
-      const toBottle = bottles[toIdx];
-      
-      if (!canPour(fromBottle, toBottle)) {
-        setDebugMsg(`❌ Can't pour!`);
-        setDragState(null);
-        setHoverBottle(null);
+  const handleBottleClick = async (bottleIdx: number) => {
+    // First click - select bottle
+    if (selectedBottle === null) {
+      if (bottles[bottleIdx].length === 0) {
+        setDebugMsg("❌ Can't select empty bottle!");
         return;
       }
-      
-      try {
-        setDebugMsg(`⏳ Pouring...`);
-        const res = await axios.post(API_URL + "/api/v1/make-move", {
-          bottles: displayBottles,
-          from_bottle: fromIdx,
-          to_bottle: toIdx,
-        });
-
-        if (res.data.success) {
-          soundManager.play("pour");
-          setBottles(res.data.bottles);
-          setDisplayBottles(res.data.bottles);
-          setMoves((m) => m + 1);
-          setDebugMsg(`✅ Poured!`);
-
-          if (res.data.is_completed) {
-            setMessage("🎉 Level Complete! 🎉");
-            setTimeout(() => soundManager.play("success"), 300);
-          }
-        }
-      } catch (error: any) {
-        const errorMsg = error.response?.data?.detail || error.message;
-        setDebugMsg(`❌ ${errorMsg}`);
-      }
-    } else {
-      setDebugMsg("❌ No valid drop target");
+      soundManager.play("select");
+      setSelectedBottle(bottleIdx);
+      setDebugMsg(`✅ Selected bottle ${bottleIdx}. Click a bottle to pour into!`);
+      return;
     }
 
-    setDragState(null);
-    setHoverBottle(null);
+    // Second click - pour or deselect
+    if (selectedBottle === bottleIdx) {
+      // Clicked same bottle - deselect
+      setSelectedBottle(null);
+      setDebugMsg("Deselected");
+      return;
+    }
+
+    // Try to pour
+    const fromBottle = bottles[selectedBottle];
+    const toBottle = bottles[bottleIdx];
+
+    setDebugMsg(`⏳ Trying to pour from ${selectedBottle} to ${bottleIdx}...`);
+
+    try {
+      const res = await axios.post(API_URL + "/api/v1/make-move", {
+        bottles: bottles,
+        from_bottle: selectedBottle,
+        to_bottle: bottleIdx,
+      });
+
+      if (res.data.success) {
+        soundManager.play("pour");
+        setBottles(res.data.bottles);
+        setMoves((m) => m + 1);
+        setDebugMsg(`✅ ${res.data.message}`);
+        setSelectedBottle(null);
+
+        if (res.data.is_completed) {
+          setMessage("🎉 Level Complete! 🎉");
+          setTimeout(() => soundManager.play("success"), 300);
+        }
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.detail || error.message;
+      setDebugMsg(`❌ ${errorMsg}`);
+      setSelectedBottle(null);
+    }
   };
 
   if (loading) {
@@ -218,29 +119,23 @@ export default function WaterSortCanvas() {
   if (!level) return null;
 
   const COLS = isMobile ? 3 : 7;
-  const scale = isMobile ? 0.65 : 1;
+  const scale = isMobile ? 0.7 : 1;
   const bottleSpacing = isMobile ? 90 : 100;
   const containerWidth = isMobile ? window.innerWidth : 800;
   const startX = (containerWidth - (COLS * bottleSpacing)) / 2;
-  const startY = isMobile ? 10 : 20;
+  const startY = 20;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
     const col = idx % COLS;
     return { 
       x: startX + col * bottleSpacing + 30, 
-      y: startY + row * 130
+      y: startY + row * 140
     };
   };
 
-  let tiltAngle = 0;
-  if (dragState) {
-    const dx = dragState.currentX - dragState.startX;
-    tiltAngle = Math.min(Math.max(dx * 0.5, -40), 40);
-  }
-
   const totalRows = Math.ceil(bottles.length / COLS);
-  const bottlesAreaHeight = totalRows * 130;
+  const bottlesAreaHeight = totalRows * 140 + 100;
 
   return (
     <div
@@ -254,9 +149,7 @@ export default function WaterSortCanvas() {
         display: "flex",
         flexDirection: "column",
         userSelect: "none",
-        touchAction: "none",
-        overflow: "hidden",
-        WebkitUserSelect: "none"
+        overflow: "hidden"
       }}
     >
       <div style={{ 
@@ -305,15 +198,13 @@ export default function WaterSortCanvas() {
         {debugMsg && (
           <div style={{
             background: "rgba(0,0,0,0.8)",
-            color: "yellow",
+            color: selectedBottle !== null ? "yellow" : "white",
             padding: "8px 15px",
             borderRadius: "8px",
             marginTop: "10px",
-            fontSize: "0.85rem",
-            fontFamily: "monospace",
+            fontSize: "0.9rem",
             display: "inline-block",
-            maxWidth: "90%",
-            wordBreak: "break-word"
+            maxWidth: "90%"
           }}>
             {debugMsg}
           </div>
@@ -333,7 +224,6 @@ export default function WaterSortCanvas() {
       </div>
 
       <div 
-        ref={scrollContainerRef}
         style={{ 
           flex: 1,
           overflowY: "auto",
@@ -342,50 +232,39 @@ export default function WaterSortCanvas() {
           paddingBottom: "80px",
           WebkitOverflowScrolling: "touch"
         }}
-        onMouseMove={handleMove}
-        onMouseUp={handleEnd}
-        onMouseLeave={handleEnd}
-        onTouchMove={handleMove}
-        onTouchEnd={handleEnd}
       >
         <div style={{
           position: "relative",
-          height: bottlesAreaHeight + 50,
-          width: "100%",
-          minHeight: "100%"
+          height: bottlesAreaHeight,
+          width: "100%"
         }}>
-          {displayBottles.map((colors, idx) => {
-            const isDragging = dragState?.bottleIdx === idx;
-            const isTarget = hoverBottle === idx;
+          {bottles.map((colors, idx) => {
+            const isSelected = selectedBottle === idx;
             const basePos = getBottlePosition(idx);
-            const position = isDragging
-              ? { x: dragState.currentX - 30, y: dragState.currentY - 80 }
-              : basePos;
 
             return (
               <div
                 key={idx}
+                onClick={() => handleBottleClick(idx)}
                 style={{
                   position: "absolute",
-                  left: position.x,
-                  top: position.y,
-                  transform: `rotate(${isDragging ? tiltAngle : 0}deg) scale(${scale})`,
+                  left: basePos.x,
+                  top: basePos.y,
+                  transform: `scale(${scale}) ${isSelected ? 'translateY(-10px)' : ''}`,
                   transformOrigin: "center center",
-                  cursor: colors.length > 0 ? "grab" : "not-allowed",
-                  zIndex: isDragging ? 1000 : 1,
-                  filter: isTarget ? "drop-shadow(0 0 30px #FFD700)" : "none",
-                  transition: isDragging ? "none" : "all 0.2s",
-                  outline: isTarget ? "6px solid yellow" : "none",
+                  cursor: "pointer",
+                  zIndex: isSelected ? 1000 : 1,
+                  filter: isSelected ? "drop-shadow(0 0 25px yellow)" : "none",
+                  transition: "all 0.2s",
+                  outline: isSelected ? "5px solid yellow" : "none",
                   borderRadius: "10px"
                 }}
-                onMouseDown={(e) => handleStart(e, idx)}
-                onTouchStart={(e) => handleStart(e, idx)}
               >
                 <RealisticBottle
                   colors={colors}
                   position={{ x: 0, y: 0 }}
                   onSelect={() => {}}
-                  isSelected={isDragging}
+                  isSelected={isSelected}
                   isEmpty={colors.length === 0}
                 />
               </div>
@@ -423,8 +302,7 @@ export default function WaterSortCanvas() {
             fontWeight: "bold",
             cursor: currentLevelId === 1 ? "not-allowed" : "pointer",
             opacity: currentLevelId === 1 ? 0.5 : 1,
-            color: "white",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+            color: "white"
           }}
         >
           ← PREV
@@ -441,8 +319,7 @@ export default function WaterSortCanvas() {
             fontSize: "0.95rem",
             fontWeight: "bold",
             cursor: "pointer",
-            color: "white",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+            color: "white"
           }}
         >
           ↻ RESTART
@@ -459,8 +336,7 @@ export default function WaterSortCanvas() {
             fontSize: "0.95rem",
             fontWeight: "bold",
             cursor: "pointer",
-            color: "white",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+            color: "white"
           }}
         >
           NEXT →
