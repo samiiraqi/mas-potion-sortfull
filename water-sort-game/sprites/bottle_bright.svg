@@ -1,7 +1,0 @@
-<svg width="60" height="160" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="10" width="50" height="140" rx="10" ry="10" 
-        fill="rgba(100,150,255,0.2)" stroke="cyan" stroke-width="5"/>
-  <ellipse cx="30" cy="148" rx="25" ry="8" 
-           fill="rgba(100,150,255,0.1)" stroke="cyan" stroke-width="4"/>
-  <text x="30" y="85" font-size="20" fill="white" text-anchor="middle">EMPTY</text>
-</svg>
