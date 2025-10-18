@@ -6,6 +6,8 @@ import RealisticBottle from "./RealisticBottle";
 import Fireworks from "./Fireworks";
 import { soundManager } from "../../utils/sounds";
 import { storage } from "../../utils/storage";
+import { musicManager } from "../../utils/music";
+import { themeManager, type Theme } from "../../utils/theme";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
@@ -30,16 +32,20 @@ export default function WaterSortCanvas() {
   const [timerRunning, setTimerRunning] = useState(false);
   const [bestMoves, setBestMoves] = useState(0);
   const [bestTime, setBestTime] = useState(0);
+  const [musicEnabled, setMusicEnabled] = useState(true);
+  const [currentTheme, setCurrentTheme] = useState<Theme>('light');
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
+    const savedTheme = themeManager.loadTheme();
+    setCurrentTheme(savedTheme);
   }, []);
 
   useEffect(() => {
     loadLevel(currentLevelId);
   }, [currentLevelId]);
 
-  // Timer effect
   useEffect(() => {
     let interval: any;
     if (timerRunning) {
@@ -63,7 +69,6 @@ export default function WaterSortCanvas() {
       setSelectedBottle(null);
       setFireworks([]);
       
-      // Load best scores
       const stats = storage.getLevelStats(levelId);
       setBestMoves(stats.bestMoves);
       setBestTime(stats.bestTime);
@@ -80,7 +85,34 @@ export default function WaterSortCanvas() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const testSound = () => {
+  const toggleMusic = () => {
+    const enabled = musicManager.toggle();
+    setMusicEnabled(enabled);
+    soundManager.play("click");
+  };
+
+  const changeTheme = (theme: Theme) => {
+    setCurrentTheme(theme);
+    themeManager.saveTheme(theme);
+    soundManager.play("click");
+    setShowMenu(false);
+  };
+
+  const shareScore = () => {
+    const text = `🎮 I completed Water Sort Level ${currentLevelId} in ${moves} moves and ${formatTime(timer)}! Can you beat my score? 💧`;
+    const url = 'https://water-sort-frontend.onrender.com';
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Water Sort Puzzle',
+        text: text,
+        url: url
+      }).catch(() => {});
+    } else {
+      // Fallback - copy to clipboard
+      navigator.clipboard.writeText(`${text}\n${url}`);
+      alert('Score copied to clipboard! Share it with friends! 🎉');
+    }
     soundManager.play("click");
   };
 
@@ -109,9 +141,9 @@ export default function WaterSortCanvas() {
   };
 
   const handleBottleClick = async (bottleIdx: number) => {
-    // Start timer on first move
     if (moves === 0 && !timerRunning) {
       setTimerRunning(true);
+      musicManager.playBackgroundMusic();
     }
 
     if (selectedBottle === null) {
@@ -151,10 +183,8 @@ export default function WaterSortCanvas() {
           setTimerRunning(false);
           setMessage("🎉 LEVEL COMPLETE! 🎉");
           
-          // Save stats
           storage.saveLevelStats(currentLevelId, moves + 1, timer);
           
-          // Update best scores
           const newStats = storage.getLevelStats(currentLevelId);
           setBestMoves(newStats.bestMoves);
           setBestTime(newStats.bestTime);
@@ -174,7 +204,7 @@ export default function WaterSortCanvas() {
         display: "flex", 
         alignItems: "center", 
         justifyContent: "center", 
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", 
+        background: themeManager.getTheme(currentTheme).background, 
         color: "white", 
         fontSize: "1.5rem" 
       }}>
@@ -185,6 +215,7 @@ export default function WaterSortCanvas() {
   
   if (!level) return null;
 
+  const theme = themeManager.getTheme(currentTheme);
   const COLS = isMobile ? 3 : Math.min(bottles.length, 6);
   const scale = isMobile ? 0.8 : 1;
   const bottleSpacing = isMobile ? 85 : 110;
@@ -222,7 +253,7 @@ export default function WaterSortCanvas() {
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background: theme.background,
         position: "fixed",
         top: 0,
         left: 0,
@@ -236,18 +267,18 @@ export default function WaterSortCanvas() {
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
 
-      <div style={{ 
-        padding: "15px",
-        textAlign: "center",
-        color: "white",
-        flexShrink: 0
+      {/* Top Menu Bar */}
+      <div style={{
+        position: "fixed",
+        top: "15px",
+        right: "15px",
+        display: "flex",
+        gap: "10px",
+        zIndex: 9999
       }}>
         <button
-          onClick={testSound}
+          onClick={toggleMusic}
           style={{
-            position: "absolute",
-            top: "15px",
-            right: "15px",
             padding: "10px",
             background: "rgba(255,255,255,0.25)",
             color: "white",
@@ -255,7 +286,6 @@ export default function WaterSortCanvas() {
             borderRadius: "50%",
             cursor: "pointer",
             fontSize: "1.3rem",
-            zIndex: 9999,
             width: "50px",
             height: "50px",
             display: "flex",
@@ -264,9 +294,100 @@ export default function WaterSortCanvas() {
             boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
           }}
         >
-          🔊
+          {musicEnabled ? '🎵' : '🔇'}
         </button>
 
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          style={{
+            padding: "10px",
+            background: "rgba(255,255,255,0.25)",
+            color: "white",
+            border: "3px solid rgba(255,255,255,0.5)",
+            borderRadius: "50%",
+            cursor: "pointer",
+            fontSize: "1.3rem",
+            width: "50px",
+            height: "50px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+          }}
+        >
+          🎨
+        </button>
+
+        {message && (
+          <button
+            onClick={shareScore}
+            style={{
+              padding: "10px 20px",
+              background: "linear-gradient(135deg, #11998e, #38ef7d)",
+              color: "white",
+              border: "none",
+              borderRadius: "25px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "bold",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+              display: "flex",
+              alignItems: "center",
+              gap: "5px"
+            }}
+          >
+            📤 SHARE
+          </button>
+        )}
+      </div>
+
+      {/* Theme Menu */}
+      {showMenu && (
+        <div style={{
+          position: "fixed",
+          top: "80px",
+          right: "15px",
+          background: "rgba(255,255,255,0.95)",
+          borderRadius: "15px",
+          padding: "15px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+          zIndex: 9998,
+          backdropFilter: "blur(10px)"
+        }}>
+          <div style={{ fontWeight: "bold", marginBottom: "10px", color: "#333" }}>Choose Theme:</div>
+          {themeManager.getAllThemes().map(themeName => (
+            <button
+              key={themeName}
+              onClick={() => changeTheme(themeName)}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "10px 20px",
+                margin: "5px 0",
+                background: currentTheme === themeName 
+                  ? "linear-gradient(135deg, #667eea, #764ba2)" 
+                  : "#f0f0f0",
+                color: currentTheme === themeName ? "white" : "#333",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                fontWeight: "bold",
+                textTransform: "capitalize"
+              }}
+            >
+              {themeName === currentTheme ? '✓ ' : ''}{themeName}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div style={{ 
+        padding: "15px",
+        textAlign: "center",
+        color: theme.text,
+        flexShrink: 0
+      }}>
         <h1 style={{ 
           fontSize: isMobile ? "2rem" : "3.5rem", 
           margin: "10px 0",
@@ -309,7 +430,7 @@ export default function WaterSortCanvas() {
             <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>⏱️ TIME</div>
             <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{formatTime(timer)}</div>
             {bestTime > 0 && (
-              <div style={{ fontSize: "0.7rem", color: "#FFD700" }}>
+              <div style={{ fontSize: "0.7rem", color: theme.accent }}>
                 Best: {formatTime(bestTime)}
               </div>
             )}
@@ -326,7 +447,7 @@ export default function WaterSortCanvas() {
             <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>MOVES</div>
             <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{moves}</div>
             {bestMoves > 0 && (
-              <div style={{ fontSize: "0.7rem", color: "#FFD700" }}>
+              <div style={{ fontSize: "0.7rem", color: theme.accent }}>
                 Best: {bestMoves}
               </div>
             )}
@@ -335,7 +456,7 @@ export default function WaterSortCanvas() {
 
         {message && (
           <div style={{
-            color: "#FFD700",
+            color: theme.accent,
             fontSize: isMobile ? "1.5rem" : "2.5rem",
             fontWeight: "900",
             marginTop: "15px",
