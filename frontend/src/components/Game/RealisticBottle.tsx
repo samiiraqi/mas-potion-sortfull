@@ -6,24 +6,25 @@ interface RealisticBottleProps {
   onSelect: () => void;
   isSelected: boolean;
   isEmpty: boolean;
+  isFull?: boolean;
 }
 
 const COLOR_MAP: { [key: string]: string } = {
-  red: '#FF6B6B',
-  blue: '#4ECDC4',
-  green: '#95E1D3',
-  purple: '#C77DFF',
-  yellow: '#FFD93D',
-  orange: '#FF9A76',
-  cyan: '#6BCF7F',
-  pink: '#FF85B3',
-  lime: '#B8E986',
-  magenta: '#E056FD',
-  teal: '#38B6C4',
-  coral: '#FF7F8F'
+  red: '#FF3B3B',
+  blue: '#3B82F6',
+  green: '#10B981',
+  purple: '#A855F7',
+  yellow: '#FBBF24',
+  orange: '#F97316',
+  cyan: '#06B6D4',
+  pink: '#EC4899',
+  lime: '#84CC16',
+  magenta: '#D946EF',
+  teal: '#14B8A6',
+  coral: '#FB7185'
 };
 
-export default function RealisticBottle({ colors, position, onSelect, isSelected, isEmpty }: RealisticBottleProps) {
+export default function RealisticBottle({ colors, position, onSelect, isSelected, isEmpty, isFull }: RealisticBottleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
@@ -39,94 +40,113 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      const bottleLeft = 8;
-      const bottleRight = 52;
-      const bottleTop = 12;
-      const bottleBottom = 148;
+      const bottleLeft = 5;
+      const bottleRight = 55;
+      const bottleTop = 8;
+      const bottleBottom = 152;
       const bottleWidth = bottleRight - bottleLeft;
       
-      // Draw glass bottle outline
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.lineWidth = 3;
+      // Glass bottle with 3D effect
+      const bottleGradient = ctx.createLinearGradient(bottleLeft, 0, bottleRight, 0);
+      bottleGradient.addColorStop(0, 'rgba(200, 220, 255, 0.3)');
+      bottleGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
+      bottleGradient.addColorStop(1, 'rgba(200, 220, 255, 0.3)');
+      
+      ctx.fillStyle = bottleGradient;
       ctx.beginPath();
       ctx.moveTo(bottleLeft, bottleTop);
-      ctx.lineTo(bottleLeft, bottleBottom - 8);
-      ctx.quadraticCurveTo(bottleLeft, bottleBottom + 2, bottleLeft + 8, bottleBottom + 2);
-      ctx.lineTo(bottleRight - 8, bottleBottom + 2);
-      ctx.quadraticCurveTo(bottleRight, bottleBottom + 2, bottleRight, bottleBottom - 8);
+      ctx.lineTo(bottleLeft, bottleBottom - 10);
+      ctx.quadraticCurveTo(bottleLeft, bottleBottom, bottleLeft + 10, bottleBottom);
+      ctx.lineTo(bottleRight - 10, bottleBottom);
+      ctx.quadraticCurveTo(bottleRight, bottleBottom, bottleRight, bottleBottom - 10);
       ctx.lineTo(bottleRight, bottleTop);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Glass border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 2.5;
       ctx.stroke();
       
       if (isEmpty) {
-        // BRIGHT YELLOW background for empty bottles
-        const pulse = 0.4 + Math.sin(frame * 0.08) * 0.2;
+        // Glowing empty bottle
+        const pulse = 0.5 + Math.sin(frame * 0.08) * 0.2;
         
-        // Fill with bright yellow
-        ctx.fillStyle = `rgba(255, 215, 0, ${pulse})`;
-        ctx.fillRect(bottleLeft + 2, bottleTop + 2, bottleWidth - 4, bottleBottom - bottleTop - 6);
+        ctx.fillStyle = `rgba(255, 215, 0, ${pulse * 0.3})`;
+        ctx.fillRect(bottleLeft + 3, bottleTop + 3, bottleWidth - 6, bottleBottom - bottleTop - 13);
         
-        // Add "EMPTY" text
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = 'bold 14px Arial';
+        // "EMPTY" text
+        ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('EMPTY', 30, 80);
         
-        // Bright glowing border
-        ctx.strokeStyle = `rgba(255, 215, 0, ${pulse + 0.3})`;
-        ctx.lineWidth = 4;
-        ctx.strokeRect(bottleLeft + 2, bottleTop + 2, bottleWidth - 4, bottleBottom - bottleTop - 6);
+        ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(bottleLeft + 3, bottleTop + 3, bottleWidth - 6, bottleBottom - bottleTop - 13);
         
       } else {
-        // Draw liquid layers
-        const totalHeight = bottleBottom - bottleTop - 10;
-        const layerHeight = totalHeight / 4;
+        // Draw liquid - FILLED TO THE BRIM!
+        const liquidHeight = (bottleBottom - bottleTop - 10) / 4;
         
         colors.forEach((color, index) => {
           const hexColor = COLOR_MAP[color];
-          const layerBottom = bottleBottom - 4;
-          const layerTop = layerBottom - (index + 1) * layerHeight;
           
-          ctx.fillStyle = hexColor + 'F0';
-          ctx.beginPath();
-          ctx.rect(bottleLeft + 2, layerTop, bottleWidth - 4, layerHeight);
-          ctx.fill();
+          // Each layer position
+          const layerTop = bottleBottom - 8 - (index + 1) * liquidHeight;
           
-          // Wave on top layer
+          // Gradient for depth
+          const liquidGrad = ctx.createLinearGradient(bottleLeft + 5, layerTop, bottleRight - 5, layerTop);
+          liquidGrad.addColorStop(0, hexColor + 'E6');
+          liquidGrad.addColorStop(0.3, hexColor);
+          liquidGrad.addColorStop(0.7, hexColor);
+          liquidGrad.addColorStop(1, hexColor + 'E6');
+          
+          ctx.fillStyle = liquidGrad;
+          ctx.fillRect(bottleLeft + 3, layerTop, bottleWidth - 6, liquidHeight);
+          
+          // Wave animation on top layer
           if (index === colors.length - 1) {
-            ctx.fillStyle = hexColor + 'F0';
+            ctx.fillStyle = hexColor;
             ctx.beginPath();
-            ctx.moveTo(bottleLeft + 2, layerTop);
+            ctx.moveTo(bottleLeft + 3, layerTop);
             
-            for (let x = bottleLeft + 2; x <= bottleRight - 2; x += 2) {
-              const progress = (x - bottleLeft - 2) / (bottleWidth - 4);
-              const wave = Math.sin(progress * Math.PI * 4 + frame * 0.1) * 2.5;
+            for (let x = bottleLeft + 3; x <= bottleRight - 3; x += 2) {
+              const progress = (x - bottleLeft - 3) / (bottleWidth - 6);
+              const wave = Math.sin(progress * Math.PI * 5 + frame * 0.12) * 2;
               ctx.lineTo(x, layerTop + wave);
             }
             
-            ctx.lineTo(bottleRight - 2, layerTop);
-            ctx.lineTo(bottleRight - 2, layerTop + 10);
-            ctx.lineTo(bottleLeft + 2, layerTop + 10);
+            ctx.lineTo(bottleRight - 3, layerTop + 8);
+            ctx.lineTo(bottleLeft + 3, layerTop + 8);
             ctx.closePath();
             ctx.fill();
             
-            // Shimmer
-            const shimmer = ctx.createLinearGradient(bottleLeft + 10, layerTop, bottleLeft + 25, layerTop);
-            shimmer.addColorStop(0, 'rgba(255, 255, 255, 0)');
-            shimmer.addColorStop(0.5, 'rgba(255, 255, 255, 0.6)');
-            shimmer.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = shimmer;
-            ctx.fillRect(bottleLeft + 10, layerTop - 2, 15, 15);
+            // Sparkle effect
+            const sparkle = ctx.createRadialGradient(bottleLeft + 20, layerTop + 5, 0, bottleLeft + 20, layerTop + 5, 15);
+            sparkle.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+            sparkle.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = sparkle;
+            ctx.fillRect(bottleLeft + 10, layerTop, 20, 15);
           }
         });
+        
+        // If bottle is full, add special glow
+        if (isFull) {
+          const glowPulse = 0.3 + Math.sin(frame * 0.1) * 0.2;
+          ctx.strokeStyle = `rgba(255, 215, 0, ${glowPulse})`;
+          ctx.lineWidth = 4;
+          ctx.strokeRect(bottleLeft, bottleTop, bottleWidth, bottleBottom - bottleTop);
+        }
       }
       
-      // Glass shine
-      const glassShine = ctx.createLinearGradient(bottleLeft + 5, 0, bottleLeft + 12, 0);
-      glassShine.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      glassShine.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
-      glassShine.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = glassShine;
-      ctx.fillRect(bottleLeft + 5, bottleTop + 8, 7, bottleBottom - bottleTop - 16);
+      // Strong glass shine
+      const shine = ctx.createLinearGradient(bottleLeft + 8, 0, bottleLeft + 18, 0);
+      shine.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      shine.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
+      shine.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = shine;
+      ctx.fillRect(bottleLeft + 8, bottleTop + 10, 10, bottleBottom - bottleTop - 20);
       
       frame++;
       animationId = requestAnimationFrame(draw);
@@ -137,7 +157,7 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [colors, isEmpty]);
+  }, [colors, isEmpty, isFull]);
   
   return (
     <div
@@ -145,8 +165,7 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
         position: 'absolute',
         left: position.x,
         top: position.y,
-        cursor: 'pointer',
-        filter: isSelected ? 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.8))' : 'none'
+        cursor: 'pointer'
       }}
       onClick={onSelect}
     >
@@ -155,7 +174,8 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
         width={60}
         height={160}
         style={{
-          display: 'block'
+          display: 'block',
+          filter: isSelected ? 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))' : 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))'
         }}
       />
     </div>
