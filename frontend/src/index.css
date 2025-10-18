@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-potion-red: #FF3B3F;
+  --color-potion-blue: #4A90E2;
+  --color-potion-green: #7ED321;
+  --color-potion-purple: #9013FE;
+  --color-potion-yellow: #F5A623;
+  --color-potion-orange: #FF6B35;
+  --color-potion-cyan: #50E3C2;
+  --color-potion-pink: #FF6BB5;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #2d1b4e 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(144, 19, 254, 0.5);
+}
