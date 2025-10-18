@@ -8,6 +8,8 @@ import { soundManager } from "../../utils/sounds";
 import { storage } from "../../utils/storage";
 import { musicManager } from "../../utils/music";
 import { themeManager, type Theme } from "../../utils/theme";
+import MultiplayerLobby from "../Multiplayer/MultiplayerLobby";
+import MultiplayerGame from "../Multiplayer/MultiplayerGame";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
@@ -35,6 +37,8 @@ export default function WaterSortCanvas() {
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [currentTheme, setCurrentTheme] = useState<Theme>('light');
   const [showMenu, setShowMenu] = useState(false);
+  const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
+  const [multiplayerData, setMultiplayerData] = useState<any>(null);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -109,7 +113,6 @@ export default function WaterSortCanvas() {
         url: url
       }).catch(() => {});
     } else {
-      // Fallback - copy to clipboard
       navigator.clipboard.writeText(`${text}\n${url}`);
       alert('Score copied to clipboard! Share it with friends! 🎉');
     }
@@ -197,6 +200,26 @@ export default function WaterSortCanvas() {
     }
   };
 
+  // Multiplayer handlers
+  const handleJoinRoom = (data: any) => {
+    setMultiplayerData(data);
+    setShowMultiplayerLobby(false);
+  };
+
+  const handleExitMultiplayer = () => {
+    setMultiplayerData(null);
+  };
+
+  // Show multiplayer game if in multiplayer mode
+  if (multiplayerData) {
+    return (
+      <MultiplayerGame 
+        roomData={multiplayerData} 
+        onExit={handleExitMultiplayer}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div style={{ 
@@ -267,7 +290,13 @@ export default function WaterSortCanvas() {
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
 
-      {/* Top Menu Bar */}
+      {showMultiplayerLobby && (
+        <MultiplayerLobby 
+          onJoinRoom={handleJoinRoom}
+          onClose={() => setShowMultiplayerLobby(false)}
+        />
+      )}
+
       <div style={{
         position: "fixed",
         top: "15px",
@@ -276,6 +305,26 @@ export default function WaterSortCanvas() {
         gap: "10px",
         zIndex: 9999
       }}>
+        <button
+          onClick={() => setShowMultiplayerLobby(true)}
+          style={{
+            padding: "10px 20px",
+            background: "linear-gradient(135deg, #f093fb, #f5576c)",
+            color: "white",
+            border: "none",
+            borderRadius: "25px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            fontWeight: "bold",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}
+        >
+          🎮 MULTIPLAYER
+        </button>
+
         <button
           onClick={toggleMusic}
           style={{
@@ -341,7 +390,6 @@ export default function WaterSortCanvas() {
         )}
       </div>
 
-      {/* Theme Menu */}
       {showMenu && (
         <div style={{
           position: "fixed",
