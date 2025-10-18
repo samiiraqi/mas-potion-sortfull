@@ -26,6 +26,7 @@ export default function WaterSortCanvas() {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [hoverBottle, setHoverBottle] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [debugMsg, setDebugMsg] = useState("");
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -47,6 +48,7 @@ export default function WaterSortCanvas() {
       setDisplayBottles(data.bottles);
       setMoves(0);
       setMessage("");
+      setDebugMsg("");
     } catch (err) {
       console.error("Error:", err);
     } finally {
@@ -58,12 +60,30 @@ export default function WaterSortCanvas() {
     soundManager.play("click");
   };
 
+  const canPour = (fromBottle: string[], toBottle: string[]): boolean => {
+    // Empty source
+    if (fromBottle.length === 0) return false;
+    
+    // Full target
+    if (toBottle.length >= 4) return false;
+    
+    // Empty target - ALWAYS ALLOWED!
+    if (toBottle.length === 0) return true;
+    
+    // Colors must match
+    return fromBottle[fromBottle.length - 1] === toBottle[toBottle.length - 1];
+  };
+
   const handleStart = (e: any, bottleIdx: number) => {
     e.preventDefault();
-    if (bottles[bottleIdx].length === 0) return;
+    if (bottles[bottleIdx].length === 0) {
+      setDebugMsg("❌ Can't drag empty bottle!");
+      return;
+    }
     
     const touch = e.touches ? e.touches[0] : e;
     soundManager.play("select");
+    setDebugMsg(`✅ Dragging bottle ${bottleIdx}`);
     
     setDragState({
       bottleIdx,
@@ -93,7 +113,10 @@ export default function WaterSortCanvas() {
     const startY = isMobile ? 10 : 20;
     
     let foundHover = false;
-    bottles.forEach((_, idx) => {
+    let closestDist = 999999;
+    let closestIdx = -1;
+    
+    bottles.forEach((bottleColors, idx) => {
       if (idx === dragState.bottleIdx) return;
       
       const row = Math.floor(idx / COLS);
@@ -101,24 +124,34 @@ export default function WaterSortCanvas() {
       const bottleX = startX + col * bottleSpacing + 30;
       const bottleY = startY + row * 130;
       
-      // BIGGER hitbox - especially for empty bottles!
-      const hitboxSize = 90;
       const distance = Math.sqrt(
         Math.pow(touch.clientX - bottleX, 2) + 
         Math.pow(touch.clientY - bottleY, 2)
       );
       
-      console.log(`Bottle ${idx}: distance=${distance}, hitbox=${hitboxSize}, empty=${bottles[idx].length === 0}`);
+      if (distance < closestDist) {
+        closestDist = distance;
+        closestIdx = idx;
+      }
       
-      if (distance < hitboxSize) {
-        console.log(`HOVER DETECTED on bottle ${idx}`);
-        setHoverBottle(idx);
-        foundHover = true;
+      if (distance < 80) {
+        const fromBottle = bottles[dragState.bottleIdx];
+        const toBottle = bottles[idx];
+        const allowed = canPour(fromBottle, toBottle);
+        
+        setDebugMsg(`Hover bottle ${idx} (${toBottle.length === 0 ? 'EMPTY' : 'has ' + toBottle.length}) - ${allowed ? '✅ CAN POUR' : '❌ BLOCKED'}`);
+        
+        if (allowed) {
+          setHoverBottle(idx);
+          foundHover = true;
+        }
       }
     });
     
-    if (!foundHover && hoverBottle !== null) {
-      console.log('No hover - clearing');
+    if (!foundHover) {
+      if (closestIdx !== -1 && closestDist < 120) {
+        setDebugMsg(`Closest: bottle ${closestIdx} (dist: ${Math.round(closestDist)}px)`);
+      }
       setHoverBottle(null);
     }
   };
@@ -130,26 +163,33 @@ export default function WaterSortCanvas() {
     const fromIdx = dragState.bottleIdx;
     const toIdx = hoverBottle;
 
-    console.log(`POUR ATTEMPT: from ${fromIdx} to ${toIdx}`);
-    console.log(`From bottle: ${bottles[fromIdx]}`);
-    console.log(`To bottle: ${bottles[toIdx]}`);
+    setDebugMsg(`Drop: from ${fromIdx} to ${toIdx}`);
 
     if (toIdx !== null && toIdx !== fromIdx) {
+      const fromBottle = bottles[fromIdx];
+      const toBottle = bottles[toIdx];
+      
+      if (!canPour(fromBottle, toBottle)) {
+        setDebugMsg(`❌ Can't pour! From: [${fromBottle}] To: [${toBottle}]`);
+        setDragState(null);
+        setHoverBottle(null);
+        return;
+      }
+      
       try {
-        console.log('Sending pour request to backend...');
+        setDebugMsg(`⏳ Sending to backend...`);
         const res = await axios.post(API_URL + "/api/v1/make-move", {
           bottles: displayBottles,
           from_bottle: fromIdx,
           to_bottle: toIdx,
         });
 
-        console.log('Backend response:', res.data);
-
         if (res.data.success) {
           soundManager.play("pour");
           setBottles(res.data.bottles);
           setDisplayBottles(res.data.bottles);
           setMoves((m) => m + 1);
+          setDebugMsg(`✅ ${res.data.message}`);
 
           if (res.data.is_completed) {
             setMessage("🎉 Level Complete! 🎉");
@@ -157,12 +197,12 @@ export default function WaterSortCanvas() {
           }
         }
       } catch (error: any) {
-        console.error("Pour failed:", error);
-        console.error("Error response:", error.response?.data);
-        alert("Pour failed: " + (error.response?.data?.detail || "Unknown error"));
+        const errorMsg = error.response?.data?.detail || error.message;
+        setDebugMsg(`❌ Error: ${errorMsg}`);
+        alert("Pour failed: " + errorMsg);
       }
     } else {
-      console.log('Pour cancelled - no valid target');
+      setDebugMsg("❌ No valid drop target");
     }
 
     setDragState(null);
@@ -272,6 +312,22 @@ export default function WaterSortCanvas() {
           Level {currentLevelId} • Moves {moves}
         </div>
 
+        {/* DEBUG MESSAGE */}
+        {debugMsg && (
+          <div style={{
+            background: "rgba(0,0,0,0.7)",
+            color: "yellow",
+            padding: "8px 15px",
+            borderRadius: "8px",
+            marginTop: "10px",
+            fontSize: "0.9rem",
+            fontFamily: "monospace",
+            display: "inline-block"
+          }}>
+            {debugMsg}
+          </div>
+        )}
+
         {message && (
           <div style={{
             color: "#FFD700",
@@ -325,8 +381,9 @@ export default function WaterSortCanvas() {
                   transformOrigin: "center center",
                   cursor: colors.length > 0 ? "grab" : "not-allowed",
                   zIndex: isDragging ? 1000 : 1,
-                  filter: isTarget ? "drop-shadow(0 0 20px yellow)" : "none",
-                  transition: isDragging ? "none" : "all 0.2s"
+                  filter: isTarget ? "drop-shadow(0 0 25px #FFD700)" : "none",
+                  transition: isDragging ? "none" : "all 0.2s",
+                  outline: isTarget ? "5px solid yellow" : "none"
                 }}
                 onMouseDown={(e) => handleStart(e, idx)}
                 onTouchStart={(e) => handleStart(e, idx)}
