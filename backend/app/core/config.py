@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from typing import List
 
 class Settings(BaseSettings):
     APP_NAME: str = "Water Sort Puzzle API"
@@ -10,12 +11,8 @@ class Settings(BaseSettings):
     
     API_V1_PREFIX: str = "/api/v1"
     
-    BACKEND_CORS_ORIGINS: list = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://*.onrender.com",
-        "*"
-    ]
+    # Allow all origins for now
+    BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     class Config:
         env_file = ".env"
