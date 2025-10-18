@@ -37,15 +37,13 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
     let frame = 0;
     
     const draw = () => {
-      // CLEAR EVERYTHING FIRST
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Bottle dimensions - FULL WIDTH
       const bottleLeft = 8;
       const bottleRight = 52;
       const bottleTop = 12;
       const bottleBottom = 148;
-      const bottleWidth = bottleRight - bottleLeft; // 44 pixels wide
+      const bottleWidth = bottleRight - bottleLeft;
       
       // Draw glass bottle outline
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
@@ -60,46 +58,45 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
       ctx.stroke();
       
       if (isEmpty) {
-        // Empty bottle glow
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.2)';
+        // BRIGHT YELLOW background for empty bottles
+        const pulse = 0.4 + Math.sin(frame * 0.08) * 0.2;
+        
+        // Fill with bright yellow
+        ctx.fillStyle = `rgba(255, 215, 0, ${pulse})`;
         ctx.fillRect(bottleLeft + 2, bottleTop + 2, bottleWidth - 4, bottleBottom - bottleTop - 6);
         
-        const pulse = 0.3 + Math.sin(frame * 0.05) * 0.1;
-        ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
-        ctx.lineWidth = 2;
+        // Add "EMPTY" text
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('EMPTY', 30, 80);
+        
+        // Bright glowing border
+        ctx.strokeStyle = `rgba(255, 215, 0, ${pulse + 0.3})`;
+        ctx.lineWidth = 4;
         ctx.strokeRect(bottleLeft + 2, bottleTop + 2, bottleWidth - 4, bottleBottom - bottleTop - 6);
+        
       } else {
-        // Draw liquid layers - FULL WIDTH RECTANGLES!
+        // Draw liquid layers
         const totalHeight = bottleBottom - bottleTop - 10;
         const layerHeight = totalHeight / 4;
         
         colors.forEach((color, index) => {
           const hexColor = COLOR_MAP[color];
-          
-          // Calculate Y position for this layer
           const layerBottom = bottleBottom - 4;
           const layerTop = layerBottom - (index + 1) * layerHeight;
           
-          // FULL WIDTH RECTANGLE - no triangles!
           ctx.fillStyle = hexColor + 'F0';
-          
           ctx.beginPath();
-          ctx.rect(
-            bottleLeft + 2,           // Left edge
-            layerTop,                  // Top
-            bottleWidth - 4,          // FULL WIDTH
-            layerHeight               // Height
-          );
+          ctx.rect(bottleLeft + 2, layerTop, bottleWidth - 4, layerHeight);
           ctx.fill();
           
-          // Add wave ONLY on top layer
+          // Wave on top layer
           if (index === colors.length - 1) {
-            // Draw wave on top
             ctx.fillStyle = hexColor + 'F0';
             ctx.beginPath();
             ctx.moveTo(bottleLeft + 2, layerTop);
             
-            // Animated wave
             for (let x = bottleLeft + 2; x <= bottleRight - 2; x += 2) {
               const progress = (x - bottleLeft - 2) / (bottleWidth - 4);
               const wave = Math.sin(progress * Math.PI * 4 + frame * 0.1) * 2.5;
@@ -112,7 +109,7 @@ export default function RealisticBottle({ colors, position, onSelect, isSelected
             ctx.closePath();
             ctx.fill();
             
-            // Shine on water surface
+            // Shimmer
             const shimmer = ctx.createLinearGradient(bottleLeft + 10, layerTop, bottleLeft + 25, layerTop);
             shimmer.addColorStop(0, 'rgba(255, 255, 255, 0)');
             shimmer.addColorStop(0.5, 'rgba(255, 255, 255, 0.6)');
