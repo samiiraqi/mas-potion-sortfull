@@ -3,25 +3,35 @@ interface GameStats {
   bestMoves: number;
   bestTime: number;
   completed: boolean;
+  stars: number;
+  optimalMoves: number;
 }
 
 export const storage = {
-  // Save level stats
-  saveLevelStats(levelId: number, moves: number, time: number) {
+  saveLevelStats(levelId: number, moves: number, time: number, optimalMoves: number) {
     const key = `level_${levelId}`;
     const existing = this.getLevelStats(levelId);
+    
+    // Calculate stars based on moves
+    let stars = 1; // 1 star for completing
+    if (moves <= optimalMoves) {
+      stars = 3; // 3 stars for optimal!
+    } else if (moves <= optimalMoves + 5) {
+      stars = 2; // 2 stars for near-optimal
+    }
     
     const stats: GameStats = {
       levelId,
       bestMoves: existing.bestMoves === 0 ? moves : Math.min(existing.bestMoves, moves),
       bestTime: existing.bestTime === 0 ? time : Math.min(existing.bestTime, time),
-      completed: true
+      completed: true,
+      stars: Math.max(existing.stars, stars), // Keep best star rating
+      optimalMoves
     };
     
     localStorage.setItem(key, JSON.stringify(stats));
   },
   
-  // Get level stats
   getLevelStats(levelId: number): GameStats {
     const key = `level_${levelId}`;
     const data = localStorage.getItem(key);
@@ -34,14 +44,15 @@ export const storage = {
       levelId,
       bestMoves: 0,
       bestTime: 0,
-      completed: false
+      completed: false,
+      stars: 0,
+      optimalMoves: 20
     };
   },
   
-  // Get all completed levels
   getAllStats(): GameStats[] {
     const stats: GameStats[] = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 50; i++) {
       const levelStats = this.getLevelStats(i);
       if (levelStats.completed) {
         stats.push(levelStats);
@@ -50,7 +61,15 @@ export const storage = {
     return stats;
   },
   
-  // Clear all data
+  getTotalStars(): number {
+    let total = 0;
+    for (let i = 1; i <= 50; i++) {
+      const stats = this.getLevelStats(i);
+      total += stats.stars;
+    }
+    return total;
+  },
+  
   clearAll() {
     localStorage.clear();
   }

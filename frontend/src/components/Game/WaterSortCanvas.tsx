@@ -10,6 +10,7 @@ import { musicManager } from "../../utils/music";
 import { themeManager, type Theme } from "../../utils/theme";
 import MultiplayerLobby from "../Multiplayer/MultiplayerLobby";
 import MultiplayerGame from "../Multiplayer/MultiplayerGame";
+import LevelSelect from "./LevelSelect";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
@@ -39,6 +40,8 @@ export default function WaterSortCanvas() {
   const [showMenu, setShowMenu] = useState(false);
   const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
   const [multiplayerData, setMultiplayerData] = useState<any>(null);
+  const [showLevelSelect, setShowLevelSelect] = useState(false);
+  const [earnedStars, setEarnedStars] = useState(0);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -72,6 +75,7 @@ export default function WaterSortCanvas() {
       setMessage("");
       setSelectedBottle(null);
       setFireworks([]);
+      setEarnedStars(0);
       
       const stats = storage.getLevelStats(levelId);
       setBestMoves(stats.bestMoves);
@@ -103,7 +107,7 @@ export default function WaterSortCanvas() {
   };
 
   const shareScore = () => {
-    const text = `🎮 I completed Water Sort Level ${currentLevelId} in ${moves} moves and ${formatTime(timer)}! Can you beat my score? 💧`;
+    const text = `🎮 I completed Water Sort Level ${currentLevelId} with ${earnedStars}⭐ in ${moves} moves! Can you beat it? 💧`;
     const url = 'https://water-sort-frontend.onrender.com';
     
     if (navigator.share) {
@@ -184,9 +188,23 @@ export default function WaterSortCanvas() {
 
         if (res.data.is_completed) {
           setTimerRunning(false);
-          setMessage("🎉 LEVEL COMPLETE! 🎉");
           
-          storage.saveLevelStats(currentLevelId, moves + 1, timer);
+          const optimalMoves = level?.optimal_moves || 20;
+          
+          // Calculate stars
+          let stars = 1;
+          if (moves + 1 <= optimalMoves) {
+            stars = 3;
+          } else if (moves + 1 <= optimalMoves + 5) {
+            stars = 2;
+          }
+          
+          setEarnedStars(stars);
+          
+          const starEmoji = '⭐'.repeat(stars);
+          setMessage(`🎉 LEVEL COMPLETE! ${starEmoji}`);
+          
+          storage.saveLevelStats(currentLevelId, moves + 1, timer, optimalMoves);
           
           const newStats = storage.getLevelStats(currentLevelId);
           setBestMoves(newStats.bestMoves);
@@ -209,11 +227,26 @@ export default function WaterSortCanvas() {
     setMultiplayerData(null);
   };
 
+  const handleSelectLevel = (levelId: number) => {
+    setCurrentLevelId(levelId);
+    setShowLevelSelect(false);
+  };
+
   if (multiplayerData) {
     return (
       <MultiplayerGame 
         roomData={multiplayerData} 
         onExit={handleExitMultiplayer}
+      />
+    );
+  }
+
+  if (showLevelSelect) {
+    return (
+      <LevelSelect 
+        onSelectLevel={handleSelectLevel}
+        onClose={() => setShowLevelSelect(false)}
+        currentTheme={currentTheme}
       />
     );
   }
@@ -269,6 +302,17 @@ export default function WaterSortCanvas() {
     coral: '#FB7185'
   };
 
+  const getDifficultyBadge = () => {
+    if (currentLevelId <= 10) return { text: '🟢 EASY', color: '#10B981' };
+    if (currentLevelId <= 25) return { text: '🟡 MEDIUM', color: '#F59E0B' };
+    if (currentLevelId <= 35) return { text: '🔴 HARD', color: '#EF4444' };
+    return { text: '🟣 EXPERT', color: '#8B5CF6' };
+  };
+
+  const difficulty = getDifficultyBadge();
+  const totalStars = storage.getTotalStars();
+  const currentStats = storage.getLevelStats(currentLevelId);
+
   return (
     <div
       style={{
@@ -295,7 +339,47 @@ export default function WaterSortCanvas() {
         />
       )}
 
-      {/* FIXED: Buttons now in separate row below title */}
+      {showMenu && (
+        <div style={{
+          position: "absolute",
+          top: isMobile ? "140px" : "160px",
+          right: "50%",
+          transform: "translateX(50%)",
+          background: "rgba(255,255,255,0.95)",
+          borderRadius: "15px",
+          padding: "15px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+          zIndex: 9998,
+          backdropFilter: "blur(10px)"
+        }}>
+          <div style={{ fontWeight: "bold", marginBottom: "10px", color: "#333" }}>Choose Theme:</div>
+          {themeManager.getAllThemes().map(themeName => (
+            <button
+              key={themeName}
+              onClick={() => changeTheme(themeName)}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "10px 20px",
+                margin: "5px 0",
+                background: currentTheme === themeName 
+                  ? "linear-gradient(135deg, #667eea, #764ba2)" 
+                  : "#f0f0f0",
+                color: currentTheme === themeName ? "white" : "#333",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                fontWeight: "bold",
+                textTransform: "capitalize"
+              }}
+            >
+              {themeName === currentTheme ? '✓ ' : ''}{themeName}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div style={{ 
         padding: isMobile ? "10px" : "15px",
         textAlign: "center",
@@ -314,7 +398,20 @@ export default function WaterSortCanvas() {
           💧 WATER SORT 💧
         </h1>
 
-        {/* Action Buttons Row - Below Title */}
+        {/* Total Stars Display */}
+        <div style={{
+          background: "rgba(0,0,0,0.3)",
+          padding: "5px 15px",
+          borderRadius: "20px",
+          display: "inline-block",
+          marginBottom: "10px",
+          fontSize: "1rem",
+          fontWeight: "bold"
+        }}>
+          ⭐ Total Stars: {totalStars} / 150
+        </div>
+
+        {/* Action Buttons Row */}
         <div style={{
           display: "flex",
           justifyContent: "center",
@@ -324,6 +421,26 @@ export default function WaterSortCanvas() {
           marginBottom: "15px",
           flexWrap: "wrap"
         }}>
+          <button
+            onClick={() => {
+              soundManager.play("click");
+              setShowLevelSelect(true);
+            }}
+            style={{
+              padding: isMobile ? "8px 15px" : "10px 20px",
+              background: "linear-gradient(135deg, #667eea, #764ba2)",
+              color: "white",
+              border: "none",
+              borderRadius: "20px",
+              cursor: "pointer",
+              fontSize: isMobile ? "0.85rem" : "1rem",
+              fontWeight: "bold",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+            }}
+          >
+            📋 LEVELS
+          </button>
+
           <button
             onClick={() => setShowMultiplayerLobby(true)}
             style={{
@@ -403,52 +520,10 @@ export default function WaterSortCanvas() {
           </button>
         </div>
 
-        {/* Theme Menu */}
-        {showMenu && (
-          <div style={{
-            position: "absolute",
-            top: isMobile ? "140px" : "160px",
-            right: "50%",
-            transform: "translateX(50%)",
-            background: "rgba(255,255,255,0.95)",
-            borderRadius: "15px",
-            padding: "15px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-            zIndex: 9998,
-            backdropFilter: "blur(10px)"
-          }}>
-            <div style={{ fontWeight: "bold", marginBottom: "10px", color: "#333" }}>Choose Theme:</div>
-            {themeManager.getAllThemes().map(themeName => (
-              <button
-                key={themeName}
-                onClick={() => changeTheme(themeName)}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  padding: "10px 20px",
-                  margin: "5px 0",
-                  background: currentTheme === themeName 
-                    ? "linear-gradient(135deg, #667eea, #764ba2)" 
-                    : "#f0f0f0",
-                  color: currentTheme === themeName ? "white" : "#333",
-                  border: "none",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  fontSize: "0.9rem",
-                  fontWeight: "bold",
-                  textTransform: "capitalize"
-                }}
-              >
-                {themeName === currentTheme ? '✓ ' : ''}{themeName}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Stats Display */}
         <div style={{
           display: "flex",
-          gap: "15px",
+          gap: "10px",
           justifyContent: "center",
           flexWrap: "wrap",
           marginTop: "10px"
@@ -459,10 +534,18 @@ export default function WaterSortCanvas() {
             borderRadius: "15px",
             backdropFilter: "blur(10px)",
             border: "2px solid rgba(255,255,255,0.3)",
-            minWidth: "100px"
+            minWidth: "90px"
           }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>LEVEL</div>
-            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{currentLevelId}/20</div>
+            <div style={{ fontSize: "0.75rem", opacity: 0.8 }}>LEVEL</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{currentLevelId}/50</div>
+            <div style={{ fontSize: "0.7rem", color: difficulty.color, fontWeight: "bold" }}>
+              {difficulty.text}
+            </div>
+            {currentStats.stars > 0 && (
+              <div style={{ fontSize: "0.9rem", marginTop: "3px" }}>
+                {'⭐'.repeat(currentStats.stars)}
+              </div>
+            )}
           </div>
 
           <div style={{
@@ -471,12 +554,12 @@ export default function WaterSortCanvas() {
             borderRadius: "15px",
             backdropFilter: "blur(10px)",
             border: "2px solid rgba(255,255,255,0.3)",
-            minWidth: "100px"
+            minWidth: "90px"
           }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>⏱️ TIME</div>
-            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{formatTime(timer)}</div>
+            <div style={{ fontSize: "0.75rem", opacity: 0.8 }}>⏱️ TIME</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{formatTime(timer)}</div>
             {bestTime > 0 && (
-              <div style={{ fontSize: "0.7rem", color: theme.accent }}>
+              <div style={{ fontSize: "0.65rem", color: theme.accent }}>
                 Best: {formatTime(bestTime)}
               </div>
             )}
@@ -488,12 +571,15 @@ export default function WaterSortCanvas() {
             borderRadius: "15px",
             backdropFilter: "blur(10px)",
             border: "2px solid rgba(255,255,255,0.3)",
-            minWidth: "100px"
+            minWidth: "90px"
           }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>MOVES</div>
-            <div style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{moves}</div>
+            <div style={{ fontSize: "0.75rem", opacity: 0.8 }}>MOVES</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{moves}</div>
+            <div style={{ fontSize: "0.65rem", opacity: 0.8 }}>
+              Target: {level.optimal_moves}
+            </div>
             {bestMoves > 0 && (
-              <div style={{ fontSize: "0.7rem", color: theme.accent }}>
+              <div style={{ fontSize: "0.65rem", color: theme.accent }}>
                 Best: {bestMoves}
               </div>
             )}
@@ -503,9 +589,9 @@ export default function WaterSortCanvas() {
         {message && (
           <div style={{
             color: theme.accent,
-            fontSize: isMobile ? "1.5rem" : "2.5rem",
+            fontSize: isMobile ? "1.3rem" : "2rem",
             fontWeight: "900",
-            marginTop: "15px",
+            marginTop: "10px",
             textShadow: "0 0 20px rgba(255,215,0,0.8), 3px 3px 6px rgba(0,0,0,0.5)",
             animation: "bounce 0.6s infinite alternate"
           }}>
@@ -514,7 +600,6 @@ export default function WaterSortCanvas() {
         )}
       </div>
 
-      {/* Game Area */}
       <div 
         style={{ 
           flex: 1,
@@ -525,7 +610,7 @@ export default function WaterSortCanvas() {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          paddingTop: "20px"
+          paddingTop: "10px"
         }}
       >
         <div style={{
@@ -571,7 +656,6 @@ export default function WaterSortCanvas() {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div
         style={{
           position: "fixed",
@@ -579,9 +663,9 @@ export default function WaterSortCanvas() {
           left: 0,
           right: 0,
           background: "linear-gradient(to top, rgba(102, 126, 234, 0.95), rgba(102, 126, 234, 0.85))",
-          padding: "15px",
+          padding: "12px",
           display: "flex",
-          gap: "12px",
+          gap: "10px",
           justifyContent: "center",
           boxShadow: "0 -6px 20px rgba(0,0,0,0.3)",
           backdropFilter: "blur(10px)",
@@ -596,14 +680,14 @@ export default function WaterSortCanvas() {
           disabled={currentLevelId === 1}
           style={{
             flex: 1,
-            maxWidth: "140px",
-            padding: "16px 12px",
+            maxWidth: "120px",
+            padding: "14px 10px",
             background: currentLevelId === 1 
               ? "rgba(100,100,100,0.5)" 
               : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
             border: "none",
             borderRadius: "15px",
-            fontSize: "1rem",
+            fontSize: "0.95rem",
             fontWeight: "bold",
             cursor: currentLevelId === 1 ? "not-allowed" : "pointer",
             opacity: currentLevelId === 1 ? 0.5 : 1,
@@ -621,12 +705,12 @@ export default function WaterSortCanvas() {
           }}
           style={{
             flex: 1,
-            maxWidth: "120px",
-            padding: "16px 12px",
+            maxWidth: "100px",
+            padding: "14px 10px",
             background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
             border: "none",
             borderRadius: "15px",
-            fontSize: "1rem",
+            fontSize: "0.95rem",
             fontWeight: "bold",
             cursor: "pointer",
             color: "white",
@@ -639,22 +723,22 @@ export default function WaterSortCanvas() {
         <button
           onClick={() => {
             soundManager.play("click");
-            setCurrentLevelId((p) => Math.min(20, p + 1));
+            setCurrentLevelId((p) => Math.min(50, p + 1));
           }}
-          disabled={currentLevelId === 20}
+          disabled={currentLevelId === 50}
           style={{
             flex: 1,
-            maxWidth: "140px",
-            padding: "16px 12px",
-            background: currentLevelId === 20
+            maxWidth: "120px",
+            padding: "14px 10px",
+            background: currentLevelId === 50
               ? "rgba(100,100,100,0.5)"
               : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
             border: "none",
             borderRadius: "15px",
-            fontSize: "1rem",
+            fontSize: "0.95rem",
             fontWeight: "bold",
-            cursor: currentLevelId === 20 ? "not-allowed" : "pointer",
-            opacity: currentLevelId === 20 ? 0.5 : 1,
+            cursor: currentLevelId === 50 ? "not-allowed" : "pointer",
+            opacity: currentLevelId === 50 ? 0.5 : 1,
             color: "white",
             boxShadow: "0 6px 15px rgba(0,0,0,0.3)",
             transition: "all 0.2s"
