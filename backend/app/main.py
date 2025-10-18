@@ -7,10 +7,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.routes import router
+from app.api.multiplayer_routes import router as multiplayer_router
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
-# CORS - Allow all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,13 +20,15 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix=settings.API_V1_PREFIX)
+app.include_router(multiplayer_router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
 async def root():
     return {
         "service": settings.APP_NAME,
         "version": settings.APP_VERSION,
-        "status": "running"
+        "status": "running",
+        "features": ["singleplayer", "multiplayer"]
     }
 
 if __name__ == "__main__":
