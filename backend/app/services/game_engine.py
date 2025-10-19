@@ -4,10 +4,10 @@ import random
 
 class GameEngine:
     def generate_level(self, level_id: int) -> Level:
-        """Generate 50 challenging levels with optimal move counts"""
+        """Generate 50 challenging levels - ALL with proper empty bottles"""
         
         levels = {
-            # EASY (1-10) - 3-4 colors, simple patterns
+            # EASY (1-10) - 3-4 colors, 2 empty bottles
             1: {
                 "bottles": [
                     ["red", "red", "blue", "blue"],
@@ -124,7 +124,7 @@ class GameEngine:
                 "optimal_moves": 18
             },
             
-            # MEDIUM (11-25) - More colors, complex mixing
+            # MEDIUM (11-25) - More colors, 2-3 empty bottles
             11: {
                 "bottles": [
                     ["red", "blue", "green", "yellow"],
@@ -149,6 +149,7 @@ class GameEngine:
                     ["lime", "lime", "lime", "lime"],
                     ["magenta", "magenta", "magenta", "magenta"],
                     [],
+                    [],
                     []
                 ],
                 "optimal_moves": 18
@@ -158,16 +159,17 @@ class GameEngine:
                     ["red", "blue", "green", "yellow"],
                     ["purple", "orange", "cyan", "pink"],
                     ["lime", "magenta", "teal", "coral"],
-                    ["coral", "lime", "magenta", "teal"],
-                    ["pink", "purple", "orange", "cyan"],
-                    ["yellow", "red", "blue", "green"],
-                    ["red", "yellow", "blue", "green"],
-                    ["purple", "pink", "orange", "cyan"],
+                    ["coral", "lime", "pink", "red"],
+                    ["magenta", "purple", "cyan", "blue"],
+                    ["teal", "orange", "yellow", "green"],
+                    ["green", "yellow", "blue", "red"],
+                    ["orange", "purple", "pink", "cyan"],
+                    ["lime", "magenta", "coral", "teal"],
                     [],
                     [],
                     []
                 ],
-                "optimal_moves": 25
+                "optimal_moves": 36
             },
             14: {
                 "bottles": [
@@ -177,6 +179,7 @@ class GameEngine:
                     ["orange", "cyan", "orange", "cyan"],
                     ["pink", "pink", "pink", "pink"],
                     ["lime", "lime", "lime", "lime"],
+                    [],
                     [],
                     []
                 ],
@@ -197,180 +200,15 @@ class GameEngine:
                 ],
                 "optimal_moves": 24
             },
-            16: {
-                "bottles": [
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["coral", "teal", "magenta", "lime"],
-                    ["pink", "cyan", "orange", "purple"],
-                    ["purple", "pink", "lime", "coral"],
-                    ["orange", "cyan", "magenta", "teal"],
-                    ["red", "red", "red", "red"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 22
-            },
-            17: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["coral", "teal", "magenta", "lime"],
-                    [],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 28
-            },
-            18: {
-                "bottles": [
-                    ["red", "red", "blue", "green"],
-                    ["blue", "green", "yellow", "yellow"],
-                    ["purple", "purple", "orange", "cyan"],
-                    ["orange", "cyan", "pink", "pink"],
-                    ["lime", "lime", "magenta", "teal"],
-                    ["magenta", "teal", "coral", "coral"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 18
-            },
-            19: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["coral", "teal", "magenta", "lime"],
-                    ["pink", "cyan", "orange", "purple"],
-                    ["yellow", "green", "blue", "red"],
-                    ["red", "yellow", "lime", "coral"],
-                    ["blue", "green", "magenta", "teal"],
-                    ["purple", "orange", "cyan", "pink"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 30
-            },
-            20: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    [],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 32
-            },
-            
-            # HARD (21-35) - Many colors, tight spaces
-            21: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["red", "purple", "lime", "coral"],
-                    ["blue", "orange", "magenta", "teal"],
-                    ["green", "cyan", "pink", "yellow"],
-                    ["yellow", "pink", "teal", "red"],
-                    ["green", "cyan", "magenta", "blue"],
-                    ["purple", "orange", "lime", "coral"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 35
-            },
-            22: {
-                "bottles": [
-                    ["red", "blue", "red", "blue"],
-                    ["green", "yellow", "green", "yellow"],
-                    ["purple", "orange", "purple", "orange"],
-                    ["cyan", "pink", "cyan", "pink"],
-                    ["lime", "magenta", "lime", "magenta"],
-                    ["teal", "coral", "teal", "coral"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 24
-            },
-            23: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["coral", "lime", "pink", "red"],
-                    ["magenta", "purple", "cyan", "blue"],
-                    ["teal", "orange", "yellow", "green"],
-                    ["green", "yellow", "blue", "red"],
-                    ["orange", "purple", "pink", "cyan"],
-                    ["lime", "magenta", "coral", "teal"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 36
-            },
-            24: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["yellow", "green", "blue", "red"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["pink", "cyan", "orange", "purple"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["coral", "teal", "magenta", "lime"],
-                    ["red", "blue", "green", "yellow"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 28
-            },
-            25: {
-                "bottles": [
-                    ["red", "blue", "green", "yellow"],
-                    ["purple", "orange", "cyan", "pink"],
-                    ["lime", "magenta", "teal", "coral"],
-                    ["red", "purple", "lime", "yellow"],
-                    ["blue", "orange", "magenta", "green"],
-                    ["cyan", "pink", "teal", "coral"],
-                    ["coral", "teal", "pink", "cyan"],
-                    ["green", "magenta", "orange", "blue"],
-                    ["yellow", "lime", "purple", "red"],
-                    [],
-                    [],
-                    []
-                ],
-                "optimal_moves": 38
-            },
-            
-            # Generate remaining hard levels (26-35)
-            **{i: {
-                "bottles": self._generate_hard_level(i),
-                "optimal_moves": 30 + (i - 25) * 2
-            } for i in range(26, 36)},
-            
-            # EXPERT (36-50) - Maximum difficulty!
-            **{i: {
-                "bottles": self._generate_expert_level(i),
-                "optimal_moves": 40 + (i - 35) * 3
-            } for i in range(36, 51)}
         }
+        
+        # Generate remaining levels (16-50) programmatically with GUARANTEED empty bottles
+        for i in range(16, 51):
+            bottles_data = self._generate_safe_level(i)
+            levels[i] = {
+                "bottles": bottles_data,
+                "optimal_moves": self._calculate_optimal_moves(bottles_data)
+            }
         
         level_data = levels.get(level_id, levels[1])
         
@@ -381,53 +219,56 @@ class GameEngine:
             optimal_moves=level_data.get("optimal_moves", 20)
         )
     
-    def _generate_hard_level(self, level_id: int) -> List[List[str]]:
-        """Generate procedural hard levels"""
+    def _generate_safe_level(self, level_id: int) -> List[List[str]]:
+        """Generate level with GUARANTEED empty bottles"""
         colors = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "pink", "lime", "magenta", "teal", "coral"]
-        num_colors = min(10 + (level_id - 26), 12)
+        
+        # Determine difficulty
+        if level_id <= 10:
+            num_colors = 3
+            empty_bottles = 2
+        elif level_id <= 25:
+            num_colors = min(6 + (level_id - 11) // 3, 8)
+            empty_bottles = 2
+        elif level_id <= 35:
+            num_colors = min(8 + (level_id - 26) // 2, 10)
+            empty_bottles = 3
+        else:  # Expert
+            num_colors = min(10 + (level_id - 36) // 3, 12)
+            empty_bottles = 3
+        
         selected_colors = colors[:num_colors]
         
-        bottles = []
+        # Create bottles with all colors (4 of each)
+        all_pieces = []
         for color in selected_colors:
-            for _ in range(4):
-                bottles.append(color)
+            all_pieces.extend([color] * 4)
         
-        random.seed(level_id * 1000)
-        random.shuffle(bottles)
+        # Shuffle
+        random.seed(level_id * 7777)
+        random.shuffle(all_pieces)
         
-        result = []
-        for i in range(0, len(bottles), 4):
-            result.append(bottles[i:i+4])
+        # Create filled bottles
+        filled_bottles = []
+        for i in range(0, len(all_pieces), 4):
+            filled_bottles.append(all_pieces[i:i+4])
         
         # Add empty bottles
-        result.extend([[], []])
-        if num_colors > 8:
-            result.append([])
+        for _ in range(empty_bottles):
+            filled_bottles.append([])
         
-        return result
+        return filled_bottles
     
-    def _generate_expert_level(self, level_id: int) -> List[List[str]]:
-        """Generate INSANE expert levels"""
-        colors = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "pink", "lime", "magenta", "teal", "coral"]
+    def _calculate_optimal_moves(self, bottles: List[List[str]]) -> int:
+        """Estimate optimal moves based on complexity"""
+        num_filled = sum(1 for b in bottles if len(b) > 0)
+        num_empty = sum(1 for b in bottles if len(b) == 0)
         
-        bottles = []
-        for color in colors:
-            for _ in range(4):
-                bottles.append(color)
+        # Simple heuristic
+        base_moves = num_filled * 2
+        difficulty_factor = max(1, num_filled - num_empty - 2)
         
-        random.seed(level_id * 9999)
-        random.shuffle(bottles)
-        
-        result = []
-        for i in range(0, len(bottles), 4):
-            result.append(bottles[i:i+4])
-        
-        # Only 2-3 empty bottles for maximum challenge!
-        result.extend([[], []])
-        if level_id > 45:
-            result.append([])
-        
-        return result
+        return base_moves + difficulty_factor * 3
     
     def is_level_complete(self, bottles: List[List[str]]) -> bool:
         for bottle in bottles:
