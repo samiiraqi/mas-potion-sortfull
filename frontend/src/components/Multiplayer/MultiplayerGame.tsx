@@ -19,31 +19,35 @@ interface MultiplayerGameProps {
 }
 
 export default function MultiplayerGame({ roomData, onExit }: MultiplayerGameProps) {
-  const [bottles, setBottles] = useState<string[][]>(roomData.bottles || []);
+  // FORCE initialize bottles from roomData
+  const initialBottles = roomData?.bottles || [];
+  const [bottles, setBottles] = useState<string[][]>(initialBottles);
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [moves, setMoves] = useState(0);
-  const [roomState, setRoomState] = useState(roomData.room_state);
+  const [roomState, setRoomState] = useState(roomData?.room_state || {});
   const [fireworks, setFireworks] = useState<FireworkData[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
 
-  const playerId = roomData.player_id;
-  const roomId = roomData.room_id;
+  const playerId = roomData?.player_id || "";
+  const roomId = roomData?.room_id || "";
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
   }, []);
 
-  // CRITICAL FIX: Initialize bottles if not available
+  // CRITICAL: Show what we have
   useEffect(() => {
-    if (!bottles || bottles.length === 0) {
-      if (roomData.bottles && roomData.bottles.length > 0) {
-        setBottles(roomData.bottles);
-      }
-    }
+    console.log("=== MULTIPLAYER DEBUG ===");
+    console.log("Room Data:", roomData);
+    console.log("Bottles:", bottles);
+    console.log("Bottles length:", bottles?.length);
+    console.log("========================");
   }, [roomData, bottles]);
 
   useEffect(() => {
+    if (!roomId) return;
+    
     const interval = setInterval(async () => {
       try {
         const res = await axios.get(`${API_URL}/api/v1/multiplayer/room/${roomId}`);
@@ -189,7 +193,42 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }
   };
 
-  // COMPACT MOBILE LAYOUT
+  // Show error if no bottles
+  if (!bottles || bottles.length === 0) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        color: "white",
+        padding: "20px",
+        textAlign: "center"
+      }}>
+        <h2>⚠️ No Game Data</h2>
+        <p>Bottles not loaded. Please try again.</p>
+        <button
+          onClick={onExit}
+          style={{
+            padding: "12px 24px",
+            background: "rgba(255,0,0,0.7)",
+            border: "none",
+            borderRadius: "10px",
+            color: "white",
+            fontSize: "1rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginTop: "20px"
+          }}
+        >
+          EXIT
+        </button>
+      </div>
+    );
+  }
+
   const bottleCount = bottles.length;
   let COLS, scale, bottleSpacing, rowSpacing;
   
@@ -253,7 +292,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
 
-      {/* COMPACT TOP BAR */}
       <div style={{
         padding: isMobile ? "8px" : "12px",
         background: "rgba(0,0,0,0.3)",
@@ -291,7 +329,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         </div>
       </div>
 
-      {/* ULTRA-COMPACT PLAYER STATS */}
       <div style={{
         display: "flex",
         justifyContent: "space-around",
@@ -299,7 +336,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         gap: isMobile ? "6px" : "10px",
         flexShrink: 0
       }}>
-        {/* YOU */}
         <div style={{
           background: "linear-gradient(135deg, #11998e, #38ef7d)",
           padding: isMobile ? "8px 12px" : "10px 18px",
@@ -323,7 +359,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           )}
         </div>
 
-        {/* OPPONENT */}
         {opponent ? (
           <div style={{
             background: "linear-gradient(135deg, #f093fb, #f5576c)",
@@ -365,7 +400,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         )}
       </div>
 
-      {/* SCROLLABLE GAME AREA */}
       <div 
         style={{ 
           flex: 1,
