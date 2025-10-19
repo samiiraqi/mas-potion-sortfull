@@ -43,27 +43,25 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }
   }, [roomState]);
 
-  // Load next level function
   const loadNextLevel = async () => {
     try {
-      const nextLevelId = currentLevel + 1;
-      const res = await axios.get(`${API_URL}/api/v1/levels/${nextLevelId}`);
-      
-      setCurrentLevel(nextLevelId);
-      setBottles(res.data.bottles);
-      setMoves(0);
-      setWinner(null);
+      // IMMEDIATELY hide victory popup
       setShowVictory(false);
+      setWinner(null);
+      setMoves(0);
       setSelectedBottle(null);
       setFireworks([]);
       
-      // Update room with new level (backend should handle this)
-      // For now, both players load independently
+      // Backend handles level progression for the room
+      const res = await axios.post(`${API_URL}/api/v1/multiplayer/next-level/${roomId}`);
+      
+      setCurrentLevel(res.data.level_id);
+      setBottles(res.data.bottles);
       
       soundManager.play("click");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load next level:", err);
-      alert("No more levels! You completed the game!");
+      alert("🎉 You completed all 50 levels!");
       onExit();
     }
   };
@@ -74,20 +72,34 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     const interval = setInterval(async () => {
       try {
         const res = await axios.get(`${API_URL}/api/v1/multiplayer/room/${roomId}`);
-        setRoomState(res.data);
+        const newRoomState = res.data;
         
-        // Sync bottles from server
-        if (res.data.bottles && res.data.bottles.length > 0) {
-          setBottles(res.data.bottles);
+        // Check if level changed (someone else clicked next level)
+        if (newRoomState.level_id && newRoomState.level_id !== currentLevel) {
+          console.log(`Level changed from ${currentLevel} to ${newRoomState.level_id}`);
+          setCurrentLevel(newRoomState.level_id);
+          setBottles(newRoomState.bottles);
+          setMoves(0);
+          setWinner(null);
+          setShowVictory(false);
+          setSelectedBottle(null);
+          setFireworks([]);
         }
         
-        if (res.data.winner && !winner) {
-          setWinner(res.data.winner);
+        setRoomState(newRoomState);
+        
+        // Sync bottles
+        if (newRoomState.bottles && newRoomState.bottles.length > 0 && !showVictory) {
+          setBottles(newRoomState.bottles);
+        }
+        
+        // Check for winner
+        if (newRoomState.winner && !winner) {
+          setWinner(newRoomState.winner);
           setShowVictory(true);
           
-          if (res.data.winner === playerId) {
+          if (newRoomState.winner === playerId) {
             soundManager.play("success");
-            // Trigger celebration fireworks
             for (let i = 0; i < 5; i++) {
               setTimeout(() => {
                 const fw: FireworkData = {
@@ -107,7 +119,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [roomId, winner, playerId]);
+  }, [roomId, winner, playerId, currentLevel, showVictory]);
 
   const checkBottleFull = (bottle: string[]): boolean => {
     if (bottle.length !== 4) return false;
@@ -396,8 +408,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
                 boxShadow: "0 6px 25px rgba(17, 153, 142, 0.4)",
                 transition: "all 0.3s"
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-3px)"}
-              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
             >
               ➡️ NEXT LEVEL
             </button>
@@ -415,8 +425,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
                 cursor: "pointer",
                 transition: "all 0.3s"
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.25)"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
             >
               🏠 EXIT
             </button>
