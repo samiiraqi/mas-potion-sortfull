@@ -40,16 +40,21 @@ async def join_multiplayer(request: JoinRoomRequest):
     if not room.add_player(player_id, request.player_name):
         raise HTTPException(status_code=400, detail="Room is full")
     
+    # Get bottles for this level
+    level = game_engine.generate_level(request.level_id)
+    bottles = level.bottles
+    
     # If room is full, start the game
     if room.can_start():
-        level = game_engine.generate_level(room.level_id)
-        room.start_game(level.bottles)
+        room.start_game(bottles)
     
+    # CRITICAL FIX: Always return bottles!
     return {
         "room_id": room.room_id,
         "player_id": player_id,
-        "room_state": room.get_state(),
-        "bottles": room.game_state.get("bottles") if room.started else None
+        "bottles": bottles,  # ALWAYS include bottles
+        "level_id": request.level_id,
+        "room_state": room.get_state()
     }
 
 @router.get("/multiplayer/room/{room_id}")
