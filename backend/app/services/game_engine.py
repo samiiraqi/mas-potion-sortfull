@@ -1,6 +1,5 @@
 import random
-from typing import List, Tuple
-from app.models.level import Level
+from typing import List, Tuple, Dict, Any
 
 class GameEngine:
     COLORS = [
@@ -9,7 +8,7 @@ class GameEngine:
         'lime', 'magenta', 'teal', 'coral'
     ]
     
-    def generate_level(self, level_id: int) -> Level:
+    def generate_level(self, level_id: int) -> Dict[str, Any]:
         """Generate a level with proper difficulty scaling"""
         
         # Determine number of colors based on level
@@ -60,11 +59,11 @@ class GameEngine:
         # Calculate optimal moves (rough estimate)
         optimal_moves = num_colors * 3 + level_id // 5
         
-        return Level(
-            level_id=level_id,
-            bottles=bottles,
-            optimal_moves=optimal_moves
-        )
+        return {
+            'level_id': level_id,
+            'bottles': bottles,
+            'optimal_moves': optimal_moves
+        }
     
     def validate_move(self, bottles: List[List[str]], from_idx: int, to_idx: int) -> Tuple[bool, List[List[str]]]:
         """Validate and execute a move"""
