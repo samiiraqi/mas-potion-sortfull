@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any
 from app.multiplayer.game_room import multiplayer_manager
 from app.services.game_engine import game_engine
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -15,7 +18,7 @@ class MoveUpdate(BaseModel):
     room_id: str
     player_id: str
     moves: int
-    bottles: List[List[str]]  # Send bottle state with each move!
+    bottles: Any  # Accept any format for bottles
     completed: bool = False
 
 @router.post("/multiplayer/join")
@@ -72,20 +75,32 @@ async def get_room_state(room_id: str):
 @router.post("/multiplayer/update")
 async def update_player_progress(update: MoveUpdate):
     """Update player progress and sync bottle state"""
+    logger.info(f"Received update: {update}")
+    
     room = multiplayer_manager.get_room(update.room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    # Update shared bottle state
-    room.update_bottles(update.bottles)
-    
-    # Update player moves
-    room.update_player_move(update.player_id, update.moves)
-    
-    if update.completed:
-        room.mark_player_complete(update.player_id)
-    
-    return {
-        "success": True,
-        "room_state": room.get_state()
-    }
+    try:
+        # Convert bottles to proper format if needed
+        bottles = update.bottles
+        if isinstance(bottles, str):
+            import json
+            bottles = json.loads(bottles)
+        
+        # Update shared bottle state
+        room.update_bottles(bottles)
+        
+        # Update player moves
+        room.update_player_move(update.player_id, update.moves)
+        
+        if update.completed:
+            room.mark_player_complete(update.player_id)
+        
+        return {
+            "success": True,
+            "room_state": room.get_state()
+        }
+    except Exception as e:
+        logger.error(f"Error updating game: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
