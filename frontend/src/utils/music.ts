@@ -2,13 +2,33 @@ class MusicManager {
   private audio: HTMLAudioElement | null = null;
   private enabled: boolean = true;
   private initialized: boolean = false;
+  private musicAvailable: boolean = false; // Flag to check if music exists
 
   constructor() {
     this.enabled = localStorage.getItem('music_enabled') !== 'false';
+    // Don't try to load music by default
+    this.musicAvailable = false;
   }
 
-  private initAudio() {
+  private async checkMusicAvailable(): Promise<boolean> {
+    try {
+      const response = await fetch('/music/background.mp3', { method: 'HEAD' });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  private async initAudio() {
     if (this.initialized) return;
+    
+    // Check if music file exists first
+    this.musicAvailable = await this.checkMusicAvailable();
+    
+    if (!this.musicAvailable) {
+      console.log('Background music not available - game will run without music');
+      return;
+    }
     
     try {
       this.audio = new Audio('/music/background.mp3');
@@ -16,17 +36,17 @@ class MusicManager {
       this.audio.volume = 0.3;
       this.initialized = true;
     } catch (err) {
-      console.warn('Background music not available');
+      console.warn('Failed to initialize music');
       this.initialized = false;
     }
   }
 
-  playBackgroundMusic() {
+  async playBackgroundMusic() {
     if (!this.enabled) return;
     
-    this.initAudio();
+    await this.initAudio();
     
-    if (this.audio) {
+    if (this.audio && this.musicAvailable) {
       this.audio.play().catch(err => {
         console.log('Music autoplay blocked - will play on user interaction');
       });
