@@ -36,16 +36,11 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     setIsMobile(window.innerWidth < 768);
   }, []);
 
-  // Wait for both players before starting
   useEffect(() => {
     if (roomState?.players?.length === 2) {
       setGameReady(true);
-      // Reset bottles when game starts
-      if (initialBottles && initialBottles.length > 0) {
-        setBottles([...initialBottles]);
-      }
     }
-  }, [roomState, initialBottles]);
+  }, [roomState]);
 
   useEffect(() => {
     if (!roomId) return;
@@ -54,6 +49,10 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
       try {
         const res = await axios.get(`${API_URL}/api/v1/multiplayer/room/${roomId}`);
         setRoomState(res.data);
+        
+        if (res.data.bottles && res.data.bottles.length > 0) {
+          setBottles(res.data.bottles);
+        }
         
         if (res.data.winner && !winner) {
           setWinner(res.data.winner);
@@ -64,7 +63,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
       } catch (err) {
         console.error("Failed to fetch room state:", err);
       }
-    }, 2000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [roomId, winner, playerId]);
@@ -118,13 +117,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   };
 
   const handleBottleClick = async (bottleIdx: number) => {
-    // Don't allow play until both players ready
-    if (!gameReady) {
-      console.log("Waiting for opponent...");
-      return;
-    }
-
-    if (winner) return;
+    if (!gameReady || winner) return;
 
     if (selectedBottle === null) {
       if (bottles[bottleIdx].length === 0) return;
@@ -179,7 +172,8 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
     soundManager.play("pour");
     setBottles(newBottles);
-    setMoves(m => m + 1);
+    const newMoves = moves + 1;
+    setMoves(newMoves);
     setSelectedBottle(null);
 
     if (checkBottleFull(toBottle)) {
@@ -189,15 +183,33 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
     const isCompleted = checkIfComplete(newBottles);
 
+    // DEBUG: Log what we're sending
+    const payload = {
+      room_id: roomId,
+      player_id: playerId,
+      moves: newMoves,
+      bottles: newBottles,
+      completed: isCompleted
+    };
+    
+    console.log("=== SENDING TO BACKEND ===");
+    console.log("Payload:", JSON.stringify(payload, null, 2));
+    console.log("URL:", `${API_URL}/api/v1/multiplayer/update`);
+    console.log("========================");
+
     try {
-      await axios.post(`${API_URL}/api/v1/multiplayer/update`, {
-        room_id: roomId,
-        player_id: playerId,
-        moves: moves + 1,
-        completed: isCompleted
+      const response = await axios.post(`${API_URL}/api/v1/multiplayer/update`, payload, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-    } catch (err) {
-      console.error("Failed to update server:", err);
+      console.log("SUCCESS:", response.data);
+    } catch (err: any) {
+      console.error("=== UPDATE FAILED ===");
+      console.error("Error:", err);
+      console.error("Response:", err.response?.data);
+      console.error("Status:", err.response?.status);
+      console.error("===================");
     }
   };
 
@@ -335,7 +347,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           Room: {roomId}
         </div>
 
-        {/* Game Status */}
         {!gameReady && (
           <div style={{
             background: "rgba(255,165,0,0.8)",
