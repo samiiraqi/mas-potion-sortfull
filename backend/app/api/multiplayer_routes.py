@@ -64,21 +64,14 @@ async def get_room_state(room_id: str):
 async def update_player_progress(body: Any = Body(...)):
     """Update player progress - accepts any JSON"""
     try:
-        logger.info("=== RECEIVED UPDATE ===")
-        logger.info(f"Body: {body}")
-        logger.info(f"Body type: {type(body)}")
-        
         room_id = body.get("room_id") if isinstance(body, dict) else None
         player_id = body.get("player_id") if isinstance(body, dict) else None
         moves = body.get("moves") if isinstance(body, dict) else None
         bottles = body.get("bottles") if isinstance(body, dict) else None
         completed = body.get("completed", False) if isinstance(body, dict) else False
         
-        logger.info(f"Extracted - room_id: {room_id}, player_id: {player_id}, moves: {moves}")
-        logger.info("=====================")
-        
         if not room_id or not player_id or moves is None:
-            raise HTTPException(status_code=400, detail=f"Missing fields: room_id={room_id}, player_id={player_id}, moves={moves}")
+            raise HTTPException(status_code=400, detail=f"Missing fields")
         
         room = multiplayer_manager.get_room(room_id)
         if not room:
@@ -101,7 +94,49 @@ async def update_player_progress(body: Any = Body(...)):
         raise
     except Exception as e:
         logger.error(f"ERROR: {e}")
-        logger.error(f"Error type: {type(e)}")
-        import traceback
-        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/multiplayer/next-level/{room_id}")
+async def load_next_level(room_id: str):
+    """Load next level for the entire room"""
+    try:
+        room = multiplayer_manager.get_room(room_id)
+        if not room:
+            raise HTTPException(status_code=404, detail="Room not found")
+        
+        # Get next level
+        next_level_id = room.level_id + 1
+        
+        if next_level_id > 50:
+            raise HTTPException(status_code=400, detail="No more levels!")
+        
+        # Generate new level
+        level = game_engine.generate_level(next_level_id)
+        
+        # Reset room for new level
+        room.level_id = next_level_id
+        room.winner = None
+        room.started = True
+        
+        # Reset all players
+        for player in room.players:
+            player.moves = 0
+            player.completed = False
+        
+        # Set new bottles
+        room.start_game(level.bottles)
+        
+        logger.info(f"Room {room_id} advanced to level {next_level_id}")
+        
+        return {
+            "success": True,
+            "level_id": next_level_id,
+            "bottles": level.bottles,
+            "room_state": room.get_state()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"ERROR loading next level: {e}")
         raise HTTPException(status_code=500, detail=str(e))
