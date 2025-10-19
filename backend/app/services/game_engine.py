@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Tuple
 from app.models.level import Level
 
 class GameEngine:
@@ -66,7 +66,7 @@ class GameEngine:
             optimal_moves=optimal_moves
         )
     
-    def validate_move(self, bottles: List[List[str]], from_idx: int, to_idx: int) -> tuple[bool, List[List[str]]]:
+    def validate_move(self, bottles: List[List[str]], from_idx: int, to_idx: int) -> Tuple[bool, List[List[str]]]:
         """Validate and execute a move"""
         
         if from_idx < 0 or from_idx >= len(bottles):
