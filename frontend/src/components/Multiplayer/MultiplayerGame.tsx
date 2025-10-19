@@ -19,8 +19,8 @@ interface MultiplayerGameProps {
 }
 
 export default function MultiplayerGame({ roomData, onExit }: MultiplayerGameProps) {
-  const initialBottles = roomData?.bottles || [];
-  const [bottles, setBottles] = useState<string[][]>(initialBottles);
+  const [currentLevel, setCurrentLevel] = useState(roomData?.level_id || 1);
+  const [bottles, setBottles] = useState<string[][]>(roomData?.bottles || []);
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [moves, setMoves] = useState(0);
   const [roomState, setRoomState] = useState(roomData?.room_state || {});
@@ -28,6 +28,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   const [isMobile, setIsMobile] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
   const [gameReady, setGameReady] = useState(false);
+  const [showVictory, setShowVictory] = useState(false);
 
   const playerId = roomData?.player_id || "";
   const roomId = roomData?.room_id || "";
@@ -42,6 +43,31 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }
   }, [roomState]);
 
+  // Load next level function
+  const loadNextLevel = async () => {
+    try {
+      const nextLevelId = currentLevel + 1;
+      const res = await axios.get(`${API_URL}/api/v1/levels/${nextLevelId}`);
+      
+      setCurrentLevel(nextLevelId);
+      setBottles(res.data.bottles);
+      setMoves(0);
+      setWinner(null);
+      setShowVictory(false);
+      setSelectedBottle(null);
+      setFireworks([]);
+      
+      // Update room with new level (backend should handle this)
+      // For now, both players load independently
+      
+      soundManager.play("click");
+    } catch (err) {
+      console.error("Failed to load next level:", err);
+      alert("No more levels! You completed the game!");
+      onExit();
+    }
+  };
+
   useEffect(() => {
     if (!roomId) return;
     
@@ -50,12 +76,15 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         const res = await axios.get(`${API_URL}/api/v1/multiplayer/room/${roomId}`);
         setRoomState(res.data);
         
+        // Sync bottles from server
         if (res.data.bottles && res.data.bottles.length > 0) {
           setBottles(res.data.bottles);
         }
         
         if (res.data.winner && !winner) {
           setWinner(res.data.winner);
+          setShowVictory(true);
+          
           if (res.data.winner === playerId) {
             soundManager.play("success");
             // Trigger celebration fireworks
@@ -120,7 +149,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   };
 
   const checkIfComplete = (newBottles: string[][]): boolean => {
-    // Check if all non-empty bottles are complete
     let completedBottles = 0;
     let emptyBottles = 0;
     
@@ -130,15 +158,13 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         continue;
       }
       
-      // Bottle must be full (4 colors) and all same color
       if (bottle.length === 4 && bottle.every(color => color === bottle[0])) {
         completedBottles++;
       } else {
-        return false; // Found an incomplete non-empty bottle
+        return false;
       }
     }
     
-    // Level is complete if we have some completed bottles and rest are empty
     return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
@@ -209,14 +235,8 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
     const isCompleted = checkIfComplete(newBottles);
 
-    console.log("Checking completion:", {
-      isCompleted,
-      bottles: newBottles,
-      moves: newMoves
-    });
-
     try {
-      const response = await axios.post(`${API_URL}/api/v1/multiplayer/update`, {
+      await axios.post(`${API_URL}/api/v1/multiplayer/update`, {
         room_id: roomId,
         player_id: playerId,
         moves: newMoves,
@@ -227,10 +247,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           'Content-Type': 'application/json'
         }
       });
-      
-      if (isCompleted) {
-        console.log("🎉 LEVEL COMPLETED! You win!");
-      }
     } catch (err: any) {
       console.error("Failed to update server:", err);
     }
@@ -334,48 +350,77 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
 
-      {winner && (
+      {showVictory && (
         <div style={{
           position: "fixed",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          background: "rgba(0,0,0,0.9)",
-          padding: "40px",
-          borderRadius: "20px",
+          background: "rgba(0,0,0,0.95)",
+          padding: isMobile ? "30px" : "50px",
+          borderRadius: "25px",
           zIndex: 10000,
           textAlign: "center",
           color: "white",
-          boxShadow: "0 0 50px rgba(255,215,0,0.5)"
+          boxShadow: "0 0 60px rgba(255,215,0,0.6)",
+          minWidth: isMobile ? "90%" : "400px"
         }}>
-          <div style={{ fontSize: "4rem", marginBottom: "20px" }}>
+          <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>
             {winner === playerId ? "🏆" : "😔"}
           </div>
-          <h1 style={{ fontSize: "2.5rem", margin: "0 0 20px 0" }}>
+          <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: winner === playerId ? "#FFD700" : "#FF6B6B" }}>
             {winner === playerId ? "YOU WON!" : "YOU LOST!"}
           </h1>
-          <p style={{ fontSize: "1.2rem", marginBottom: "30px" }}>
+          <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>
+            Level {currentLevel} Complete!
+          </p>
+          <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "35px", opacity: 0.8 }}>
             {winner === playerId 
-              ? `Completed in ${moves} moves!` 
-              : `Better luck next time!`
+              ? `✨ Completed in ${moves} moves!` 
+              : `${opponent?.name} finished first with ${opponent?.moves} moves`
             }
           </p>
-          <button
-            onClick={onExit}
-            style={{
-              padding: "15px 40px",
-              background: "linear-gradient(135deg, #667eea, #764ba2)",
-              border: "none",
-              borderRadius: "15px",
-              color: "white",
-              fontSize: "1.2rem",
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
-            }}
-          >
-            EXIT
-          </button>
+          
+          <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={loadNextLevel}
+              style={{
+                padding: isMobile ? "14px 30px" : "18px 45px",
+                background: "linear-gradient(135deg, #11998e, #38ef7d)",
+                border: "none",
+                borderRadius: "15px",
+                color: "white",
+                fontSize: isMobile ? "1rem" : "1.3rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+                boxShadow: "0 6px 25px rgba(17, 153, 142, 0.4)",
+                transition: "all 0.3s"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-3px)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+            >
+              ➡️ NEXT LEVEL
+            </button>
+            
+            <button
+              onClick={onExit}
+              style={{
+                padding: isMobile ? "14px 30px" : "18px 45px",
+                background: "rgba(255,255,255,0.15)",
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderRadius: "15px",
+                color: "white",
+                fontSize: isMobile ? "1rem" : "1.3rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+                transition: "all 0.3s"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.25)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+            >
+              🏠 EXIT
+            </button>
+          </div>
         </div>
       )}
 
@@ -412,7 +457,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           fontSize: isMobile ? "0.7rem" : "0.85rem",
           fontWeight: "bold"
         }}>
-          Room: {roomId}
+          Level {currentLevel} • Room: {roomId}
         </div>
 
         {!gameReady && (
@@ -558,6 +603,13 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           })}
         </div>
       </div>
+
+      <style>{`
+        @keyframes bounce {
+          from { transform: translateY(0); }
+          to { transform: translateY(-10px); }
+        }
+      `}</style>
     </div>
   );
 }
