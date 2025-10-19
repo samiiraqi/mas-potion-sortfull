@@ -270,15 +270,52 @@ export default function WaterSortCanvas() {
 
   const theme = themeManager.getTheme(currentTheme);
   
-  // IMPROVED MOBILE LAYOUT - Much more compact!
-  const COLS = isMobile ? 4 : Math.min(bottles.length, 6);
-  const scale = isMobile ? 0.5 : 0.95; // Smaller bottles on mobile
-  const bottleSpacing = isMobile ? 60 : 110; // Much closer together!
-  const rowSpacing = isMobile ? 100 : 170; // Closer rows on mobile
-  const numCols = Math.min(bottles.length, COLS);
+  // SMART LAYOUT - Adjust based on bottle count!
+  const bottleCount = bottles.length;
+  let COLS, scale, bottleSpacing, rowSpacing;
+  
+  if (isMobile) {
+    // Mobile layout
+    if (bottleCount <= 6) {
+      COLS = 3;
+      scale = 0.65;
+      bottleSpacing = 80;
+      rowSpacing = 120;
+    } else if (bottleCount <= 13) {
+      COLS = 4;
+      scale = 0.6;
+      bottleSpacing = 70;
+      rowSpacing = 110;
+    } else {
+      COLS = 4;
+      scale = 0.5;
+      bottleSpacing = 60;
+      rowSpacing = 100;
+    }
+  } else {
+    // Desktop layout
+    if (bottleCount <= 6) {
+      COLS = 6;
+      scale = 1.0;
+      bottleSpacing = 120;
+      rowSpacing = 180;
+    } else if (bottleCount <= 13) {
+      COLS = 7;
+      scale = 0.95;
+      bottleSpacing = 110;
+      rowSpacing = 170;
+    } else {
+      COLS = 6;
+      scale = 0.9;
+      bottleSpacing = 105;
+      rowSpacing = 165;
+    }
+  }
+  
+  const numCols = Math.min(bottleCount, COLS);
   const totalWidth = numCols * bottleSpacing;
   const startX = (window.innerWidth - totalWidth) / 2;
-  const startY = 10; // Start higher
+  const startY = 10;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
@@ -315,8 +352,7 @@ export default function WaterSortCanvas() {
   const totalStars = storage.getTotalStars();
   const currentStats = storage.getLevelStats(currentLevelId);
 
-  // Calculate total height needed for all bottles
-  const totalRows = Math.ceil(bottles.length / COLS);
+  const totalRows = Math.ceil(bottleCount / COLS);
   const bottlesAreaHeight = totalRows * rowSpacing + 100;
 
   return (
@@ -386,7 +422,6 @@ export default function WaterSortCanvas() {
         </div>
       )}
 
-      {/* COMPACT HEADER FOR MOBILE */}
       <div style={{ 
         padding: isMobile ? "8px 5px" : "15px",
         textAlign: "center",
@@ -525,7 +560,6 @@ export default function WaterSortCanvas() {
           </button>
         </div>
 
-        {/* COMPACT STATS */}
         <div style={{
           display: "flex",
           gap: isMobile ? "6px" : "10px",
@@ -600,7 +634,6 @@ export default function WaterSortCanvas() {
         )}
       </div>
 
-      {/* SCROLLABLE GAME AREA */}
       <div 
         style={{ 
           flex: 1,
@@ -612,7 +645,7 @@ export default function WaterSortCanvas() {
           justifyContent: "center",
           alignItems: "flex-start",
           paddingTop: "5px",
-          WebkitOverflowScrolling: "touch" // Smooth scrolling on iOS
+          WebkitOverflowScrolling: "touch"
         }}
       >
         <div style={{
@@ -659,7 +692,6 @@ export default function WaterSortCanvas() {
         </div>
       </div>
 
-      {/* BOTTOM BUTTONS */}
       <div
         style={{
           position: "fixed",
