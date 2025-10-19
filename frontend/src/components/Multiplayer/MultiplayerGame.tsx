@@ -34,6 +34,15 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     setIsMobile(window.innerWidth < 768);
   }, []);
 
+  // CRITICAL FIX: Initialize bottles if not available
+  useEffect(() => {
+    if (!bottles || bottles.length === 0) {
+      if (roomData.bottles && roomData.bottles.length > 0) {
+        setBottles(roomData.bottles);
+      }
+    }
+  }, [roomData, bottles]);
+
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -89,7 +98,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     setFireworks(prev => [...prev, fw]);
     
     setTimeout(() => {
-      setFireworks(prev => prev.filter(f => f.id !== fw.id));
+      setFireeworks(prev => prev.filter(f => f.id !== fw.id));
     }, 2000);
   };
 
@@ -180,20 +189,45 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }
   };
 
-  const COLS = isMobile ? 3 : Math.min(bottles.length, 6);
-  const scale = isMobile ? 0.7 : 0.9;
-  const bottleSpacing = isMobile ? 85 : 110;
-  const numCols = Math.min(bottles.length, COLS);
+  // COMPACT MOBILE LAYOUT
+  const bottleCount = bottles.length;
+  let COLS, scale, bottleSpacing, rowSpacing;
+  
+  if (isMobile) {
+    if (bottleCount <= 6) {
+      COLS = 3;
+      scale = 0.5;
+      bottleSpacing = 70;
+      rowSpacing = 95;
+    } else if (bottleCount <= 13) {
+      COLS = 4;
+      scale = 0.45;
+      bottleSpacing = 58;
+      rowSpacing = 85;
+    } else {
+      COLS = 4;
+      scale = 0.42;
+      bottleSpacing = 55;
+      rowSpacing = 80;
+    }
+  } else {
+    COLS = Math.min(bottles.length, 6);
+    scale = 0.8;
+    bottleSpacing = 100;
+    rowSpacing = 150;
+  }
+  
+  const numCols = Math.min(bottleCount, COLS);
   const totalWidth = numCols * bottleSpacing;
   const startX = (window.innerWidth - totalWidth) / 2;
-  const startY = 40;
+  const startY = 5;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
     const col = idx % COLS;
     return { 
       x: startX + col * bottleSpacing, 
-      y: startY + row * 170
+      y: startY + row * rowSpacing
     };
   };
 
@@ -219,24 +253,25 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
 
+      {/* COMPACT TOP BAR */}
       <div style={{
-        padding: "15px",
+        padding: isMobile ? "8px" : "12px",
         background: "rgba(0,0,0,0.3)",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        flexWrap: "wrap",
-        gap: "10px"
+        gap: "8px",
+        flexShrink: 0
       }}>
         <button
           onClick={onExit}
           style={{
-            padding: "10px 20px",
+            padding: isMobile ? "6px 12px" : "8px 16px",
             background: "rgba(255,0,0,0.7)",
             border: "none",
-            borderRadius: "10px",
+            borderRadius: "8px",
             color: "white",
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.75rem" : "0.9rem",
             fontWeight: "bold",
             cursor: "pointer"
           }}
@@ -246,99 +281,109 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
         <div style={{
           background: "rgba(255,255,255,0.2)",
-          padding: "10px 20px",
-          borderRadius: "12px",
+          padding: isMobile ? "4px 10px" : "6px 15px",
+          borderRadius: "10px",
           color: "white",
-          fontSize: "0.9rem"
+          fontSize: isMobile ? "0.7rem" : "0.85rem",
+          fontWeight: "bold"
         }}>
-          Room: <strong>{roomId}</strong>
+          Room: {roomId}
         </div>
       </div>
 
+      {/* ULTRA-COMPACT PLAYER STATS */}
       <div style={{
         display: "flex",
         justifyContent: "space-around",
-        padding: "20px",
-        gap: "15px",
-        flexWrap: "wrap"
+        padding: isMobile ? "8px 5px" : "12px",
+        gap: isMobile ? "6px" : "10px",
+        flexShrink: 0
       }}>
+        {/* YOU */}
         <div style={{
           background: "linear-gradient(135deg, #11998e, #38ef7d)",
-          padding: "15px 25px",
-          borderRadius: "15px",
+          padding: isMobile ? "8px 12px" : "10px 18px",
+          borderRadius: "12px",
           color: "white",
-          minWidth: "150px",
+          flex: 1,
+          maxWidth: "180px",
           textAlign: "center",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
-          border: winner === playerId ? "4px solid gold" : "none"
+          boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+          border: winner === playerId ? "3px solid gold" : "none"
         }}>
-          <div style={{ fontSize: "0.8rem", opacity: 0.9 }}>YOU</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", margin: "5px 0" }}>
+          <div style={{ fontSize: isMobile ? "0.65rem" : "0.75rem", opacity: 0.9 }}>YOU</div>
+          <div style={{ fontSize: isMobile ? "1rem" : "1.2rem", fontWeight: "bold", margin: "3px 0" }}>
             {myStats?.name || "Player"}
           </div>
-          <div style={{ fontSize: "1.2rem" }}>
+          <div style={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
             {moves} moves
           </div>
           {winner === playerId && (
-            <div style={{ fontSize: "1.5rem", marginTop: "5px" }}>🏆 WINNER!</div>
+            <div style={{ fontSize: isMobile ? "1rem" : "1.2rem", marginTop: "3px" }}>🏆</div>
           )}
         </div>
 
+        {/* OPPONENT */}
         {opponent ? (
           <div style={{
             background: "linear-gradient(135deg, #f093fb, #f5576c)",
-            padding: "15px 25px",
-            borderRadius: "15px",
+            padding: isMobile ? "8px 12px" : "10px 18px",
+            borderRadius: "12px",
             color: "white",
-            minWidth: "150px",
+            flex: 1,
+            maxWidth: "180px",
             textAlign: "center",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
-            border: winner === opponent.id ? "4px solid gold" : "none"
+            boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+            border: winner === opponent.id ? "3px solid gold" : "none"
           }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.9 }}>OPPONENT</div>
-            <div style={{ fontSize: "1.5rem", fontWeight: "bold", margin: "5px 0" }}>
+            <div style={{ fontSize: isMobile ? "0.65rem" : "0.75rem", opacity: 0.9 }}>OPPONENT</div>
+            <div style={{ fontSize: isMobile ? "1rem" : "1.2rem", fontWeight: "bold", margin: "3px 0" }}>
               {opponent.name}
             </div>
-            <div style={{ fontSize: "1.2rem" }}>
+            <div style={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
               {opponent.moves} moves
             </div>
             {winner === opponent.id && (
-              <div style={{ fontSize: "1.5rem", marginTop: "5px" }}>🏆 WINNER!</div>
+              <div style={{ fontSize: isMobile ? "1rem" : "1.2rem", marginTop: "3px" }}>🏆</div>
             )}
           </div>
         ) : (
           <div style={{
             background: "rgba(255,255,255,0.2)",
-            padding: "15px 25px",
-            borderRadius: "15px",
+            padding: isMobile ? "8px 12px" : "10px 18px",
+            borderRadius: "12px",
             color: "white",
-            minWidth: "150px",
+            flex: 1,
+            maxWidth: "180px",
             textAlign: "center",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
+            boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
           }}>
-            <div style={{ fontSize: "1.2rem" }}>
-              ⏳ Waiting for opponent...
+            <div style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}>
+              ⏳ Waiting...
             </div>
           </div>
         )}
       </div>
 
+      {/* SCROLLABLE GAME AREA */}
       <div 
         style={{ 
           flex: 1,
           overflowY: "auto",
           overflowX: "hidden",
           position: "relative",
-          paddingBottom: "50px",
+          paddingBottom: "20px",
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          paddingTop: "20px"
+          paddingTop: "5px",
+          WebkitOverflowScrolling: "touch"
         }}
       >
         <div style={{
           position: "relative",
-          width: "100%"
+          width: "100%",
+          minHeight: "100%"
         }}>
           {bottles.map((colors, idx) => {
             const isSelected = selectedBottle === idx;
@@ -353,16 +398,16 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
                   position: "absolute",
                   left: basePos.x,
                   top: basePos.y,
-                  transform: `scale(${scale}) ${isSelected ? 'translateY(-15px) scale(1.1)' : ''}`,
+                  transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
                   transformOrigin: "center center",
                   cursor: winner ? "not-allowed" : "pointer",
                   zIndex: isSelected ? 1000 : 1,
                   transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
                   filter: isSelected 
-                    ? "drop-shadow(0 0 30px rgba(255,215,0,0.9))" 
+                    ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" 
                     : isFull 
-                      ? "drop-shadow(0 0 20px rgba(255,215,0,0.6))"
-                      : "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
+                      ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))"
+                      : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
                   opacity: winner ? 0.7 : 1
                 }}
               >
