@@ -270,23 +270,38 @@ export default function WaterSortCanvas() {
 
   const theme = themeManager.getTheme(currentTheme);
   
-  // SMART LAYOUT - Adjust based on bottle count!
+  // ULTRA-COMPACT: Make bottles fit on one screen for levels 1-13
   const bottleCount = bottles.length;
   let COLS, scale, bottleSpacing, rowSpacing;
   
   if (isMobile) {
-    // Mobile layout
-    if (bottleCount <= 6) {
+    // Mobile: ALL bottles visible for level 1-13
+    if (bottleCount <= 4) {
+      // Level 1: 4 bottles in 2x2
+      COLS = 2;
+      scale = 0.75;
+      bottleSpacing = 100;
+      rowSpacing = 130;
+    } else if (bottleCount <= 6) {
+      // 3x2 grid
       COLS = 3;
       scale = 0.65;
       bottleSpacing = 80;
-      rowSpacing = 120;
-    } else if (bottleCount <= 13) {
-      COLS = 4;
-      scale = 0.6;
+      rowSpacing = 115;
+    } else if (bottleCount <= 9) {
+      // 3x3 grid
+      COLS = 3;
+      scale = 0.55;
       bottleSpacing = 70;
-      rowSpacing = 110;
+      rowSpacing = 100;
+    } else if (bottleCount <= 13) {
+      // 4x4 or 4x3 grid - ALL visible!
+      COLS = 4;
+      scale = 0.48;
+      bottleSpacing = 58;
+      rowSpacing = 88;
     } else {
+      // Larger levels - scrollable
       COLS = 4;
       scale = 0.5;
       bottleSpacing = 60;
