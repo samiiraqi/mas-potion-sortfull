@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from app.multiplayer.game_room import multiplayer_manager
 from app.services.game_engine import game_engine
 
@@ -15,6 +15,7 @@ class MoveUpdate(BaseModel):
     room_id: str
     player_id: str
     moves: int
+    bottles: List[List[str]]  # Send bottle state with each move!
     completed: bool = False
 
 @router.post("/multiplayer/join")
@@ -44,42 +45,41 @@ async def join_multiplayer(request: JoinRoomRequest):
     if not room.add_player(player_id, request.player_name):
         raise HTTPException(status_code=400, detail="Room is full")
     
-    # If room is full, start the game
+    # If room is full, start the game with shared bottles
     if room.can_start():
         room.start_game(bottles)
     
-    # CRITICAL: ALWAYS return bottles for BOTH players!
+    # Return current bottle state (shared for all players)
+    current_bottles = room.get_bottles() if room.started else bottles
+    
     return {
         "room_id": room.room_id,
         "player_id": player_id,
-        "bottles": bottles,  # Same bottles for both players!
+        "bottles": current_bottles,
         "level_id": request.level_id,
         "room_state": room.get_state()
     }
 
 @router.get("/multiplayer/room/{room_id}")
 async def get_room_state(room_id: str):
-    """Get current room state"""
+    """Get current room state including bottles"""
     room = multiplayer_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    # Add bottles to room state response
-    state = room.get_state()
-    
-    # If game has started, include bottles
-    if room.started and hasattr(room.game_state, 'get') and 'bottles' in room.game_state:
-        state['bottles'] = room.game_state['bottles']
-    
-    return state
+    return room.get_state()
 
 @router.post("/multiplayer/update")
 async def update_player_progress(update: MoveUpdate):
-    """Update player progress"""
+    """Update player progress and sync bottle state"""
     room = multiplayer_manager.get_room(update.room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
+    # Update shared bottle state
+    room.update_bottles(update.bottles)
+    
+    # Update player moves
     room.update_player_move(update.player_id, update.moves)
     
     if update.completed:
