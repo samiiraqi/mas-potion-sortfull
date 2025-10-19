@@ -1,11 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import './index.css'
+import { checkForUpdates } from './utils/version'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+// Check for updates on load
+checkForUpdates();
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
+  </React.StrictMode>,
 )
-// Updated Sat Oct 18 11:24:21 PM IDT 2025
