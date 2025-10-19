@@ -1,104 +1,55 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
 from pydantic import BaseModel
-from app.models.game import Level
+from typing import List
 from app.services.game_engine import game_engine
 
 router = APIRouter()
 
-class MoveRequest(BaseModel):
+class MakeMoveRequest(BaseModel):
     bottles: List[List[str]]
     from_bottle: int
     to_bottle: int
 
-class MoveResponse(BaseModel):
-    success: bool
-    bottles: List[List[str]]
-    is_completed: bool
-    message: str
-
-@router.get("/health")
-async def health():
-    return {"status": "healthy", "service": "game-engine"}
-
-@router.get("/levels/{level_id}", response_model=Level)
+@router.get("/levels/{level_id}")
 async def get_level(level_id: int):
-    if level_id < 1:
-        raise HTTPException(status_code=400, detail="Level must be >= 1")
-    if level_id > 10000:
-        raise HTTPException(status_code=400, detail="Level too high")
-    return game_engine.generate_level(level_id)
+    """Get a specific level"""
+    if level_id < 1 or level_id > 50:
+        raise HTTPException(status_code=404, detail="Level not found")
+    
+    level_data = game_engine.generate_level(level_id)
+    return level_data
 
-@router.post("/make-move", response_model=MoveResponse)
-async def make_move(move: MoveRequest):
-    """Execute a move - pours ALL matching colors at once!"""
-    print(f"\nMOVE REQUEST: from {move.from_bottle} to {move.to_bottle}")
-    print(f"   Bottles: {move.bottles}")
-    
-    # Validate indices
-    if move.from_bottle < 0 or move.from_bottle >= len(move.bottles):
-        raise HTTPException(status_code=400, detail="Invalid source bottle")
-    
-    if move.to_bottle < 0 or move.to_bottle >= len(move.bottles):
-        raise HTTPException(status_code=400, detail="Invalid target bottle")
-    
-    if move.from_bottle == move.to_bottle:
-        raise HTTPException(status_code=400, detail="Cannot pour into same bottle")
-    
-    # Check if source is empty
-    if not move.bottles[move.from_bottle]:
-        raise HTTPException(status_code=400, detail="Source bottle is empty")
-    
-    # Check if target is full
-    if len(move.bottles[move.to_bottle]) >= 4:
-        raise HTTPException(status_code=400, detail="Target bottle is full")
-    
-    # ALLOW POURING INTO EMPTY BOTTLES - Remove color match check for empty targets!
-    source_color = move.bottles[move.from_bottle][-1]
-    if move.bottles[move.to_bottle]:  # Only check color match if target is NOT empty
-        target_color = move.bottles[move.to_bottle][-1]
-        if source_color != target_color:
-            print(f"   Color mismatch: {source_color} vs {target_color}")
-            raise HTTPException(status_code=400, detail="Colors don't match")
-    
-    # Execute move - POUR ALL MATCHING COLORS AT ONCE!
-    new_bottles = [bottle[:] for bottle in move.bottles]
-    
-    # Get top color
-    color_to_pour = new_bottles[move.from_bottle][-1]
-    print(f"   Color to pour: {color_to_pour}")
-    
-    # Count how many matching colors are stacked on top
-    count = 0
-    for i in range(len(new_bottles[move.from_bottle]) - 1, -1, -1):
-        if new_bottles[move.from_bottle][i] == color_to_pour:
-            count += 1
-        else:
-            break
-    
-    print(f"   Found {count} matching colors on top")
-    
-    # Limit by available space in target
-    available_space = 4 - len(new_bottles[move.to_bottle])
-    colors_to_pour = min(count, available_space)
-    
-    print(f"   Available space: {available_space}")
-    print(f"   Pouring {colors_to_pour} colors")
-    
-    # Pour all matching colors!
-    for i in range(colors_to_pour):
-        color = new_bottles[move.from_bottle].pop()
-        new_bottles[move.to_bottle].append(color)
-        print(f"      Poured #{i+1}: {color}")
-    
-    print(f"   Result - From: {new_bottles[move.from_bottle]}")
-    print(f"   Result - To: {new_bottles[move.to_bottle]}")
-    
-    is_completed = game_engine.is_level_complete(new_bottles)
-    
-    return MoveResponse(
-        success=True,
-        bottles=new_bottles,
-        is_completed=is_completed,
-        message="Level Complete!" if is_completed else f"Poured {colors_to_pour} colors!"
-    )
+@router.post("/make-move")
+async def make_move(request: MakeMoveRequest):
+    """Validate and make a move"""
+    try:
+        print(f"\nMOVE REQUEST: from {request.from_bottle} to {request.to_bottle}")
+        print(f" Bottles: {request.bottles}")
+        
+        success, new_bottles = game_engine.validate_move(
+            request.bottles,
+            request.from_bottle,
+            request.to_bottle
+        )
+        
+        if not success:
+            return {
+                "success": False,
+                "message": "Invalid move",
+                "bottles": request.bottles
+            }
+        
+        # FIXED: Use check_completion instead of is_level_complete
+        is_completed = game_engine.check_completion(new_bottles)
+        
+        return {
+            "success": True,
+            "bottles": new_bottles,
+            "is_completed": is_completed
+        }
+        
+    except Exception as e:
+        print(f"ERROR in make_move: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
