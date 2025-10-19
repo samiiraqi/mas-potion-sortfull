@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import random
 import string
+import time
 
 class Player:
     def __init__(self, player_id: str, name: str):
@@ -20,7 +21,7 @@ class GameRoom:
         self.started = False
         self.winner: Optional[str] = None
         self.created_at = datetime.now()
-        self.game_state = {}  # Shared game state
+        self.game_state = {}
         
     def add_player(self, player_id: str, name: str) -> bool:
         if len(self.players) >= self.max_players:
@@ -33,7 +34,6 @@ class GameRoom:
     
     def start_game(self, bottles: List[List[str]]):
         self.started = True
-        # Store bottles in shared state
         self.game_state = {
             'bottles': bottles,
             'started_at': datetime.now().isoformat()
@@ -69,7 +69,7 @@ class GameRoom:
             'level_id': self.level_id,
             'started': self.started,
             'winner': self.winner,
-            'bottles': self.get_bottles(),  # Include bottles in state
+            'bottles': self.get_bottles(),
             'players': [
                 {
                     'id': p.id,
@@ -85,7 +85,16 @@ class MultiplayerManager:
         self.rooms: Dict[str, GameRoom] = {}
     
     def create_room(self, level_id: int) -> str:
-        room_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        # Generate UNIQUE room ID with timestamp to ensure uniqueness
+        timestamp = str(int(time.time() * 1000))[-6:]  # Last 6 digits of timestamp
+        random_part = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        room_id = f"{random_part}{timestamp}"[:8]  # Max 8 chars
+        
+        # Ensure it's unique
+        while room_id in self.rooms:
+            random_part = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+            room_id = f"{random_part}{timestamp}"[:8]
+        
         self.rooms[room_id] = GameRoom(room_id, level_id)
         return room_id
     
@@ -94,7 +103,7 @@ class MultiplayerManager:
     
     def find_available_room(self, level_id: int) -> Optional[GameRoom]:
         for room in self.rooms.values():
-            if room.level_id == level_id and len(room.players) < room.max_players:
+            if room.level_id == level_id and len(room.players) < room.max_players and not room.started:
                 return room
         return None
 
