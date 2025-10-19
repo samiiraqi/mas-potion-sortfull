@@ -1,61 +1,59 @@
 class MusicManager {
   private audio: HTMLAudioElement | null = null;
   private enabled: boolean = true;
-  private volume: number = 0.3;
+  private initialized: boolean = false;
 
   constructor() {
-    // Create simple background ambience using Web Audio API
-    this.createAmbience();
+    this.enabled = localStorage.getItem('music_enabled') !== 'false';
   }
 
-  private createAmbience() {
-    // We'll use a simple looping tone for now
-    // You can replace with actual MP3 later
+  private initAudio() {
+    if (this.initialized) return;
+    
+    try {
+      this.audio = new Audio('/music/background.mp3');
+      this.audio.loop = true;
+      this.audio.volume = 0.3;
+      this.initialized = true;
+    } catch (err) {
+      console.warn('Background music not available');
+      this.initialized = false;
+    }
   }
 
   playBackgroundMusic() {
     if (!this.enabled) return;
     
-    // For now, just a placeholder
-    // Add your music.mp3 to public/music/ folder
-    try {
-      if (!this.audio) {
-        this.audio = new Audio('/music/background.mp3');
-        this.audio.loop = true;
-        this.audio.volume = this.volume;
-      }
-      this.audio.play().catch(() => {
+    this.initAudio();
+    
+    if (this.audio) {
+      this.audio.play().catch(err => {
         console.log('Music autoplay blocked - will play on user interaction');
       });
-    } catch (e) {
-      console.log('Background music not available');
     }
   }
 
-  stopMusic() {
+  stopBackgroundMusic() {
     if (this.audio) {
       this.audio.pause();
+      this.audio.currentTime = 0;
     }
   }
 
-  toggle() {
+  toggle(): boolean {
     this.enabled = !this.enabled;
+    localStorage.setItem('music_enabled', this.enabled.toString());
+    
     if (this.enabled) {
       this.playBackgroundMusic();
     } else {
-      this.stopMusic();
+      this.stopBackgroundMusic();
     }
+    
     return this.enabled;
   }
 
-  setVolume(vol: number) {
-    this.volume = vol;
-    if (this.audio) {
-      this.audio.volume = vol;
-    }
-  }
-
-  isEnabled() {
+  isEnabled(): boolean {
     return this.enabled;
   }
 }
