@@ -58,6 +58,18 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
           setWinner(res.data.winner);
           if (res.data.winner === playerId) {
             soundManager.play("success");
+            // Trigger celebration fireworks
+            for (let i = 0; i < 5; i++) {
+              setTimeout(() => {
+                const fw: FireworkData = {
+                  id: Date.now() + i,
+                  x: Math.random() * window.innerWidth,
+                  y: Math.random() * window.innerHeight / 2,
+                  color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'][i]
+                };
+                setFireworks(prev => [...prev, fw]);
+              }, i * 200);
+            }
           }
         }
       } catch (err) {
@@ -108,12 +120,26 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   };
 
   const checkIfComplete = (newBottles: string[][]): boolean => {
+    // Check if all non-empty bottles are complete
+    let completedBottles = 0;
+    let emptyBottles = 0;
+    
     for (const bottle of newBottles) {
-      if (bottle.length === 0) continue;
-      if (bottle.length !== 4) return false;
-      if (!bottle.every(color => color === bottle[0])) return false;
+      if (bottle.length === 0) {
+        emptyBottles++;
+        continue;
+      }
+      
+      // Bottle must be full (4 colors) and all same color
+      if (bottle.length === 4 && bottle.every(color => color === bottle[0])) {
+        completedBottles++;
+      } else {
+        return false; // Found an incomplete non-empty bottle
+      }
     }
-    return true;
+    
+    // Level is complete if we have some completed bottles and rest are empty
+    return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
   const handleBottleClick = async (bottleIdx: number) => {
@@ -183,33 +209,30 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
     const isCompleted = checkIfComplete(newBottles);
 
-    // DEBUG: Log what we're sending
-    const payload = {
-      room_id: roomId,
-      player_id: playerId,
-      moves: newMoves,
+    console.log("Checking completion:", {
+      isCompleted,
       bottles: newBottles,
-      completed: isCompleted
-    };
-    
-    console.log("=== SENDING TO BACKEND ===");
-    console.log("Payload:", JSON.stringify(payload, null, 2));
-    console.log("URL:", `${API_URL}/api/v1/multiplayer/update`);
-    console.log("========================");
+      moves: newMoves
+    });
 
     try {
-      const response = await axios.post(`${API_URL}/api/v1/multiplayer/update`, payload, {
+      const response = await axios.post(`${API_URL}/api/v1/multiplayer/update`, {
+        room_id: roomId,
+        player_id: playerId,
+        moves: newMoves,
+        bottles: newBottles,
+        completed: isCompleted
+      }, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      console.log("SUCCESS:", response.data);
+      
+      if (isCompleted) {
+        console.log("🎉 LEVEL COMPLETED! You win!");
+      }
     } catch (err: any) {
-      console.error("=== UPDATE FAILED ===");
-      console.error("Error:", err);
-      console.error("Response:", err.response?.data);
-      console.error("Status:", err.response?.status);
-      console.error("===================");
+      console.error("Failed to update server:", err);
     }
   };
 
@@ -310,6 +333,51 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
       {fireworks.map(fw => (
         <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />
       ))}
+
+      {winner && (
+        <div style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          background: "rgba(0,0,0,0.9)",
+          padding: "40px",
+          borderRadius: "20px",
+          zIndex: 10000,
+          textAlign: "center",
+          color: "white",
+          boxShadow: "0 0 50px rgba(255,215,0,0.5)"
+        }}>
+          <div style={{ fontSize: "4rem", marginBottom: "20px" }}>
+            {winner === playerId ? "🏆" : "😔"}
+          </div>
+          <h1 style={{ fontSize: "2.5rem", margin: "0 0 20px 0" }}>
+            {winner === playerId ? "YOU WON!" : "YOU LOST!"}
+          </h1>
+          <p style={{ fontSize: "1.2rem", marginBottom: "30px" }}>
+            {winner === playerId 
+              ? `Completed in ${moves} moves!` 
+              : `Better luck next time!`
+            }
+          </p>
+          <button
+            onClick={onExit}
+            style={{
+              padding: "15px 40px",
+              background: "linear-gradient(135deg, #667eea, #764ba2)",
+              border: "none",
+              borderRadius: "15px",
+              color: "white",
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              cursor: "pointer",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
+            }}
+          >
+            EXIT
+          </button>
+        </div>
+      )}
 
       <div style={{
         padding: isMobile ? "8px" : "12px",
