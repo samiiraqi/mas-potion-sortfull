@@ -11,12 +11,14 @@ from app.api.multiplayer_routes import router as multiplayer_router
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
+# CRITICAL: Allow ALL origins for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"]  # Expose all headers
 )
 
 app.include_router(router, prefix=settings.API_V1_PREFIX)

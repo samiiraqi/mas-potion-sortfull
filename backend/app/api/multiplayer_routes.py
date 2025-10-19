@@ -21,6 +21,10 @@ class MoveUpdate(BaseModel):
 async def join_multiplayer(request: JoinRoomRequest):
     """Join or create a multiplayer room"""
     
+    # Get bottles for this level FIRST
+    level = game_engine.generate_level(request.level_id)
+    bottles = level.bottles
+    
     # Try to find existing room or create new one
     if request.room_id:
         room = multiplayer_manager.get_room(request.room_id)
@@ -40,19 +44,15 @@ async def join_multiplayer(request: JoinRoomRequest):
     if not room.add_player(player_id, request.player_name):
         raise HTTPException(status_code=400, detail="Room is full")
     
-    # Get bottles for this level
-    level = game_engine.generate_level(request.level_id)
-    bottles = level.bottles
-    
     # If room is full, start the game
     if room.can_start():
         room.start_game(bottles)
     
-    # CRITICAL FIX: Always return bottles!
+    # CRITICAL: ALWAYS return bottles for BOTH players!
     return {
         "room_id": room.room_id,
         "player_id": player_id,
-        "bottles": bottles,  # ALWAYS include bottles
+        "bottles": bottles,  # Same bottles for both players!
         "level_id": request.level_id,
         "room_state": room.get_state()
     }
@@ -64,7 +64,14 @@ async def get_room_state(room_id: str):
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    return room.get_state()
+    # Add bottles to room state response
+    state = room.get_state()
+    
+    # If game has started, include bottles
+    if room.started and hasattr(room.game_state, 'get') and 'bottles' in room.game_state:
+        state['bottles'] = room.game_state['bottles']
+    
+    return state
 
 @router.post("/multiplayer/update")
 async def update_player_progress(update: MoveUpdate):
