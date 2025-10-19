@@ -98,7 +98,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     setFireworks(prev => [...prev, fw]);
     
     setTimeout(() => {
-      setFireeworks(prev => prev.filter(f => f.id !== fw.id));
+      setFireworks(prev => prev.filter(f => f.id !== fw.id));
     }, 2000);
   };
 
