@@ -19,7 +19,6 @@ interface MultiplayerGameProps {
 }
 
 export default function MultiplayerGame({ roomData, onExit }: MultiplayerGameProps) {
-  // FORCE initialize bottles from roomData
   const initialBottles = roomData?.bottles || [];
   const [bottles, setBottles] = useState<string[][]>(initialBottles);
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
@@ -28,6 +27,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   const [fireworks, setFireworks] = useState<FireworkData[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
+  const [gameReady, setGameReady] = useState(false);
 
   const playerId = roomData?.player_id || "";
   const roomId = roomData?.room_id || "";
@@ -36,14 +36,16 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     setIsMobile(window.innerWidth < 768);
   }, []);
 
-  // CRITICAL: Show what we have
+  // Wait for both players before starting
   useEffect(() => {
-    console.log("=== MULTIPLAYER DEBUG ===");
-    console.log("Room Data:", roomData);
-    console.log("Bottles:", bottles);
-    console.log("Bottles length:", bottles?.length);
-    console.log("========================");
-  }, [roomData, bottles]);
+    if (roomState?.players?.length === 2) {
+      setGameReady(true);
+      // Reset bottles when game starts
+      if (initialBottles && initialBottles.length > 0) {
+        setBottles([...initialBottles]);
+      }
+    }
+  }, [roomState, initialBottles]);
 
   useEffect(() => {
     if (!roomId) return;
@@ -116,6 +118,12 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
   };
 
   const handleBottleClick = async (bottleIdx: number) => {
+    // Don't allow play until both players ready
+    if (!gameReady) {
+      console.log("Waiting for opponent...");
+      return;
+    }
+
     if (winner) return;
 
     if (selectedBottle === null) {
@@ -193,7 +201,6 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }
   };
 
-  // Show error if no bottles
   if (!bottles || bottles.length === 0) {
     return (
       <div style={{
@@ -327,6 +334,20 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         }}>
           Room: {roomId}
         </div>
+
+        {/* Game Status */}
+        {!gameReady && (
+          <div style={{
+            background: "rgba(255,165,0,0.8)",
+            padding: isMobile ? "4px 10px" : "6px 15px",
+            borderRadius: "10px",
+            color: "white",
+            fontSize: isMobile ? "0.7rem" : "0.85rem",
+            fontWeight: "bold"
+          }}>
+            ⏳ Starting...
+          </div>
+        )}
       </div>
 
       <div style={{
@@ -434,7 +455,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
                   top: basePos.y,
                   transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
                   transformOrigin: "center center",
-                  cursor: winner ? "not-allowed" : "pointer",
+                  cursor: (!gameReady || winner) ? "not-allowed" : "pointer",
                   zIndex: isSelected ? 1000 : 1,
                   transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
                   filter: isSelected 
@@ -442,7 +463,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
                     : isFull 
                       ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))"
                       : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
-                  opacity: winner ? 0.7 : 1
+                  opacity: (!gameReady || winner) ? 0.7 : 1
                 }}
               >
                 <RealisticBottle
