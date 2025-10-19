@@ -1,0 +1,23 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#gradient)"/>
+  
+  <!-- Bottle shape -->
+  <path d="M 200 150 L 200 120 Q 200 100 220 100 L 292 100 Q 312 100 312 120 L 312 150 Q 320 160 320 180 L 320 420 Q 320 450 290 450 L 222 450 Q 192 450 192 420 L 192 180 Q 192 160 200 150 Z" 
+        fill="white" opacity="0.9"/>
+  
+  <!-- Water layers -->
+  <path d="M 195 350 L 195 420 Q 195 445 220 445 L 292 445 Q 317 445 317 420 L 317 350 Z" fill="#3B82F6"/>
+  <path d="M 195 280 L 195 350 L 317 350 L 317 280 Z" fill="#10B981"/>
+  <path d="M 195 210 L 195 280 L 317 280 L 317 210 Z" fill="#F59E0B"/>
+  
+  <!-- Bottle neck -->
+  <rect x="220" y="100" width="72" height="50" fill="white" opacity="0.9"/>
+</svg>
