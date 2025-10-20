@@ -9,93 +9,71 @@ class GameEngine:
     ]
     
     def generate_level(self, level_id: int) -> Dict[str, Any]:
-        """ULTIMATE CHAOS - Maximum mixing, no patterns!"""
+        """NIGHTMARE MODE - Only 1 empty bottle for EXTREME difficulty!"""
         
-        # Difficulty scaling
+        # AGGRESSIVE color scaling + ONLY 1 EMPTY!
         if level_id <= 3:
             num_colors = 3
-            num_empty = 2
-        elif level_id <= 6:
+            num_empty = 2  # Easy start
+        elif level_id <= 5:
             num_colors = 4
-            num_empty = 2
-        elif level_id <= 10:
+            num_empty = 2  # Still learning
+        elif level_id <= 8:
             num_colors = 5
-            num_empty = 2
-        elif level_id <= 15:
+            num_empty = 1  # Now it gets HARD - only 1 empty!
+        elif level_id <= 12:
             num_colors = 6
-            num_empty = 2
-        elif level_id <= 20:
+            num_empty = 1  # 6 colors, 1 empty = BRUTAL!
+        elif level_id <= 16:
             num_colors = 7
-            num_empty = 2
-        elif level_id <= 25:
+            num_empty = 1  # You'll need REAL strategy!
+        elif level_id <= 20:
             num_colors = 8
-            num_empty = 2
-        elif level_id <= 30:
+            num_empty = 1  # Expert level
+        elif level_id <= 25:
             num_colors = 9
-            num_empty = 2
-        elif level_id <= 35:
+            num_empty = 1  # Master
+        elif level_id <= 30:
             num_colors = 10
-            num_empty = 2
-        elif level_id <= 40:
+            num_empty = 1  # Insane
+        elif level_id <= 35:
             num_colors = 11
-            num_empty = 2
+            num_empty = 1  # Near impossible
         else:
             num_colors = 12
-            num_empty = 2
+            num_empty = 1  # IMPOSSIBLE with only 1 empty!
         
         colors = random.sample(self.COLORS, num_colors)
         
-        # Create 4 of each color
+        # Create pieces
         all_pieces = []
         for color in colors:
             all_pieces.extend([color] * 4)
         
-        # CRITICAL: Shuffle extensively
-        for _ in range(100):  # 100 SHUFFLES!
+        # MAXIMUM shuffling
+        for _ in range(200):  # 200 SHUFFLES!!!
             random.shuffle(all_pieces)
         
-        # Create bottles with FORCED mixing strategy
+        # Create bottles with maximum chaos
         bottles = []
         
-        # Strategy: Ensure NO bottle has more than 2 of the same color together!
+        # Fill bottles completely randomly
         for bottle_idx in range(num_colors):
             bottle = []
-            attempts = 0
-            max_attempts = 1000
-            
-            while len(bottle) < 4 and attempts < max_attempts:
-                # Pick random piece
+            for _ in range(4):
                 if all_pieces:
                     piece = all_pieces.pop(0)
-                    
-                    # Check if this creates 3+ same colors in a row
-                    if len(bottle) >= 2 and bottle[-1] == bottle[-2] == piece:
-                        # Would create 3 in a row - put piece back and try another
-                        all_pieces.append(piece)
-                        random.shuffle(all_pieces)
-                        attempts += 1
-                    else:
-                        # OK to add
-                        bottle.append(piece)
-                        attempts = 0
-                else:
-                    break
-            
-            # If we couldn't fill properly, just shuffle what we have
-            if len(bottle) < 4 and all_pieces:
-                while len(bottle) < 4 and all_pieces:
-                    bottle.append(all_pieces.pop(0))
-            
+                    bottle.append(piece)
             bottles.append(bottle)
         
-        # Add empty bottles
+        # Add ONLY 1 empty bottle (or 2 for easy levels)
         for _ in range(num_empty):
             bottles.append([])
         
-        # Final shuffle
+        # Shuffle bottle order
         random.shuffle(bottles)
         
-        optimal_moves = num_colors * 10 + level_id * 3
+        optimal_moves = num_colors * 15 + level_id * 5
         
         return {
             'level_id': level_id,
