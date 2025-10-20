@@ -9,39 +9,31 @@ class GameEngine:
     ]
     
     def generate_level(self, level_id: int) -> Dict[str, Any]:
-        """NIGHTMARE MODE - Only 1 empty bottle for EXTREME difficulty!"""
+        """SMART DIFFICULTY: Always 2 empty, but aggressive color scaling"""
         
-        # AGGRESSIVE color scaling + ONLY 1 EMPTY!
+        # AGGRESSIVE color progression - more colors = harder!
         if level_id <= 3:
-            num_colors = 3
-            num_empty = 2  # Easy start
+            num_colors = 3   # Easy
         elif level_id <= 5:
-            num_colors = 4
-            num_empty = 2  # Still learning
+            num_colors = 4   # Learning
         elif level_id <= 8:
-            num_colors = 5
-            num_empty = 1  # Now it gets HARD - only 1 empty!
-        elif level_id <= 12:
-            num_colors = 6
-            num_empty = 1  # 6 colors, 1 empty = BRUTAL!
-        elif level_id <= 16:
-            num_colors = 7
-            num_empty = 1  # You'll need REAL strategy!
+            num_colors = 5   # Medium
+        elif level_id <= 11:
+            num_colors = 6   # Getting hard!
+        elif level_id <= 14:
+            num_colors = 7   # Hard!
+        elif level_id <= 17:
+            num_colors = 8   # Very hard!
         elif level_id <= 20:
-            num_colors = 8
-            num_empty = 1  # Expert level
-        elif level_id <= 25:
-            num_colors = 9
-            num_empty = 1  # Master
-        elif level_id <= 30:
-            num_colors = 10
-            num_empty = 1  # Insane
-        elif level_id <= 35:
-            num_colors = 11
-            num_empty = 1  # Near impossible
+            num_colors = 9   # Expert!
+        elif level_id <= 24:
+            num_colors = 10  # Master!
+        elif level_id <= 28:
+            num_colors = 11  # Insane!
         else:
-            num_colors = 12
-            num_empty = 1  # IMPOSSIBLE with only 1 empty!
+            num_colors = 12  # MAXIMUM difficulty!
+        
+        num_empty = 2  # ALWAYS 2 empty for solvability
         
         colors = random.sample(self.COLORS, num_colors)
         
@@ -50,11 +42,11 @@ class GameEngine:
         for color in colors:
             all_pieces.extend([color] * 4)
         
-        # MAXIMUM shuffling
-        for _ in range(200):  # 200 SHUFFLES!!!
+        # EXTREME shuffling for maximum chaos
+        for _ in range(150):
             random.shuffle(all_pieces)
         
-        # Create bottles with maximum chaos
+        # Create bottles with MAXIMUM mixing
         bottles = []
         
         # Fill bottles completely randomly
@@ -66,14 +58,15 @@ class GameEngine:
                     bottle.append(piece)
             bottles.append(bottle)
         
-        # Add ONLY 1 empty bottle (or 2 for easy levels)
+        # Add 2 empty bottles
         for _ in range(num_empty):
             bottles.append([])
         
         # Shuffle bottle order
         random.shuffle(bottles)
         
-        optimal_moves = num_colors * 15 + level_id * 5
+        # Calculate optimal moves based on complexity
+        optimal_moves = num_colors * 8 + level_id * 2
         
         return {
             'level_id': level_id,
