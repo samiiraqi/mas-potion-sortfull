@@ -45,14 +45,12 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
   const loadNextLevel = async () => {
     try {
-      // IMMEDIATELY hide victory popup
       setShowVictory(false);
       setWinner(null);
       setMoves(0);
       setSelectedBottle(null);
       setFireworks([]);
       
-      // Backend handles level progression for the room
       const res = await axios.post(`${API_URL}/api/v1/multiplayer/next-level/${roomId}`);
       
       setCurrentLevel(res.data.level_id);
@@ -74,9 +72,8 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         const res = await axios.get(`${API_URL}/api/v1/multiplayer/room/${roomId}`);
         const newRoomState = res.data;
         
-        // Check if level changed (someone else clicked next level)
+        // Check if level changed
         if (newRoomState.level_id && newRoomState.level_id !== currentLevel) {
-          console.log(`Level changed from ${currentLevel} to ${newRoomState.level_id}`);
           setCurrentLevel(newRoomState.level_id);
           setBottles(newRoomState.bottles);
           setMoves(0);
@@ -88,12 +85,8 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
         
         setRoomState(newRoomState);
         
-        // Sync bottles
-        if (newRoomState.bottles && newRoomState.bottles.length > 0 && !showVictory) {
-          setBottles(newRoomState.bottles);
-        }
-        
-        // Check for winner
+        // DON'T sync bottles - each player has their own!
+        // Only sync winner status
         if (newRoomState.winner && !winner) {
           setWinner(newRoomState.winner);
           setShowVictory(true);
@@ -119,7 +112,7 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [roomId, winner, playerId, currentLevel, showVictory]);
+  }, [roomId, winner, playerId, currentLevel]);
 
   const checkBottleFull = (bottle: string[]): boolean => {
     if (bottle.length !== 4) return false;
@@ -247,12 +240,12 @@ export default function MultiplayerGame({ roomData, onExit }: MultiplayerGamePro
 
     const isCompleted = checkIfComplete(newBottles);
 
+    // Send ONLY completion status and moves, NOT bottles!
     try {
       await axios.post(`${API_URL}/api/v1/multiplayer/update`, {
         room_id: roomId,
         player_id: playerId,
         moves: newMoves,
-        bottles: newBottles,
         completed: isCompleted
       }, {
         headers: {
