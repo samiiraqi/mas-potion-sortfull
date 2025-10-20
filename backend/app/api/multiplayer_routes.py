@@ -19,8 +19,9 @@ class JoinRoomRequest(BaseModel):
 async def join_multiplayer(request: JoinRoomRequest):
     """Join or create a multiplayer room"""
     
+    # Get level data (returns dict now)
     level = game_engine.generate_level(request.level_id)
-    bottles = level.bottles
+    bottles = level['bottles']  # Access dict, not object attribute!
     
     if request.room_id:
         room = multiplayer_manager.get_room(request.room_id)
@@ -104,34 +105,33 @@ async def load_next_level(room_id: str):
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
         
-        # Get next level
         next_level_id = room.level_id + 1
         
         if next_level_id > 50:
             raise HTTPException(status_code=400, detail="No more levels!")
         
-        # Generate new level
+        # Generate new level (returns dict)
         level = game_engine.generate_level(next_level_id)
         
-        # Reset room for new level
+        # Reset room
         room.level_id = next_level_id
         room.winner = None
         room.started = True
         
-        # Reset all players
+        # Reset players
         for player in room.players:
             player.moves = 0
             player.completed = False
         
         # Set new bottles
-        room.start_game(level.bottles)
+        room.start_game(level['bottles'])  # Use dict access!
         
         logger.info(f"Room {room_id} advanced to level {next_level_id}")
         
         return {
             "success": True,
             "level_id": next_level_id,
-            "bottles": level.bottles,
+            "bottles": level['bottles'],  # Use dict access!
             "room_state": room.get_state()
         }
         
