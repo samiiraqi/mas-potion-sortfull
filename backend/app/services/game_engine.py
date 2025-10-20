@@ -9,55 +9,77 @@ class GameEngine:
     ]
     
     def generate_level(self, level_id: int) -> Dict[str, Any]:
-        """Generate a level with proper difficulty scaling"""
+        """Generate a level with REAL difficulty scaling"""
         
-        # Determine number of colors based on level
-        if level_id <= 3:
-            num_colors = 2  # 2 colors = easy
-        elif level_id <= 8:
-            num_colors = 3  # 3 colors
+        # AGGRESSIVE difficulty scaling
+        if level_id <= 5:
+            num_colors = 3  # Easy start
+            num_empty = 2   # 2 empty bottles
+        elif level_id <= 10:
+            num_colors = 4  # Getting harder
+            num_empty = 2
         elif level_id <= 15:
-            num_colors = 4  # 4 colors
+            num_colors = 5  # Medium
+            num_empty = 2
+        elif level_id <= 20:
+            num_colors = 6  # Medium-Hard
+            num_empty = 2
         elif level_id <= 25:
-            num_colors = 5  # 5 colors
+            num_colors = 7  # Hard - only 2 empty!
+            num_empty = 2
+        elif level_id <= 30:
+            num_colors = 8  # Very Hard
+            num_empty = 2
         elif level_id <= 35:
-            num_colors = 6  # 6 colors
+            num_colors = 9  # Expert
+            num_empty = 2
+        elif level_id <= 40:
+            num_colors = 10  # Master
+            num_empty = 2
+        elif level_id <= 45:
+            num_colors = 11  # Insane
+            num_empty = 2
         else:
-            num_colors = min(7 + (level_id - 35) // 5, 12)  # Up to 12 colors
+            num_colors = 12  # IMPOSSIBLE!
+            num_empty = 2
         
-        # Select colors for this level
+        # Select colors
         colors = random.sample(self.COLORS, num_colors)
         
         # Create exactly 4 pieces of each color
         all_pieces = []
         for color in colors:
-            all_pieces.extend([color] * 4)  # Exactly 4 of each color!
+            all_pieces.extend([color] * 4)
         
-        # Shuffle pieces
-        random.shuffle(all_pieces)
+        # AGGRESSIVE SHUFFLING - make it REALLY mixed!
+        for _ in range(5):  # Shuffle 5 times for maximum chaos
+            random.shuffle(all_pieces)
         
-        # Number of bottles = colors + 2 empty bottles for maneuvering
-        num_bottles = num_colors + 2
+        # Total bottles = colors + empty bottles
+        num_bottles = num_colors + num_empty
         
-        # Distribute pieces into bottles (4 per bottle max)
-        bottles = []
-        pieces_per_bottle = 4
+        # Distribute pieces RANDOMLY into bottles (maximum chaos!)
+        bottles = [[] for _ in range(num_bottles)]
         
-        # Fill bottles
-        for i in range(num_colors):
-            start_idx = i * pieces_per_bottle
-            end_idx = start_idx + pieces_per_bottle
-            bottles.append(all_pieces[start_idx:end_idx])
+        # Fill bottles randomly (not in order!)
+        bottle_indices = list(range(num_colors))  # Only fill non-empty bottles
+        
+        for piece in all_pieces:
+            # Pick a random bottle that's not full yet
+            available = [i for i in bottle_indices if len(bottles[i]) < 4]
+            if available:
+                chosen = random.choice(available)
+                bottles[chosen].append(piece)
         
         # Add empty bottles
-        for _ in range(2):
+        for _ in range(num_empty):
             bottles.append([])
         
-        # Shuffle bottles so empty ones aren't always at the end
+        # Final shuffle of all bottles
         random.shuffle(bottles)
         
-        # Calculate optimal moves (rough estimate)
-        optimal_moves = num_colors * 3 + level_id // 5
+        # Calculate realistic optimal moves
+        optimal_moves = num_colors * 4 + (level_id // 3)
         
         return {
             'level_id': level_id,
@@ -88,14 +110,14 @@ class GameEngine:
         if len(to_bottle) >= 4:
             return False, bottles
         
-        # Get the color to pour (top color of source bottle)
+        # Get the color to pour
         color_to_pour = from_bottle[-1]
         
         # If target is not empty, colors must match
         if to_bottle and to_bottle[-1] != color_to_pour:
             return False, bottles
         
-        # Count how many of the same color on top of source
+        # Count matching colors on top
         count = 1
         for i in range(len(from_bottle) - 2, -1, -1):
             if from_bottle[i] == color_to_pour:
@@ -103,12 +125,12 @@ class GameEngine:
             else:
                 break
         
-        # Calculate how many we can pour
+        # Calculate pour amount
         space_available = 4 - len(to_bottle)
         pour_count = min(count, space_available)
         
-        # Execute the pour
-        new_bottles = [bottle[:] for bottle in bottles]  # Deep copy
+        # Execute pour
+        new_bottles = [bottle[:] for bottle in bottles]
         
         for _ in range(pour_count):
             new_bottles[to_idx].append(new_bottles[from_idx].pop())
@@ -116,13 +138,11 @@ class GameEngine:
         return True, new_bottles
     
     def check_completion(self, bottles: List[List[str]]) -> bool:
-        """Check if the level is completed"""
+        """Check if level is complete"""
         for bottle in bottles:
-            # Skip empty bottles
             if not bottle:
                 continue
             
-            # Bottle must be full (4 colors) and all same color
             if len(bottle) != 4:
                 return False
             
