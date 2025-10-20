@@ -9,78 +9,75 @@ class GameEngine:
     ]
     
     def generate_level(self, level_id: int) -> Dict[str, Any]:
-        """Generate a level with AGGRESSIVE difficulty - fewer empty bottles!"""
+        """Generate CHAOTIC puzzles that require REAL thinking!"""
         
-        # HARDCORE difficulty scaling with FEWER empty bottles
-        if level_id <= 3:
+        # Aggressive scaling
+        if level_id <= 5:
             num_colors = 3
-            num_empty = 2  # Start with 2 empty (beginner friendly)
-        elif level_id <= 8:
+            num_empty = 2  # Start with 2 empty
+        elif level_id <= 10:
             num_colors = 4
-            num_empty = 2  # Still 2 empty
-        elif level_id <= 12:
+            num_empty = 2
+        elif level_id <= 15:
             num_colors = 5
-            num_empty = 2  # Getting harder
-        elif level_id <= 18:
+            num_empty = 2
+        elif level_id <= 20:
             num_colors = 6
-            num_empty = 2  # Medium difficulty
+            num_empty = 2
         elif level_id <= 25:
             num_colors = 7
-            num_empty = 2  # Hard - you need to think!
-        elif level_id <= 32:
+            num_empty = 2  # Only 2 empty with 7 colors = HARD!
+        elif level_id <= 30:
             num_colors = 8
-            num_empty = 2  # Very hard
-        elif level_id <= 38:
+            num_empty = 2
+        elif level_id <= 35:
             num_colors = 9
-            num_empty = 2  # Expert
-        elif level_id <= 44:
+            num_empty = 2
+        elif level_id <= 40:
             num_colors = 10
-            num_empty = 2  # Master
+            num_empty = 2
+        elif level_id <= 45:
+            num_colors = 11
+            num_empty = 2
         else:
-            num_colors = min(11 + (level_id - 44), 12)
-            num_empty = 2  # INSANE - only 2 empty with 12 colors!
+            num_colors = 12
+            num_empty = 2  # INSANE: 12 colors, 2 empty!
         
-        # Select colors
         colors = random.sample(self.COLORS, num_colors)
         
-        # Create exactly 4 pieces of each color
+        # Create pieces
         all_pieces = []
         for color in colors:
             all_pieces.extend([color] * 4)
         
-        # MAXIMUM CHAOS - shuffle multiple times
-        for _ in range(7):  # 7 shuffles for extreme mixing!
+        # CRITICAL: MAXIMUM CHAOS DISTRIBUTION
+        # Instead of filling bottles sequentially, distribute RANDOMLY!
+        
+        # Shuffle pieces extensively
+        for _ in range(20):  # 20 SHUFFLES for extreme randomness!
             random.shuffle(all_pieces)
         
-        # Create bottles
-        bottles = []
+        # Create bottles and fill COMPLETELY RANDOMLY
+        bottles = [[] for _ in range(num_colors)]
         
-        # Fill bottles with 4 pieces each (completely random distribution)
-        temp_bottles = [[] for _ in range(num_colors)]
-        
-        # Randomly distribute all pieces
-        piece_index = 0
-        for bottle_idx in range(num_colors):
-            for _ in range(4):
-                if piece_index < len(all_pieces):
-                    temp_bottles[bottle_idx].append(all_pieces[piece_index])
-                    piece_index += 1
-        
-        # Shuffle each bottle internally for maximum chaos
-        for bottle in temp_bottles:
-            random.shuffle(bottle)
-        
-        bottles.extend(temp_bottles)
+        # Distribute pieces ONE BY ONE to random bottles
+        for piece in all_pieces:
+            # Find bottles that aren't full
+            available_bottles = [i for i in range(len(bottles)) if len(bottles[i]) < 4]
+            if available_bottles:
+                # Pick a RANDOM bottle to add this piece
+                chosen_bottle = random.choice(available_bottles)
+                bottles[chosen_bottle].append(piece)
         
         # Add empty bottles
         for _ in range(num_empty):
             bottles.append([])
         
-        # Final shuffle of bottle order
+        # Shuffle bottle order
         random.shuffle(bottles)
         
-        # Calculate optimal moves (higher for complex levels)
-        optimal_moves = num_colors * 5 + level_id
+        # Higher optimal moves for complex levels
+        optimal_moves = num_colors * 6 + level_id
         
         return {
             'level_id': level_id,
