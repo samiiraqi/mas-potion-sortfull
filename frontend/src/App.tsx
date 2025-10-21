@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import LoadingScreen from './components/LoadingScreen'
 import Home from './components/Home'
 import WaterSortCanvas from './components/Game/WaterSortCanvas'
 import MultiplayerGame from './components/Multiplayer/MultiplayerGame'
 
-type GameMode = 'home' | 'singleplayer' | 'multiplayer';
+type GameMode = 'loading' | 'home' | 'singleplayer' | 'multiplayer';
 
 interface MultiplayerData {
   room_id: string;
@@ -14,8 +15,12 @@ interface MultiplayerData {
 }
 
 function App() {
-  const [gameMode, setGameMode] = useState<GameMode>('home');
+  const [gameMode, setGameMode] = useState<GameMode>('loading');
   const [multiplayerData, setMultiplayerData] = useState<MultiplayerData | null>(null);
+
+  const handleLoadComplete = () => {
+    setGameMode('home');
+  };
 
   const handleStartSinglePlayer = () => {
     setGameMode('singleplayer');
@@ -33,6 +38,10 @@ function App() {
 
   return (
     <>
+      {gameMode === 'loading' && (
+        <LoadingScreen onLoadComplete={handleLoadComplete} />
+      )}
+
       {gameMode === 'home' && (
         <Home 
           onStartSinglePlayer={handleStartSinglePlayer}
