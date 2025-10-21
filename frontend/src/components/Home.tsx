@@ -262,6 +262,60 @@ export default function Home({ onStartSinglePlayer, onStartMultiplayer }: HomePr
           )}
         </div>
 
+        {/* Footer links - AT THE BOTTOM */}
+        <div style={{
+          position: 'absolute',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '20px',
+          fontSize: '0.9rem',
+          alignItems: 'center'
+        }}>
+          <a 
+            href="/about" 
+            style={{ 
+              color: 'white', 
+              opacity: 0.8, 
+              textDecoration: 'none',
+              transition: 'opacity 0.3s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+          >
+            About
+          </a>
+          <span style={{ color: 'white', opacity: 0.5 }}>•</span>
+          <a 
+            href="/privacy" 
+            style={{ 
+              color: 'white', 
+              opacity: 0.8, 
+              textDecoration: 'none',
+              transition: 'opacity 0.3s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+          >
+            Privacy
+          </a>
+          <span style={{ color: 'white', opacity: 0.5 }}>•</span>
+          <a 
+            href="/qr" 
+            style={{ 
+              color: 'white', 
+              opacity: 0.8, 
+              textDecoration: 'none',
+              transition: 'opacity 0.3s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+          >
+            QR Code
+          </a>
+        </div>
+
         <style>{`
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -272,18 +326,3 @@ export default function Home({ onStartSinglePlayer, onStartMultiplayer }: HomePr
     </>
   );
 }
-
-        {/* Footer links */}
-        <div style={{
-          position: 'absolute',
-          bottom: '20px',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '20px',
-          fontSize: '0.9rem'
-        }}>
-          <a href="/about" style={{ color: 'white', opacity: 0.8, textDecoration: 'none' }}>About</a>
-          <span style={{ color: 'white', opacity: 0.5 }}>|</span>
-          <a href="/privacy" style={{ color: 'white', opacity: 0.8, textDecoration: 'none' }}>Privacy</a>
-        </div>
