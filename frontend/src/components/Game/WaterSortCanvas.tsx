@@ -56,7 +56,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [showVictory, setShowVictory] = useState(false);
   
-  // NEW: Animation states
   const [pourAnimations, setPourAnimations] = useState<PourAnimation[]>([]);
   const [particleEffects, setParticleEffects] = useState<ParticleEffect[]>([]);
   const [comboEffects, setComboEffects] = useState<ComboEffect[]>([]);
@@ -154,12 +153,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     const recent = [...recentCompletions, now];
     setRecentCompletions(recent);
     
-    // Remove completions older than 3 seconds
     setTimeout(() => {
       setRecentCompletions(prev => prev.filter(t => now - t < 3000));
     }, 3000);
     
-    // Count recent completions
     const recentCount = recent.filter(t => now - t < 3000).length;
     
     if (recentCount >= 3) {
@@ -203,7 +200,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
-  const handleBottleClick = async (bottleIdx: number) => {
+  const handleBottleClick = (bottleIdx: number) => {
     if (showVictory || isAnimating) return;
 
     if (selectedBottle === null) {
@@ -221,7 +218,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     const fromBottle = [...bottles[selectedBottle]];
     const toBottle = [...bottles[bottleIdx]];
 
-    if (fromBottle.length === 0 || toBottle.length >= 4) {
+    if (fromBottle.length === 0) {
+      setSelectedBottle(null);
+      return;
+    }
+
+    if (toBottle.length >= 4) {
       setSelectedBottle(null);
       return;
     }
@@ -232,19 +234,24 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }
 
     const colorToPour = fromBottle[fromBottle.length - 1];
-    let poured = 0;
-    
-    while (fromBottle.length > 0 && toBottle.length < 4 && fromBottle[fromBottle.length - 1] === colorToPour) {
-      toBottle.push(fromBottle.pop()!);
-      poured++;
+    let count = 1;
+    for (let i = fromBottle.length - 2; i >= 0; i--) {
+      if (fromBottle[i] === colorToPour) {
+        count++;
+      } else {
+        break;
+      }
     }
 
-    if (poured === 0) {
+    const spaceAvailable = 4 - toBottle.length;
+    const pourCount = Math.min(count, spaceAvailable);
+
+    if (pourCount === 0) {
       setSelectedBottle(null);
       return;
     }
 
-    // Create pour animation
+    // Create animation
     setIsAnimating(true);
     const fromPos = getBottlePosition(selectedBottle);
     const toPos = getBottlePosition(bottleIdx);
@@ -258,11 +265,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     
     setPourAnimations(prev => [...prev, pourAnim]);
 
-    // Wait for animation to complete
+    // Execute move after animation
     setTimeout(() => {
-      const newBottles = [...bottles];
-      newBottles[selectedBottle] = fromBottle;
-      newBottles[bottleIdx] = toBottle;
+      const newBottles = [... bottles];
+      for (let i = 0; i < pourCount; i++) {
+        newBottles[bottleIdx].push(newBottles[selectedBottle].pop()!);
+      }
 
       soundManager.play("pour");
       setBottles(newBottles);
@@ -270,17 +278,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setSelectedBottle(null);
       setIsAnimating(false);
 
-      // Remove animation
       setPourAnimations(prev => prev.filter(p => p.id !== pourAnim.id));
 
-      // Check if bottle is complete
-      if (checkBottleFull(toBottle)) {
-        triggerParticleExplosion(bottleIdx, toBottle[0]);
+      if (checkBottleFull(newBottles[bottleIdx])) {
+        triggerParticleExplosion(bottleIdx, newBottles[bottleIdx][0]);
         soundManager.play("success");
         checkCombo(bottleIdx);
       }
 
-      // Check if level is complete
       if (checkIfComplete(newBottles)) {
         setTimeout(() => {
           setShowVictory(true);
@@ -300,7 +305,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           }
         }, 500);
       }
-    }, 400); // Animation duration
+    }, 400);
   };
 
   if (!bottles || bottles.length === 0) {
@@ -318,25 +323,78 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   let COLS, scale, bottleSpacing, rowSpacing;
   
   if (isMobile) {
-    if (bottleCount <= 6) { COLS = 3; scale = 0.5; bottleSpacing = 70; rowSpacing = 95; }
-    else if (bottleCount <= 13) { COLS = 4; scale = 0.45; bottleSpacing = 58; rowSpacing = 85; }
-    else { COLS = 4; scale = 0.42; bottleSpacing = 55; rowSpacing = 80; }
+    if (bottleCount <= 5) {
+      COLS = 3;
+      scale = 0.7;
+      bottleSpacing = 90;
+      rowSpacing = 120;
+    } else if (bottleCount <= 7) {
+      COLS = 3;
+      scale = 0.6;
+      bottleSpacing = 80;
+      rowSpacing = 110;
+    } else if (bottleCount <= 9) {
+      COLS = 4;
+      scale = 0.5;
+      bottleSpacing = 70;
+      rowSpacing = 95;
+    } else if (bottleCount <= 11) {
+      COLS = 4;
+      scale = 0.45;
+      bottleSpacing = 65;
+      rowSpacing = 90;
+    } else {
+      COLS = 4;
+      scale = 0.42;
+      bottleSpacing = 58;
+      rowSpacing = 85;
+    }
   } else {
-    COLS = Math.min(bottles.length, 6);
-    scale = 0.8;
-    bottleSpacing = 100;
-    rowSpacing = 150;
+    if (bottleCount <= 5) {
+      COLS = 3;
+      scale = 1.2;
+      bottleSpacing = 140;
+      rowSpacing = 200;
+    } else if (bottleCount <= 7) {
+      COLS = 4;
+      scale = 1.0;
+      bottleSpacing = 120;
+      rowSpacing = 180;
+    } else if (bottleCount <= 9) {
+      COLS = 5;
+      scale = 0.9;
+      bottleSpacing = 110;
+      rowSpacing = 165;
+    } else if (bottleCount <= 11) {
+      COLS = 5;
+      scale = 0.85;
+      bottleSpacing = 105;
+      rowSpacing = 160;
+    } else if (bottleCount <= 13) {
+      COLS = 6;
+      scale = 0.8;
+      bottleSpacing = 100;
+      rowSpacing = 150;
+    } else {
+      COLS = 6;
+      scale = 0.75;
+      bottleSpacing = 95;
+      rowSpacing = 145;
+    }
   }
   
   const numCols = Math.min(bottleCount, COLS);
   const totalWidth = numCols * bottleSpacing;
   const startX = (window.innerWidth - totalWidth) / 2;
-  const startY = 5;
+  const startY = isMobile ? 10 : 20;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
     const col = idx % COLS;
-    return { x: startX + col * bottleSpacing, y: startY + row * rowSpacing };
+    return { 
+      x: startX + col * bottleSpacing, 
+      y: startY + row * rowSpacing
+    };
   };
 
   const completedLevels = progressManager.getCompletedCount();
@@ -346,7 +404,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       minHeight: "100vh", width: "100vw", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", userSelect: "none", overflow: "hidden"
     }}>
-      {/* All effects */}
       {fireworks.map(fw => <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />)}
       {pourAnimations.map(anim => (
         <LiquidPourAnimation
@@ -432,7 +489,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
       <div style={{ 
         flex: 1, overflowY: "auto", overflowX: "hidden", position: "relative", paddingBottom: "20px",
-        display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "5px", WebkitOverflowScrolling: "touch"
+        display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: isMobile ? "10px" : "20px", 
+        WebkitOverflowScrolling: "touch"
       }}>
         <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
           {bottles.map((colors, idx) => {
