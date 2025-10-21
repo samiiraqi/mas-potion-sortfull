@@ -107,12 +107,12 @@ export default function WaterSortCanvas() {
   };
 
   const shareScore = () => {
-    const text = `🎮 I completed Water Sort Level ${currentLevelId} with ${earnedStars}⭐ in ${moves} moves! Can you beat it? 💧`;
+    const text = `🎮 I completed Bottle For Mas Level ${currentLevelId} with ${earnedStars}⭐ in ${moves} moves! Can you beat it? 💧`;
     const url = 'https://water-sort-frontend.onrender.com';
     
     if (navigator.share) {
       navigator.share({
-        title: 'Water Sort Puzzle',
+        title: 'Bottle For Mas Puzzle',
         text: text,
         url: url
       }).catch(() => {});
