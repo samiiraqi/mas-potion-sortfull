@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import MultiplayerLobby from './Multiplayer/MultiplayerLobby';
-import AnimatedBottleLogo from './AnimatedBottleLogo';
+import BottleTextLogo from './BottleTextLogo';
 
 interface HomeProps {
   onStartSinglePlayer: () => void;
@@ -36,20 +36,10 @@ export default function Home({ onStartSinglePlayer, onStartMultiplayer }: HomePr
         maxWidth: '600px',
         width: '100%'
       }}>
-        <h1 style={{
-          fontSize: 'clamp(2.5rem, 8vw, 4rem)',
-          marginBottom: '1rem',
-          fontWeight: 'bold',
-          textShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <AnimatedBottleLogo />
-          Bottle For Mas
-        </h1>
+        {/* Beautiful bottle-shaped logo with text inside */}
+        <div style={{ marginBottom: '2rem' }}>
+          <BottleTextLogo />
+        </div>
         
         <p style={{
           fontSize: 'clamp(1rem, 3vw, 1.3rem)',
