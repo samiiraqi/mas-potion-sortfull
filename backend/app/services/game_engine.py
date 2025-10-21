@@ -9,47 +9,43 @@ class GameEngine:
     ]
     
     def generate_level(self, level_id: int) -> Dict[str, Any]:
-        """SMART DIFFICULTY: Always 2 empty, but aggressive color scaling"""
+        """Generate 120 levels with perfect difficulty scaling"""
         
-        # AGGRESSIVE color progression - more colors = harder!
-        if level_id <= 3:
-            num_colors = 3   # Easy
-        elif level_id <= 5:
-            num_colors = 4   # Learning
-        elif level_id <= 8:
-            num_colors = 5   # Medium
-        elif level_id <= 11:
-            num_colors = 6   # Getting hard!
-        elif level_id <= 14:
-            num_colors = 7   # Hard!
-        elif level_id <= 17:
-            num_colors = 8   # Very hard!
+        if level_id <= 5:
+            num_colors = 3
+        elif level_id <= 10:
+            num_colors = 4
         elif level_id <= 20:
-            num_colors = 9   # Expert!
-        elif level_id <= 24:
-            num_colors = 10  # Master!
-        elif level_id <= 28:
-            num_colors = 11  # Insane!
+            num_colors = 5
+        elif level_id <= 35:
+            num_colors = 6
+        elif level_id <= 50:
+            num_colors = 7
+        elif level_id <= 65:
+            num_colors = 8
+        elif level_id <= 80:
+            num_colors = 9
+        elif level_id <= 95:
+            num_colors = 10
+        elif level_id <= 110:
+            num_colors = 11
         else:
-            num_colors = 12  # MAXIMUM difficulty!
+            num_colors = 12
         
-        num_empty = 2  # ALWAYS 2 empty for solvability
+        num_empty = 2
         
         colors = random.sample(self.COLORS, num_colors)
         
-        # Create pieces
         all_pieces = []
         for color in colors:
             all_pieces.extend([color] * 4)
         
-        # EXTREME shuffling for maximum chaos
-        for _ in range(150):
+        shuffle_count = 50 + (level_id // 2)
+        for _ in range(shuffle_count):
             random.shuffle(all_pieces)
         
-        # Create bottles with MAXIMUM mixing
         bottles = []
         
-        # Fill bottles completely randomly
         for bottle_idx in range(num_colors):
             bottle = []
             for _ in range(4):
@@ -58,15 +54,12 @@ class GameEngine:
                     bottle.append(piece)
             bottles.append(bottle)
         
-        # Add 2 empty bottles
         for _ in range(num_empty):
             bottles.append([])
         
-        # Shuffle bottle order
         random.shuffle(bottles)
         
-        # Calculate optimal moves based on complexity
-        optimal_moves = num_colors * 8 + level_id * 2
+        optimal_moves = num_colors * 8 + level_id // 2
         
         return {
             'level_id': level_id,
