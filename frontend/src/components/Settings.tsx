@@ -8,21 +8,32 @@ export default function Settings({ onClose }: SettingsProps) {
   const [selectedBackground, setSelectedBackground] = useState('galaxy');
   const [selectedTheme, setSelectedTheme] = useState('classic');
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [unlockedLevels, setUnlockedLevels] = useState(0);
+  const [unlockedLevels, setUnlockedLevels] = useState(1);
 
   useEffect(() => {
+    // Load saved settings
     const saved = localStorage.getItem('gameSettings');
     if (saved) {
-      const settings = JSON.parse(saved);
-      setSelectedBackground(settings.background || 'galaxy');
-      setSelectedTheme(settings.theme || 'classic');
-      setSoundEnabled(settings.sound !== false);
+      try {
+        const settings = JSON.parse(saved);
+        setSelectedBackground(settings.background || 'galaxy');
+        setSelectedTheme(settings.theme || 'classic');
+        setSoundEnabled(settings.sound !== false);
+      } catch (e) {
+        console.error('Error loading settings:', e);
+      }
     }
 
+    // Load progress to determine unlocked levels
     const progress = localStorage.getItem('bottleForMasProgress');
     if (progress) {
-      const data = JSON.parse(progress);
-      setUnlockedLevels(data.lastLevel || 1);
+      try {
+        const data = JSON.parse(progress);
+        setUnlockedLevels(data.lastLevel || 1);
+      } catch (e) {
+        console.error('Error loading progress:', e);
+        setUnlockedLevels(1);
+      }
     }
   }, []);
 
@@ -33,7 +44,9 @@ export default function Settings({ onClose }: SettingsProps) {
       sound: soundEnabled
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
-    onClose();
+    
+    // Reload the page to apply settings
+    window.location.reload();
   };
 
   const backgrounds = [
@@ -78,31 +91,46 @@ export default function Settings({ onClose }: SettingsProps) {
       }}>
         <h2 style={{ margin: '0 0 20px 0', fontSize: '2rem', textAlign: 'center' }}>⚙️ Settings</h2>
 
+        {/* Current Level Info */}
+        <div style={{ 
+          marginBottom: '20px', 
+          padding: '10px', 
+          background: 'rgba(255,255,255,0.1)', 
+          borderRadius: '10px',
+          textAlign: 'center',
+          fontSize: '0.9rem'
+        }}>
+          Your Progress: Level {unlockedLevels} / 120
+        </div>
+
         {/* Backgrounds */}
         <div style={{ marginBottom: '25px' }}>
           <h3 style={{ fontSize: '1.3rem', marginBottom: '12px' }}>🎨 Backgrounds</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
             {backgrounds.map(bg => {
               const isLocked = unlockedLevels < bg.unlock;
+              const isSelected = selectedBackground === bg.id;
               return (
                 <button
                   key={bg.id}
                   disabled={isLocked}
-                  onClick={() => setSelectedBackground(bg.id)}
+                  onClick={() => !isLocked && setSelectedBackground(bg.id)}
                   style={{
                     padding: '12px',
-                    background: selectedBackground === bg.id ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.1)',
-                    border: selectedBackground === bg.id ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
+                    background: isSelected ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)',
+                    border: isSelected ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
                     borderRadius: '10px',
                     color: isLocked ? 'rgba(255,255,255,0.4)' : 'white',
                     fontSize: '0.9rem',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
-                    opacity: isLocked ? 0.5 : 1
+                    opacity: isLocked ? 0.5 : 1,
+                    fontWeight: isSelected ? 'bold' : 'normal'
                   }}
                 >
                   {bg.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {bg.unlock}</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
                 </button>
               );
             })}
@@ -115,25 +143,28 @@ export default function Settings({ onClose }: SettingsProps) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
             {themes.map(th => {
               const isLocked = unlockedLevels < th.unlock;
+              const isSelected = selectedTheme === th.id;
               return (
                 <button
                   key={th.id}
                   disabled={isLocked}
-                  onClick={() => setSelectedTheme(th.id)}
+                  onClick={() => !isLocked && setSelectedTheme(th.id)}
                   style={{
                     padding: '12px',
-                    background: selectedTheme === th.id ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.1)',
-                    border: selectedTheme === th.id ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
+                    background: isSelected ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)',
+                    border: isSelected ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
                     borderRadius: '10px',
                     color: isLocked ? 'rgba(255,255,255,0.4)' : 'white',
                     fontSize: '0.9rem',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
-                    opacity: isLocked ? 0.5 : 1
+                    opacity: isLocked ? 0.5 : 1,
+                    fontWeight: isSelected ? 'bold' : 'normal'
                   }}
                 >
                   {th.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {th.unlock}</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
                 </button>
               );
             })}
@@ -147,13 +178,14 @@ export default function Settings({ onClose }: SettingsProps) {
             onClick={() => setSoundEnabled(!soundEnabled)}
             style={{
               padding: '12px 20px',
-              background: soundEnabled ? 'rgba(76,175,80,0.3)' : 'rgba(244,67,54,0.3)',
-              border: '2px solid rgba(255,255,255,0.3)',
+              background: soundEnabled ? 'rgba(76,175,80,0.4)' : 'rgba(244,67,54,0.4)',
+              border: soundEnabled ? '3px solid #4CAF50' : '3px solid #F44336',
               borderRadius: '10px',
               color: 'white',
               fontSize: '1rem',
               cursor: 'pointer',
-              width: '100%'
+              width: '100%',
+              fontWeight: 'bold'
             }}
           >
             {soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF'}
@@ -177,7 +209,7 @@ export default function Settings({ onClose }: SettingsProps) {
               boxShadow: '0 4px 15px rgba(17, 153, 142, 0.4)'
             }}
           >
-            ✅ Save
+            ✅ Save & Apply
           </button>
           <button
             onClick={onClose}
