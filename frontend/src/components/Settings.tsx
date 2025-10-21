@@ -11,7 +11,6 @@ export default function Settings({ onClose }: SettingsProps) {
   const [unlockedLevels, setUnlockedLevels] = useState(1);
 
   useEffect(() => {
-    // Load saved settings
     const saved = localStorage.getItem('gameSettings');
     if (saved) {
       try {
@@ -24,7 +23,6 @@ export default function Settings({ onClose }: SettingsProps) {
       }
     }
 
-    // Load progress to determine unlocked levels
     const progress = localStorage.getItem('bottleForMasProgress');
     if (progress) {
       try {
@@ -45,25 +43,27 @@ export default function Settings({ onClose }: SettingsProps) {
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
     
-    // Reload the page to apply settings
+    // Show confirmation
+    alert(`Settings saved!\n\n🎨 Background: ${selectedBackground}\n🍾 Theme: ${selectedTheme}\n🔊 Sound: ${soundEnabled ? 'ON' : 'OFF'}\n\nPage will reload to apply changes.`);
+    
     window.location.reload();
   };
 
   const backgrounds = [
     { id: 'galaxy', name: '🌌 Galaxy Space', unlock: 1 },
-    { id: 'sunset', name: '🌅 Sunset Beach', unlock: 20 },
-    { id: 'cherry', name: '🌸 Cherry Blossom', unlock: 40 },
-    { id: 'ocean', name: '🌊 Ocean Deep', unlock: 60 },
-    { id: 'mountain', name: '⛰️ Mountain View', unlock: 80 },
-    { id: 'night', name: '🌙 Night City', unlock: 100 }
+    { id: 'sunset', name: '🌅 Sunset Beach', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'cherry', name: '🌸 Cherry Blossom', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'ocean', name: '🌊 Ocean Deep', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'mountain', name: '⛰️ Mountain View', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'night', name: '🌙 Night City', unlock: 1 } // UNLOCKED FOR TESTING
   ];
 
   const themes = [
     { id: 'classic', name: '🍾 Classic Bottle', unlock: 1 },
-    { id: 'lab', name: '🧪 Laboratory', unlock: 20 },
-    { id: 'coffee', name: '☕ Coffee Shop', unlock: 40 },
-    { id: 'juice', name: '🧃 Juice Bottle', unlock: 60 },
-    { id: 'potion', name: '🧙 Magic Potion', unlock: 80 }
+    { id: 'lab', name: '🧪 Laboratory', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'coffee', name: '☕ Coffee Shop', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'juice', name: '🧃 Juice Bottle', unlock: 1 }, // UNLOCKED FOR TESTING
+    { id: 'potion', name: '🧙 Magic Potion', unlock: 1 } // UNLOCKED FOR TESTING
   ];
 
   return (
@@ -89,19 +89,10 @@ export default function Settings({ onClose }: SettingsProps) {
         overflowY: 'auto',
         color: 'white'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', fontSize: '2rem', textAlign: 'center' }}>⚙️ Settings</h2>
-
-        {/* Current Level Info */}
-        <div style={{ 
-          marginBottom: '20px', 
-          padding: '10px', 
-          background: 'rgba(255,255,255,0.1)', 
-          borderRadius: '10px',
-          textAlign: 'center',
-          fontSize: '0.9rem'
-        }}>
-          Your Progress: Level {unlockedLevels} / 120
-        </div>
+        <h2 style={{ margin: '0 0 10px 0', fontSize: '2rem', textAlign: 'center' }}>⚙️ Settings</h2>
+        <p style={{ margin: '0 0 20px 0', textAlign: 'center', fontSize: '0.9rem', opacity: 0.8 }}>
+          🎮 Level {unlockedLevels} / 120 • All unlocked for testing!
+        </p>
 
         {/* Backgrounds */}
         <div style={{ marginBottom: '25px' }}>
@@ -125,12 +116,13 @@ export default function Settings({ onClose }: SettingsProps) {
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
                     opacity: isLocked ? 0.5 : 1,
-                    fontWeight: isSelected ? 'bold' : 'normal'
+                    fontWeight: isSelected ? 'bold' : 'normal',
+                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
                   }}
                 >
                   {bg.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {bg.unlock}</div>}
-                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px', color: '#FFD700' }}>✓ SELECTED</div>}
                 </button>
               );
             })}
@@ -159,12 +151,13 @@ export default function Settings({ onClose }: SettingsProps) {
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
                     opacity: isLocked ? 0.5 : 1,
-                    fontWeight: isSelected ? 'bold' : 'normal'
+                    fontWeight: isSelected ? 'bold' : 'normal',
+                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
                   }}
                 >
                   {th.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {th.unlock}</div>}
-                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px', color: '#FFD700' }}>✓ SELECTED</div>}
                 </button>
               );
             })}
