@@ -19,14 +19,17 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
 }) => {
   const bottleWidth = 60;
   const bottleHeight = 120;
-  const colorHeight = bottleHeight / 4;
   
-  // Bottle interior boundaries (slightly inside the glass)
+  // Define the liquid container area INSIDE the bottle
   const liquidLeft = bottleWidth * 0.18;
   const liquidRight = bottleWidth * 0.82;
   const liquidWidth = liquidRight - liquidLeft;
-  const liquidBottom = bottleHeight + 6; // Slightly above bottle bottom
+  const liquidBottom = bottleHeight + 3; // Just above bottle bottom
   const liquidTop = 32; // Below the neck
+  const liquidHeight = liquidBottom - liquidTop; // Total height available
+  
+  // Each layer gets EQUAL height (divide by 4 for full bottles)
+  const layerHeight = liquidHeight / 4;
 
   // Enhanced color mapping with gradients
   const colorMap: { [key: string]: { base: string; light: string; dark: string } } = {
@@ -102,10 +105,10 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
           <clipPath id="bottleClip">
             <path
               d={`M ${bottleWidth * 0.17} ${liquidTop}
-                  L ${bottleWidth * 0.17} ${liquidBottom - 8}
-                  C ${bottleWidth * 0.17} ${liquidBottom - 3}, ${bottleWidth * 0.2} ${liquidBottom}, ${bottleWidth * 0.3} ${liquidBottom}
+                  L ${bottleWidth * 0.17} ${liquidBottom - 5}
+                  C ${bottleWidth * 0.17} ${liquidBottom - 2}, ${bottleWidth * 0.2} ${liquidBottom}, ${bottleWidth * 0.3} ${liquidBottom}
                   L ${bottleWidth * 0.7} ${liquidBottom}
-                  C ${bottleWidth * 0.8} ${liquidBottom}, ${bottleWidth * 0.83} ${liquidBottom - 3}, ${bottleWidth * 0.83} ${liquidBottom - 8}
+                  C ${bottleWidth * 0.8} ${liquidBottom}, ${bottleWidth * 0.83} ${liquidBottom - 2}, ${bottleWidth * 0.83} ${liquidBottom - 5}
                   L ${bottleWidth * 0.83} ${liquidTop}
                   Z`}
             />
@@ -143,20 +146,21 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
           opacity={0.9}
         />
 
-        {/* Liquid layers - clipped to bottle interior */}
+        {/* Liquid layers - ALL EQUAL HEIGHT and clipped to bottle interior */}
         <g clipPath="url(#bottleClip)">
           {colors.map((color, index) => {
-            const y = liquidBottom - (index + 1) * colorHeight;
+            // Calculate Y position from BOTTOM up, each layer same height
+            const y = liquidBottom - (index + 1) * layerHeight;
             const shades = getColorShades(color);
             
             return (
               <g key={`layer-${index}`}>
-                {/* Main liquid layer with gradient */}
+                {/* Main liquid layer with gradient - EQUAL HEIGHT FOR ALL */}
                 <rect
                   x={liquidLeft}
                   y={y}
                   width={liquidWidth}
-                  height={colorHeight}
+                  height={layerHeight}
                   fill={`url(#gradient-${color}-${index})`}
                   opacity={0.95}
                 />
@@ -166,14 +170,14 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
                   <circle
                     key={`bubble-${index}-${bubbleIdx}`}
                     cx={liquidLeft + liquidWidth * (0.2 + Math.random() * 0.6)}
-                    cy={y + colorHeight * (0.3 + Math.random() * 0.4)}
+                    cy={y + layerHeight * (0.3 + Math.random() * 0.4)}
                     r={1.5 + Math.random() * 1}
                     fill="rgba(255,255,255,0.4)"
                     opacity={0.6}
                   >
                     <animate
                       attributeName="cy"
-                      values={`${y + colorHeight * 0.8};${y + colorHeight * 0.2};${y + colorHeight * 0.8}`}
+                      values={`${y + layerHeight * 0.8};${y + layerHeight * 0.2};${y + layerHeight * 0.8}`}
                       dur={`${3 + Math.random() * 2}s`}
                       repeatCount="indefinite"
                     />
@@ -205,7 +209,7 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
               x={liquidLeft}
               y={liquidTop}
               width={liquidWidth}
-              height={liquidBottom - liquidTop}
+              height={liquidHeight}
               fill="url(#shimmer)"
               opacity={0.5}
             >
@@ -234,7 +238,7 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
           <circle
             key={`sparkle-${i}`}
             cx={liquidLeft + liquidWidth * (0.3 + Math.random() * 0.4)}
-            cy={40 + Math.random() * 60}
+            cy={liquidTop + liquidHeight * (0.2 + Math.random() * 0.6)}
             r={2}
             fill="white"
             opacity={0}
