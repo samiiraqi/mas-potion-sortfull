@@ -20,59 +20,64 @@ export default function BottleTextLogo() {
       >
         <defs>
           {/* Rainbow gradients for bubble letters */}
-          <linearGradient id="bubbleGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#FF6B9D', stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: '#FEC163', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#FFC371', stopOpacity: 1 }} />
-          </linearGradient>
+          <radialGradient id="bubbleGrad1" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#FFE5E5', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#FF6B9D', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#FF1744', stopOpacity: 0.9 }} />
+          </radialGradient>
           
-          <linearGradient id="bubbleGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#4FACFE', stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: '#00F2FE', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#43E97B', stopOpacity: 1 }} />
-          </linearGradient>
+          <radialGradient id="bubbleGrad2" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#E3F9FF', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#4FACFE', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#0077FF', stopOpacity: 0.9 }} />
+          </radialGradient>
           
-          <linearGradient id="bubbleGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#FA709A', stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: '#FEE140', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#30CFD0', stopOpacity: 1 }} />
-          </linearGradient>
+          <radialGradient id="bubbleGrad3" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#FFF9E5', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#FEC163', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#FF9500', stopOpacity: 0.9 }} />
+          </radialGradient>
           
-          <linearGradient id="bubbleGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#A8EDEA', stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: '#FED6E3', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#A8EDEA', stopOpacity: 1 }} />
-          </linearGradient>
+          <radialGradient id="bubbleGrad4" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#F0FFE5', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#43E97B', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#00C853', stopOpacity: 0.9 }} />
+          </radialGradient>
           
-          <linearGradient id="bubbleGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#FF9A8B', stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: '#FF6A88', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#FF99AC', stopOpacity: 1 }} />
-          </linearGradient>
+          <radialGradient id="bubbleGrad5" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#F5E5FF', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#A855F7', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#7C3AED', stopOpacity: 0.9 }} />
+          </radialGradient>
           
-          {/* Bottle outline gradient */}
+          <radialGradient id="bubbleGrad6" cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#FFE5F5', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#EC4899', stopOpacity: 0.95 }} />
+            <stop offset="100%" style={{ stopColor: '#DB2777', stopOpacity: 0.9 }} />
+          </radialGradient>
+          
+          {/* Bottle outline */}
           <linearGradient id="bottleOutline" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" style={{ stopColor: 'rgba(255,255,255,0.5)' }} />
             <stop offset="100%" style={{ stopColor: 'rgba(200,230,255,0.4)' }} />
           </linearGradient>
           
-          {/* Liquid background */}
           <linearGradient id="liquidBg" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" style={{ stopColor: '#667eea', stopOpacity: 0.15 }} />
             <stop offset="100%" style={{ stopColor: '#764ba2', stopOpacity: 0.2 }} />
           </linearGradient>
           
-          {/* Bubble shine effect */}
+          {/* Bubble shine highlight */}
           <radialGradient id="bubbleShine">
-            <stop offset="0%" style={{ stopColor: 'rgba(255,255,255,0.8)' }} />
-            <stop offset="70%" style={{ stopColor: 'rgba(255,255,255,0.2)' }} />
+            <stop offset="0%" style={{ stopColor: 'rgba(255,255,255,1)' }} />
+            <stop offset="50%" style={{ stopColor: 'rgba(255,255,255,0.6)' }} />
             <stop offset="100%" style={{ stopColor: 'rgba(255,255,255,0)' }} />
           </radialGradient>
         </defs>
         
-        {/* Bottle shape outline */}
+        {/* Bottle shape - WIDER to fit all letters */}
         <path
-          d="M 180 15 L 180 30 C 180 30 165 40 165 55 L 165 170 C 165 178 170 185 190 185 L 310 185 C 330 185 335 178 335 170 L 335 55 C 335 40 320 30 320 30 L 320 15 C 320 10 315 5 310 5 L 190 5 C 185 5 180 10 180 15 Z"
+          d="M 170 15 L 170 30 C 170 30 155 40 155 55 L 155 170 C 155 178 160 185 180 185 L 320 185 C 340 185 345 178 345 170 L 345 55 C 345 40 330 30 330 30 L 330 15 C 330 10 325 5 320 5 L 180 5 C 175 5 170 10 170 15 Z"
           fill="url(#liquidBg)"
           stroke="url(#bottleOutline)"
           strokeWidth="3"
@@ -80,120 +85,193 @@ export default function BottleTextLogo() {
         />
         
         {/* Bottle cap */}
-        <rect x="210" y="3" width="80" height="8" rx="3" fill="#E74C3C" opacity="0.8" />
+        <rect x="200" y="3" width="100" height="8" rx="3" fill="#E74C3C" opacity="0.8" />
         
-        {/* "BOTTLE" - Each letter as a colorful bubble */}
+        {/* "BOTTLE" - Each letter as bubble with FLOATING animation */}
         
         {/* B */}
-        <circle cx="195" cy="60" r="16" fill="url(#bubbleGrad1)" opacity="0.95">
-          <animate attributeName="r" values="16;18;16" dur="2s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="192" cy="55" r="5" fill="url(#bubbleShine)" />
-        <text x="195" y="67" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>B</text>
+        <g>
+          <circle cx="180" cy="60" r="17" fill="url(#bubbleGrad1)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="60;58;60" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="17;18.5;17" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="177" cy="55" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="180" y="67" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>B</tspan>
+            <animate attributeName="y" values="67;65;67" dur="2s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* O */}
-        <circle cx="225" cy="58" r="17" fill="url(#bubbleGrad2)" opacity="0.95">
-          <animate attributeName="r" values="17;19;17" dur="2.2s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="222" cy="53" r="5" fill="url(#bubbleShine)" />
-        <text x="225" y="65" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>O</text>
+        <g>
+          <circle cx="210" cy="58" r="18" fill="url(#bubbleGrad2)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="58;56;58" dur="2.3s" repeatCount="indefinite" />
+            <animate attributeName="r" values="18;19.5;18" dur="2.3s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="207" cy="53" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="210" y="65" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>O</tspan>
+            <animate attributeName="y" values="65;63;65" dur="2.3s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* T */}
-        <circle cx="255" cy="60" r="16" fill="url(#bubbleGrad3)" opacity="0.95">
-          <animate attributeName="r" values="16;18;16" dur="2.4s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="252" cy="55" r="5" fill="url(#bubbleShine)" />
-        <text x="255" y="67" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>T</text>
+        <g>
+          <circle cx="240" cy="60" r="17" fill="url(#bubbleGrad3)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="60;58;60" dur="2.6s" repeatCount="indefinite" />
+            <animate attributeName="r" values="17;18.5;17" dur="2.6s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="237" cy="55" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="240" y="67" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>T</tspan>
+            <animate attributeName="y" values="67;65;67" dur="2.6s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* T */}
-        <circle cx="283" cy="58" r="17" fill="url(#bubbleGrad4)" opacity="0.95">
-          <animate attributeName="r" values="17;19;17" dur="2.6s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="280" cy="53" r="5" fill="url(#bubbleShine)" />
-        <text x="283" y="65" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>T</text>
+        <g>
+          <circle cx="268" cy="58" r="18" fill="url(#bubbleGrad4)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="58;56;58" dur="2.9s" repeatCount="indefinite" />
+            <animate attributeName="r" values="18;19.5;18" dur="2.9s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="265" cy="53" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="268" y="65" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>T</tspan>
+            <animate attributeName="y" values="65;63;65" dur="2.9s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* L */}
-        <circle cx="310" cy="60" r="16" fill="url(#bubbleGrad5)" opacity="0.95">
-          <animate attributeName="r" values="16;18;16" dur="2.8s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="307" cy="55" r="5" fill="url(#bubbleShine)" />
-        <text x="310" y="67" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>L</text>
+        <g>
+          <circle cx="296" cy="60" r="17" fill="url(#bubbleGrad5)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="60;58;60" dur="3.2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="17;18.5;17" dur="3.2s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="293" cy="55" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="296" y="67" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>L</tspan>
+            <animate attributeName="y" values="67;65;67" dur="3.2s" repeatCount="indefinite" />
+          </text>
+        </g>
         
-        {/* E */}
-        <circle cx="335" cy="58" r="17" fill="url(#bubbleGrad1)" opacity="0.95">
-          <animate attributeName="r" values="17;19;17" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="332" cy="53" r="5" fill="url(#bubbleShine)" />
-        <text x="335" y="65" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>E</text>
+        {/* E - MOVED INSIDE! */}
+        <g>
+          <circle cx="322" cy="58" r="17" fill="url(#bubbleGrad6)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="58;56;58" dur="3.5s" repeatCount="indefinite" />
+            <animate attributeName="r" values="17;18.5;17" dur="3.5s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="319" cy="53" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="322" y="65" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>E</tspan>
+            <animate attributeName="y" values="65;63;65" dur="3.5s" repeatCount="indefinite" />
+          </text>
+        </g>
         
-        {/* "FOR" - Middle section */}
+        {/* "FOR" - Middle */}
         
         {/* F */}
-        <circle cx="225" cy="105" r="15" fill="url(#bubbleGrad2)" opacity="0.95">
-          <animate attributeName="r" values="15;17;15" dur="2.1s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="222" cy="101" r="4" fill="url(#bubbleShine)" />
-        <text x="225" y="111" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>F</text>
+        <g>
+          <circle cx="220" cy="105" r="16" fill="url(#bubbleGrad2)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="105;103;105" dur="2.2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="16;17.5;16" dur="2.2s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="217" cy="101" rx="5" ry="7" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="220" y="111" fontFamily="Arial Black" fontSize="18" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>F</tspan>
+            <animate attributeName="y" values="111;109;111" dur="2.2s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* O */}
-        <circle cx="255" cy="103" r="16" fill="url(#bubbleGrad3)" opacity="0.95">
-          <animate attributeName="r" values="16;18;16" dur="2.3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="252" cy="99" r="4" fill="url(#bubbleShine)" />
-        <text x="255" y="110" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>O</text>
+        <g>
+          <circle cx="250" cy="103" r="17" fill="url(#bubbleGrad3)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="103;101;103" dur="2.5s" repeatCount="indefinite" />
+            <animate attributeName="r" values="17;18.5;17" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="247" cy="99" rx="5" ry="7" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="250" y="110" fontFamily="Arial Black" fontSize="18" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>O</tspan>
+            <animate attributeName="y" values="110;108;110" dur="2.5s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* R */}
-        <circle cx="283" cy="105" r="15" fill="url(#bubbleGrad4)" opacity="0.95">
-          <animate attributeName="r" values="15;17;15" dur="2.5s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="280" cy="101" r="4" fill="url(#bubbleShine)" />
-        <text x="283" y="111" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>R</text>
+        <g>
+          <circle cx="280" cy="105" r="16" fill="url(#bubbleGrad4)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="105;103;105" dur="2.8s" repeatCount="indefinite" />
+            <animate attributeName="r" values="16;17.5;16" dur="2.8s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="277" cy="101" rx="5" ry="7" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="280" y="111" fontFamily="Arial Black" fontSize="18" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>R</tspan>
+            <animate attributeName="y" values="111;109;111" dur="2.8s" repeatCount="indefinite" />
+          </text>
+        </g>
         
-        {/* "MAS" - Bottom section */}
+        {/* "MAS" - Bottom */}
         
         {/* M */}
-        <circle cx="220" cy="150" r="17" fill="url(#bubbleGrad5)" opacity="0.95">
-          <animate attributeName="r" values="17;19;17" dur="2.2s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="217" cy="145" r="5" fill="url(#bubbleShine)" />
-        <text x="220" y="157" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>M</text>
+        <g>
+          <circle cx="210" cy="150" r="18" fill="url(#bubbleGrad5)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="150;148;150" dur="2.3s" repeatCount="indefinite" />
+            <animate attributeName="r" values="18;19.5;18" dur="2.3s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="207" cy="145" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="210" y="157" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>M</tspan>
+            <animate attributeName="y" values="157;155;157" dur="2.3s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* A */}
-        <circle cx="253" cy="148" r="18" fill="url(#bubbleGrad1)" opacity="0.95">
-          <animate attributeName="r" values="18;20;18" dur="2.4s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="250" cy="143" r="5" fill="url(#bubbleShine)" />
-        <text x="253" y="156" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>A</text>
+        <g>
+          <circle cx="243" cy="148" r="19" fill="url(#bubbleGrad1)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="148;146;148" dur="2.6s" repeatCount="indefinite" />
+            <animate attributeName="r" values="19;20.5;19" dur="2.6s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="240" cy="143" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="243" y="156" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>A</tspan>
+            <animate attributeName="y" values="156;154;156" dur="2.6s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* S */}
-        <circle cx="285" cy="150" r="17" fill="url(#bubbleGrad2)" opacity="0.95">
-          <animate attributeName="r" values="17;19;17" dur="2.6s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="282" cy="145" r="5" fill="url(#bubbleShine)" />
-        <text x="285" y="157" fontFamily="Arial Black" fontSize="22" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>S</text>
+        <g>
+          <circle cx="275" cy="150" r="18" fill="url(#bubbleGrad2)" opacity="0.95" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+            <animate attributeName="cy" values="150;148;150" dur="2.9s" repeatCount="indefinite" />
+            <animate attributeName="r" values="18;19.5;18" dur="2.9s" repeatCount="indefinite" />
+          </circle>
+          <ellipse cx="272" cy="145" rx="6" ry="8" fill="url(#bubbleShine)" opacity="0.9" />
+          <text x="275" y="157" fontFamily="Arial Black" fontSize="20" fontWeight="bold" textAnchor="middle" fill="white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
+            <tspan>S</tspan>
+            <animate attributeName="y" values="157;155;157" dur="2.9s" repeatCount="indefinite" />
+          </text>
+        </g>
         
         {/* Floating bubbles rising */}
-        <circle cx="190" cy="180" r="4" fill="rgba(255,255,255,0.6)">
-          <animate attributeName="cy" values="180;50" dur="4s" repeatCount="indefinite" />
+        <circle cx="180" cy="180" r="5" fill="rgba(255,255,255,0.6)" stroke="rgba(255,255,255,0.8)" strokeWidth="1">
+          <animate attributeName="cy" values="180;40" dur="4s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0;0.8;0" dur="4s" repeatCount="indefinite" />
-          <animate attributeName="r" values="4;6;4" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="r" values="5;7;5" dur="4s" repeatCount="indefinite" />
         </circle>
-        <circle cx="240" cy="175" r="5" fill="rgba(255,255,255,0.5)">
-          <animate attributeName="cy" values="175;40" dur="5s" repeatCount="indefinite" />
+        <circle cx="240" cy="175" r="6" fill="rgba(255,255,255,0.5)" stroke="rgba(255,255,255,0.7)" strokeWidth="1">
+          <animate attributeName="cy" values="175;35" dur="5s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0;0.7;0" dur="5s" repeatCount="indefinite" />
+          <animate attributeName="r" values="6;8;6" dur="5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="280" cy="178" r="4" fill="rgba(255,255,255,0.6)">
-          <animate attributeName="cy" values="178;45" dur="4.5s" repeatCount="indefinite" />
+        <circle cx="290" cy="178" r="5" fill="rgba(255,255,255,0.6)" stroke="rgba(255,255,255,0.8)" strokeWidth="1">
+          <animate attributeName="cy" values="178;38" dur="4.5s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0;0.8;0" dur="4.5s" repeatCount="indefinite" />
-          <animate attributeName="r" values="4;7;4" dur="4.5s" repeatCount="indefinite" />
+          <animate attributeName="r" values="5;9;5" dur="4.5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="320" cy="180" r="5" fill="rgba(255,255,255,0.5)">
-          <animate attributeName="cy" values="180;35" dur="5.5s" repeatCount="indefinite" />
+        <circle cx="320" cy="180" r="6" fill="rgba(255,255,255,0.5)" stroke="rgba(255,255,255,0.7)" strokeWidth="1">
+          <animate attributeName="cy" values="180;32" dur="5.5s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0;0.6;0" dur="5.5s" repeatCount="indefinite" />
         </circle>
         
-        {/* Glass shine effect */}
-        <ellipse cx="200" cy="70" rx="18" ry="35" fill="rgba(255,255,255,0.15)" />
+        {/* Glass shine */}
+        <ellipse cx="190" cy="70" rx="20" ry="40" fill="rgba(255,255,255,0.12)" />
       </svg>
     </div>
   );
