@@ -12,8 +12,8 @@ export default function Home({ onStartSinglePlayer, onStartMultiplayer }: HomePr
   if (showMultiplayer) {
     return (
       <MultiplayerLobby 
-        onGameStart={onStartMultiplayer}
-        onBack={() => setShowMultiplayer(false)}
+        onJoinRoom={onStartMultiplayer}
+        onClose={() => setShowMultiplayer(false)}
       />
     );
   }
