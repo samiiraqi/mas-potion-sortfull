@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import RealisticBottle from "./RealisticBottle";
+import ThemedBottle from "./ThemedBottle";
+import AnimatedBackground from "./AnimatedBackground";
 import Fireworks from "./Fireworks";
 import LiquidPourAnimation from "./LiquidPourAnimation";
 import ParticleExplosion from "./ParticleExplosion";
@@ -62,8 +63,20 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [recentCompletions, setRecentCompletions] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // NEW: Load settings from localStorage
+  const [background, setBackground] = useState('galaxy');
+  const [bottleTheme, setBottleTheme] = useState('classic');
+
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
+    
+    // Load settings
+    const saved = localStorage.getItem('gameSettings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      setBackground(settings.background || 'galaxy');
+      setBottleTheme(settings.theme || 'classic');
+    }
   }, []);
 
   useEffect(() => {
@@ -106,28 +119,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const checkBottleFull = (bottle: string[]): boolean => {
     if (bottle.length !== 4) return false;
     return bottle.every(color => color === bottle[0]);
-  };
-
-  const triggerFireworks = (bottleIdx: number, color: string) => {
-    const pos = getBottlePosition(bottleIdx);
-    const screenX = pos.x + 30;
-    const screenY = pos.y + 80;
-    
-    const COLOR_MAP: { [key: string]: string } = {
-      red: '#FF3B3B', blue: '#3B82F6', green: '#10B981', purple: '#A855F7',
-      yellow: '#FBBF24', orange: '#F97316', cyan: '#06B6D4', pink: '#EC4899',
-      lime: '#84CC16', magenta: '#D946EF', teal: '#14B8A6', coral: '#FB7185'
-    };
-    
-    const fw: FireworkData = {
-      id: Date.now(),
-      x: screenX,
-      y: screenY,
-      color: COLOR_MAP[color] || '#FFD700'
-    };
-    
-    setFireworks(prev => [...prev, fw]);
-    setTimeout(() => setFireworks(prev => prev.filter(f => f.id !== fw.id)), 2000);
   };
 
   const triggerParticleExplosion = (bottleIdx: number, color: string) => {
@@ -251,7 +242,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       return;
     }
 
-    // Create animation
     setIsAnimating(true);
     const fromPos = getBottlePosition(selectedBottle);
     const toPos = getBottlePosition(bottleIdx);
@@ -265,9 +255,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     
     setPourAnimations(prev => [...prev, pourAnim]);
 
-    // Execute move after animation
     setTimeout(() => {
-      const newBottles = [... bottles];
+      const newBottles = [...bottles];
       for (let i = 0; i < pourCount; i++) {
         newBottles[bottleIdx].push(newBottles[selectedBottle].pop()!);
       }
@@ -400,121 +389,134 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const completedLevels = progressManager.getCompletedCount();
 
   return (
-    <div style={{
-      minHeight: "100vh", width: "100vw", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", userSelect: "none", overflow: "hidden"
-    }}>
-      {fireworks.map(fw => <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />)}
-      {pourAnimations.map(anim => (
-        <LiquidPourAnimation
-          key={anim.id}
-          fromPos={anim.fromPos}
-          toPos={anim.toPos}
-          color={anim.color}
-          onComplete={() => {}}
-        />
-      ))}
-      {particleEffects.map(effect => (
-        <ParticleExplosion
-          key={effect.id}
-          x={effect.x}
-          y={effect.y}
-          color={effect.color}
-          onComplete={() => {}}
-        />
-      ))}
-      {comboEffects.map(combo => (
-        <ComboText
-          key={combo.id}
-          text={combo.text}
-          x={combo.x}
-          y={combo.y}
-          onComplete={() => {}}
-        />
-      ))}
+    <>
+      {/* ANIMATED BACKGROUND */}
+      <AnimatedBackground theme={background} />
 
-      {showVictory && (
-        <div style={{
-          position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-          background: "rgba(0,0,0,0.95)", padding: isMobile ? "30px" : "50px", borderRadius: "25px",
-          zIndex: 10000, textAlign: "center", color: "white", boxShadow: "0 0 60px rgba(255,215,0,0.6)",
-          minWidth: isMobile ? "90%" : "400px"
-        }}>
-          <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>🎉</div>
-          <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#FFD700" }}>LEVEL COMPLETE!</h1>
-          <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
-          <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>Completed in {moves} moves!</p>
-          <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>🏆 Total completed: {completedLevels}/120</p>
-          
-          <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={loadNextLevel} style={{
-              padding: isMobile ? "14px 30px" : "18px 45px", background: "linear-gradient(135deg, #11998e, #38ef7d)",
-              border: "none", borderRadius: "15px", color: "white", fontSize: isMobile ? "1rem" : "1.3rem",
-              fontWeight: "bold", cursor: "pointer", boxShadow: "0 6px 25px rgba(17, 153, 142, 0.4)", transition: "all 0.3s"
-            }}>➡️ NEXT LEVEL</button>
+      <div style={{
+        minHeight: "100vh", width: "100vw",
+        position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", userSelect: "none", overflow: "hidden"
+      }}>
+        {fireworks.map(fw => <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />)}
+        {pourAnimations.map(anim => (
+          <LiquidPourAnimation
+            key={anim.id}
+            fromPos={anim.fromPos}
+            toPos={anim.toPos}
+            color={anim.color}
+            onComplete={() => {}}
+          />
+        ))}
+        {particleEffects.map(effect => (
+          <ParticleExplosion
+            key={effect.id}
+            x={effect.x}
+            y={effect.y}
+            color={effect.color}
+            onComplete={() => {}}
+          />
+        ))}
+        {comboEffects.map(combo => (
+          <ComboText
+            key={combo.id}
+            text={combo.text}
+            x={combo.x}
+            y={combo.y}
+            onComplete={() => {}}
+          />
+        ))}
+
+        {showVictory && (
+          <div style={{
+            position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+            background: "rgba(0,0,0,0.95)", padding: isMobile ? "30px" : "50px", borderRadius: "25px",
+            zIndex: 10000, textAlign: "center", color: "white", boxShadow: "0 0 60px rgba(255,215,0,0.6)",
+            minWidth: isMobile ? "90%" : "400px"
+          }}>
+            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>🎉</div>
+            <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#FFD700" }}>LEVEL COMPLETE!</h1>
+            <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
+            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>Completed in {moves} moves!</p>
+            <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>🏆 Total completed: {completedLevels}/120</p>
             
-            <button onClick={onExit} style={{
-              padding: isMobile ? "14px 30px" : "18px 45px", background: "rgba(255,255,255,0.15)",
-              border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
-              fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer", transition: "all 0.3s"
-            }}>🏠 EXIT</button>
+            <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <button onClick={loadNextLevel} style={{
+                padding: isMobile ? "14px 30px" : "18px 45px", background: "linear-gradient(135deg, #11998e, #38ef7d)",
+                border: "none", borderRadius: "15px", color: "white", fontSize: isMobile ? "1rem" : "1.3rem",
+                fontWeight: "bold", cursor: "pointer", boxShadow: "0 6px 25px rgba(17, 153, 142, 0.4)", transition: "all 0.3s"
+              }}>➡️ NEXT LEVEL</button>
+              
+              <button onClick={onExit} style={{
+                padding: isMobile ? "14px 30px" : "18px 45px", background: "rgba(255,255,255,0.15)",
+                border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
+                fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer", transition: "all 0.3s"
+              }}>🏠 EXIT</button>
+            </div>
+          </div>
+        )}
+
+        <div style={{
+          padding: isMobile ? "8px" : "12px", background: "rgba(0,0,0,0.3)", display: "flex",
+          justifyContent: "space-between", alignItems: "center", gap: "8px", flexShrink: 0
+        }}>
+          <button onClick={onExit} style={{
+            padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,0,0,0.7)", border: "none",
+            borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+          }}>← EXIT</button>
+
+          <div style={{
+            background: "rgba(255,255,255,0.2)", padding: isMobile ? "4px 10px" : "6px 15px", borderRadius: "10px",
+            color: "white", fontSize: isMobile ? "0.7rem" : "0.85rem", fontWeight: "bold"
+          }}>Level {currentLevel}/120 • Moves: {moves}</div>
+
+          <button onClick={restartLevel} style={{
+            padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,165,0,0.7)", border: "none",
+            borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+          }}>🔄 RESTART</button>
+        </div>
+
+        <div style={{
+          padding: isMobile ? "4px 8px" : "6px 12px", background: "rgba(0,0,0,0.2)", textAlign: "center",
+          color: "white", fontSize: isMobile ? "0.7rem" : "0.8rem", flexShrink: 0
+        }}>🏆 Progress: {completedLevels}/120 levels completed</div>
+
+        <div style={{ 
+          flex: 1, overflowY: "auto", overflowX: "hidden", position: "relative", paddingBottom: "20px",
+          display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: isMobile ? "10px" : "20px", 
+          WebkitOverflowScrolling: "touch"
+        }}>
+          <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
+            {bottles.map((colors, idx) => {
+              const isSelected = selectedBottle === idx;
+              const isFull = checkBottleFull(colors);
+              const basePos = getBottlePosition(idx);
+
+              return (
+                <div key={idx} onClick={() => handleBottleClick(idx)} style={{
+                  position: "absolute", left: basePos.x, top: basePos.y,
+                  transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
+                  transformOrigin: "center center", cursor: showVictory || isAnimating ? "not-allowed" : "pointer",
+                  zIndex: isSelected ? 1000 : 1, transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+                  filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : isFull ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
+                  opacity: showVictory || isAnimating ? 0.7 : 1
+                }}>
+                  <ThemedBottle 
+                    colors={colors} 
+                    position={{ x: 0, y: 0 }} 
+                    onSelect={() => {}} 
+                    isSelected={isSelected} 
+                    isEmpty={colors.length === 0} 
+                    isFull={isFull}
+                    theme={bottleTheme}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
 
-      <div style={{
-        padding: isMobile ? "8px" : "12px", background: "rgba(0,0,0,0.3)", display: "flex",
-        justifyContent: "space-between", alignItems: "center", gap: "8px", flexShrink: 0
-      }}>
-        <button onClick={onExit} style={{
-          padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,0,0,0.7)", border: "none",
-          borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
-        }}>← EXIT</button>
-
-        <div style={{
-          background: "rgba(255,255,255,0.2)", padding: isMobile ? "4px 10px" : "6px 15px", borderRadius: "10px",
-          color: "white", fontSize: isMobile ? "0.7rem" : "0.85rem", fontWeight: "bold"
-        }}>Level {currentLevel}/120 • Moves: {moves}</div>
-
-        <button onClick={restartLevel} style={{
-          padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,165,0,0.7)", border: "none",
-          borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
-        }}>🔄 RESTART</button>
+        <style>{`@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }`}</style>
       </div>
-
-      <div style={{
-        padding: isMobile ? "4px 8px" : "6px 12px", background: "rgba(0,0,0,0.2)", textAlign: "center",
-        color: "white", fontSize: isMobile ? "0.7rem" : "0.8rem", flexShrink: 0
-      }}>🏆 Progress: {completedLevels}/120 levels completed</div>
-
-      <div style={{ 
-        flex: 1, overflowY: "auto", overflowX: "hidden", position: "relative", paddingBottom: "20px",
-        display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: isMobile ? "10px" : "20px", 
-        WebkitOverflowScrolling: "touch"
-      }}>
-        <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
-          {bottles.map((colors, idx) => {
-            const isSelected = selectedBottle === idx;
-            const isFull = checkBottleFull(colors);
-            const basePos = getBottlePosition(idx);
-
-            return (
-              <div key={idx} onClick={() => handleBottleClick(idx)} style={{
-                position: "absolute", left: basePos.x, top: basePos.y,
-                transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
-                transformOrigin: "center center", cursor: showVictory || isAnimating ? "not-allowed" : "pointer",
-                zIndex: isSelected ? 1000 : 1, transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-                filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : isFull ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
-                opacity: showVictory || isAnimating ? 0.7 : 1
-              }}>
-                <RealisticBottle colors={colors} position={{ x: 0, y: 0 }} onSelect={() => {}} isSelected={isSelected} isEmpty={colors.length === 0} isFull={isFull} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <style>{`@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }`}</style>
-    </div>
+    </>
   );
 }
