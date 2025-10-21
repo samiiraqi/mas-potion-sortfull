@@ -272,3 +272,18 @@ export default function Home({ onStartSinglePlayer, onStartMultiplayer }: HomePr
     </>
   );
 }
+
+        {/* Footer links */}
+        <div style={{
+          position: 'absolute',
+          bottom: '20px',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '20px',
+          fontSize: '0.9rem'
+        }}>
+          <a href="/about" style={{ color: 'white', opacity: 0.8, textDecoration: 'none' }}>About</a>
+          <span style={{ color: 'white', opacity: 0.5 }}>|</span>
+          <a href="/privacy" style={{ color: 'white', opacity: 0.8, textDecoration: 'none' }}>Privacy</a>
+        </div>
