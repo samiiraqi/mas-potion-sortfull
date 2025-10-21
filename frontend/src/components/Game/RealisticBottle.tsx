@@ -20,6 +20,13 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
   const bottleWidth = 60;
   const bottleHeight = 120;
   const colorHeight = bottleHeight / 4;
+  
+  // Bottle interior boundaries (slightly inside the glass)
+  const liquidLeft = bottleWidth * 0.18;
+  const liquidRight = bottleWidth * 0.82;
+  const liquidWidth = liquidRight - liquidLeft;
+  const liquidBottom = bottleHeight + 6; // Slightly above bottle bottom
+  const liquidTop = 32; // Below the neck
 
   // Enhanced color mapping with gradients
   const colorMap: { [key: string]: { base: string; light: string; dark: string } } = {
@@ -90,6 +97,19 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
             <stop offset="50%" style={{ stopColor: 'rgba(255,255,255,0.6)', stopOpacity: 1 }} />
             <stop offset="100%" style={{ stopColor: 'rgba(255,255,255,0)', stopOpacity: 0 }} />
           </linearGradient>
+
+          {/* Clipping path to keep liquid inside bottle */}
+          <clipPath id="bottleClip">
+            <path
+              d={`M ${bottleWidth * 0.17} ${liquidTop}
+                  L ${bottleWidth * 0.17} ${liquidBottom - 8}
+                  C ${bottleWidth * 0.17} ${liquidBottom - 3}, ${bottleWidth * 0.2} ${liquidBottom}, ${bottleWidth * 0.3} ${liquidBottom}
+                  L ${bottleWidth * 0.7} ${liquidBottom}
+                  C ${bottleWidth * 0.8} ${liquidBottom}, ${bottleWidth * 0.83} ${liquidBottom - 3}, ${bottleWidth * 0.83} ${liquidBottom - 8}
+                  L ${bottleWidth * 0.83} ${liquidTop}
+                  Z`}
+            />
+          </clipPath>
         </defs>
 
         {/* Bottle body outline */}
@@ -123,62 +143,83 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
           opacity={0.9}
         />
 
-        {/* Liquid layers with enhanced gradients */}
-        {colors.map((color, index) => {
-          const y = bottleHeight + 8 - (index + 1) * colorHeight;
-          const shades = getColorShades(color);
-          
-          return (
-            <g key={`layer-${index}`}>
-              {/* Main liquid layer with gradient */}
-              <rect
-                x={bottleWidth * 0.18}
-                y={y}
-                width={bottleWidth * 0.64}
-                height={colorHeight}
-                fill={`url(#gradient-${color}-${index})`}
-                opacity={0.95}
-              />
+        {/* Liquid layers - clipped to bottle interior */}
+        <g clipPath="url(#bottleClip)">
+          {colors.map((color, index) => {
+            const y = liquidBottom - (index + 1) * colorHeight;
+            const shades = getColorShades(color);
+            
+            return (
+              <g key={`layer-${index}`}>
+                {/* Main liquid layer with gradient */}
+                <rect
+                  x={liquidLeft}
+                  y={y}
+                  width={liquidWidth}
+                  height={colorHeight}
+                  fill={`url(#gradient-${color}-${index})`}
+                  opacity={0.95}
+                />
 
-              {/* Subtle bubbles inside liquid */}
-              {[...Array(2)].map((_, bubbleIdx) => (
-                <circle
-                  key={`bubble-${index}-${bubbleIdx}`}
-                  cx={bottleWidth * (0.3 + Math.random() * 0.4)}
-                  cy={y + colorHeight * (0.3 + Math.random() * 0.4)}
-                  r={1.5 + Math.random() * 1}
-                  fill="rgba(255,255,255,0.4)"
+                {/* Subtle bubbles inside liquid */}
+                {[...Array(2)].map((_, bubbleIdx) => (
+                  <circle
+                    key={`bubble-${index}-${bubbleIdx}`}
+                    cx={liquidLeft + liquidWidth * (0.2 + Math.random() * 0.6)}
+                    cy={y + colorHeight * (0.3 + Math.random() * 0.4)}
+                    r={1.5 + Math.random() * 1}
+                    fill="rgba(255,255,255,0.4)"
+                    opacity={0.6}
+                  >
+                    <animate
+                      attributeName="cy"
+                      values={`${y + colorHeight * 0.8};${y + colorHeight * 0.2};${y + colorHeight * 0.8}`}
+                      dur={`${3 + Math.random() * 2}s`}
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="0.6;0.9;0.6"
+                      dur={`${2 + Math.random()}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                ))}
+
+                {/* Light reflection on top of liquid */}
+                <ellipse
+                  cx={liquidLeft + liquidWidth * 0.3}
+                  cy={y + 5}
+                  rx={8}
+                  ry={3}
+                  fill="rgba(255,255,255,0.3)"
                   opacity={0.6}
-                >
-                  <animate
-                    attributeName="cy"
-                    values={`${y + colorHeight * 0.8};${y + colorHeight * 0.2};${y + colorHeight * 0.8}`}
-                    dur={`${3 + Math.random() * 2}s`}
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0.6;0.9;0.6"
-                    dur={`${2 + Math.random()}s`}
-                    repeatCount="indefinite"
-                  />
-                </circle>
-              ))}
+                />
+              </g>
+            );
+          })}
 
-              {/* Light reflection on top of liquid */}
-              <ellipse
-                cx={bottleWidth * 0.35}
-                cy={y + 5}
-                rx={8}
-                ry={3}
-                fill="rgba(255,255,255,0.3)"
-                opacity={0.6}
+          {/* Shimmer effect for completed bottles */}
+          {isFull && (
+            <rect
+              x={liquidLeft}
+              y={liquidTop}
+              width={liquidWidth}
+              height={liquidBottom - liquidTop}
+              fill="url(#shimmer)"
+              opacity={0.5}
+            >
+              <animate
+                attributeName="x"
+                values={`${liquidLeft - liquidWidth};${liquidLeft + liquidWidth * 2}`}
+                dur="2s"
+                repeatCount="indefinite"
               />
-            </g>
-          );
-        })}
+            </rect>
+          )}
+        </g>
 
-        {/* Glass shine effect */}
+        {/* Glass shine effect - OUTSIDE the clip */}
         <rect
           x={bottleWidth * 0.2}
           y={25}
@@ -188,30 +229,11 @@ const RealisticBottle: React.FC<RealisticBottleProps> = ({
           opacity={0.4}
         />
 
-        {/* Shimmer effect for completed bottles */}
-        {isFull && (
-          <rect
-            x={bottleWidth * 0.15}
-            y={30}
-            width={bottleWidth * 0.7}
-            height={bottleHeight - 22}
-            fill="url(#shimmer)"
-            opacity={0.5}
-          >
-            <animate
-              attributeName="x"
-              values={`${bottleWidth * -0.5};${bottleWidth * 1.5}`}
-              dur="2s"
-              repeatCount="indefinite"
-            />
-          </rect>
-        )}
-
         {/* Sparkle particles for completed bottles */}
         {isFull && [...Array(3)].map((_, i) => (
           <circle
             key={`sparkle-${i}`}
-            cx={bottleWidth * (0.3 + Math.random() * 0.4)}
+            cx={liquidLeft + liquidWidth * (0.3 + Math.random() * 0.4)}
             cy={40 + Math.random() * 60}
             r={2}
             fill="white"
