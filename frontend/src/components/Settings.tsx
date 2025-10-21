@@ -43,27 +43,30 @@ export default function Settings({ onClose }: SettingsProps) {
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
     
-    // Show confirmation
-    alert(`Settings saved!\n\n🎨 Background: ${selectedBackground}\n🍾 Theme: ${selectedTheme}\n🔊 Sound: ${soundEnabled ? 'ON' : 'OFF'}\n\nPage will reload to apply changes.`);
+    // Show what was saved
+    const bgName = backgrounds.find(b => b.id === selectedBackground)?.name || selectedBackground;
+    const themeName = themes.find(t => t.id === selectedTheme)?.name || selectedTheme;
+    
+    alert(`✅ Settings Saved!\n\n🎨 Background: ${bgName}\n🍾 Theme: ${themeName}\n🔊 Sound: ${soundEnabled ? 'ON' : 'OFF'}\n\nReloading to apply changes...`);
     
     window.location.reload();
   };
 
   const backgrounds = [
     { id: 'galaxy', name: '🌌 Galaxy Space', unlock: 1 },
-    { id: 'sunset', name: '🌅 Sunset Beach', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'cherry', name: '🌸 Cherry Blossom', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'ocean', name: '🌊 Ocean Deep', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'mountain', name: '⛰️ Mountain View', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'night', name: '🌙 Night City', unlock: 1 } // UNLOCKED FOR TESTING
+    { id: 'sunset', name: '🌅 Sunset Beach', unlock: 20 },
+    { id: 'cherry', name: '🌸 Cherry Blossom', unlock: 40 },
+    { id: 'ocean', name: '🌊 Ocean Deep', unlock: 60 },
+    { id: 'mountain', name: '⛰️ Mountain View', unlock: 80 },
+    { id: 'night', name: '🌙 Night City', unlock: 100 }
   ];
 
   const themes = [
     { id: 'classic', name: '🍾 Classic Bottle', unlock: 1 },
-    { id: 'lab', name: '🧪 Laboratory', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'coffee', name: '☕ Coffee Shop', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'juice', name: '🧃 Juice Bottle', unlock: 1 }, // UNLOCKED FOR TESTING
-    { id: 'potion', name: '🧙 Magic Potion', unlock: 1 } // UNLOCKED FOR TESTING
+    { id: 'lab', name: '🧪 Laboratory', unlock: 20 },
+    { id: 'coffee', name: '☕ Coffee Shop', unlock: 40 },
+    { id: 'juice', name: '🧃 Juice Bottle', unlock: 60 },
+    { id: 'potion', name: '🧙 Magic Potion', unlock: 80 }
   ];
 
   return (
@@ -91,7 +94,7 @@ export default function Settings({ onClose }: SettingsProps) {
       }}>
         <h2 style={{ margin: '0 0 10px 0', fontSize: '2rem', textAlign: 'center' }}>⚙️ Settings</h2>
         <p style={{ margin: '0 0 20px 0', textAlign: 'center', fontSize: '0.9rem', opacity: 0.8 }}>
-          🎮 Level {unlockedLevels} / 120 • All unlocked for testing!
+          🎮 Your Progress: Level {unlockedLevels} / 120
         </p>
 
         {/* Backgrounds */}
@@ -220,6 +223,15 @@ export default function Settings({ onClose }: SettingsProps) {
           >
             ❌ Cancel
           </button>
+        </div>
+
+        {/* Unlock Info */}
+        <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
+          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#FFD700' }}>🎁 Unlock New Content!</p>
+          <p style={{ margin: 0, opacity: 0.9 }}>
+            Keep playing to unlock amazing backgrounds and bottle themes!<br/>
+            🔓 Next unlock at Level {Math.min(...[20, 40, 60, 80, 100].filter(l => l > unlockedLevels))}
+          </p>
         </div>
       </div>
     </div>
