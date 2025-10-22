@@ -25,9 +25,13 @@ export default function Privacy() {
         <h2 style={{ fontSize: '1.8rem', marginTop: '30px', marginBottom: '15px' }}>2. Local Storage</h2>
         <p style={{ lineHeight: '1.8', opacity: 0.9 }}>
           We use localStorage to save:
-          - Your current level progress
-          - Your selected theme and background preferences
-          - Your game settings (sound on/off)
+        </p>
+        <ul style={{ lineHeight: '1.8', opacity: 0.9, marginLeft: '20px' }}>
+          <li>Your current level progress</li>
+          <li>Your selected theme and background preferences</li>
+          <li>Your game settings (sound on/off)</li>
+        </ul>
+        <p style={{ lineHeight: '1.8', opacity: 0.9, marginTop: '10px' }}>
           All data stays on your device and is never transmitted.
         </p>
 
@@ -49,11 +53,24 @@ export default function Privacy() {
 
         <h2 style={{ fontSize: '1.8rem', marginTop: '30px', marginBottom: '15px' }}>6. Contact</h2>
         <p style={{ lineHeight: '1.8', opacity: 0.9 }}>
-          For any privacy concerns, please contact us at: privacy@bottlefomas.com
+          For any privacy concerns, please contact us on Instagram:<br/>
+          <a 
+            href="https://instagram.com/_sami_mas" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              color: '#E1306C', 
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '1.1rem'
+            }}
+          >
+            @_sami_mas
+          </a>
         </p>
 
         <button
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = '/'}
           style={{
             marginTop: '40px',
             padding: '15px 30px',

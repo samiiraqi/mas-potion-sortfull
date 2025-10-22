@@ -30,11 +30,31 @@ export default function QRCodePage() {
           <img src={qrCodeURL} alt="QR Code" style={{ width: '100%', maxWidth: '300px' }} />
         </div>
 
-        <p style={{ fontSize: '1.2rem', marginBottom: '15px' }}>
-          🍾 Bottle For Mas
+        {/* Lab flask icon */}
+        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
+          🧪
+        </div>
+
+        <p style={{ fontSize: '1.5rem', marginBottom: '15px', fontWeight: 'bold' }}>
+          Bottle For Mas
         </p>
-        <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '30px', wordBreak: 'break-all' }}>
+        <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '20px', wordBreak: 'break-all' }}>
           {gameURL}
+        </p>
+
+        <p style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '30px' }}>
+          Follow on Instagram: <a 
+            href="https://instagram.com/_sami_mas" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              color: '#E1306C', 
+              textDecoration: 'none',
+              fontWeight: 'bold'
+            }}
+          >
+            @_sami_mas
+          </a>
         </p>
 
         <button
@@ -62,7 +82,7 @@ export default function QRCodePage() {
         <br/>
 
         <button
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = '/'}
           style={{
             padding: '12px 25px',
             background: 'rgba(255,255,255,0.2)',

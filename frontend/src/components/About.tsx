@@ -14,7 +14,12 @@ export default function About() {
         borderRadius: '20px',
         textAlign: 'center'
       }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>🍾 Bottle For Mas</h1>
+        {/* Lab flask icon instead of wine bottle */}
+        <div style={{ fontSize: '5rem', marginBottom: '20px' }}>
+          🧪
+        </div>
+        
+        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Bottle For Mas</h1>
         <p style={{ fontSize: '1.3rem', marginBottom: '30px', opacity: 0.9 }}>
           A beautiful, relaxing color sorting puzzle game
         </p>
@@ -45,15 +50,26 @@ export default function About() {
             through beautiful puzzle gameplay. Made with ❤️ using React and TypeScript.
           </p>
 
-          <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>📧 Contact</h2>
+          <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>📱 Follow Me</h2>
           <p style={{ lineHeight: '1.8', fontSize: '1.1rem', opacity: 0.9 }}>
-            Email: contact@bottlefomas.com<br/>
-            Support: support@bottlefomas.com
+            Instagram: <a 
+              href="https://instagram.com/_sami_mas" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ 
+                color: '#E1306C', 
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                fontSize: '1.2rem'
+              }}
+            >
+              @_sami_mas
+            </a>
           </p>
         </div>
 
         <button
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = '/'}
           style={{
             marginTop: '40px',
             padding: '15px 30px',
