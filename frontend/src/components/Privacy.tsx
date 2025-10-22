@@ -70,7 +70,7 @@ export default function Privacy() {
         </p>
 
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.history.back()}
           style={{
             marginTop: '40px',
             padding: '15px 30px',
@@ -83,7 +83,7 @@ export default function Privacy() {
             cursor: 'pointer'
           }}
         >
-          ← Back to Game
+          ← Back
         </button>
       </div>
     </div>

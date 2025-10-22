@@ -14,7 +14,7 @@ export default function About() {
         borderRadius: '20px',
         textAlign: 'center'
       }}>
-        {/* Lab flask icon instead of wine bottle */}
+        {/* Lab flask icon */}
         <div style={{ fontSize: '5rem', marginBottom: '20px' }}>
           🧪
         </div>
@@ -69,7 +69,7 @@ export default function About() {
         </div>
 
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.history.back()}
           style={{
             marginTop: '40px',
             padding: '15px 30px',
@@ -82,7 +82,7 @@ export default function About() {
             cursor: 'pointer'
           }}
         >
-          ← Back to Game
+          ← Back
         </button>
       </div>
     </div>

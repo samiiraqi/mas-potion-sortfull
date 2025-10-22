@@ -82,7 +82,7 @@ export default function QRCodePage() {
         <br/>
 
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.history.back()}
           style={{
             padding: '12px 25px',
             background: 'rgba(255,255,255,0.2)',
