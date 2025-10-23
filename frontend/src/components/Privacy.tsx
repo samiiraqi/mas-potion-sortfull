@@ -14,11 +14,11 @@ export default function Privacy() {
         borderRadius: '20px'
       }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Privacy Policy</h1>
-        <p style={{ marginBottom: '20px', opacity: 0.9 }}>Last updated: October 21, 2025</p>
+        <p style={{ marginBottom: '20px', opacity: 0.9 }}>Last updated: October 23, 2025</p>
         
         <h2 style={{ fontSize: '1.8rem', marginTop: '30px', marginBottom: '15px' }}>1. Information We Collect</h2>
         <p style={{ lineHeight: '1.8', opacity: 0.9 }}>
-          Bottle For Mas stores your game progress locally on your device using browser storage. 
+          Potion Sort stores your game progress locally on your device using browser storage. 
           We do not collect, transmit, or store any personal information on our servers.
         </p>
 

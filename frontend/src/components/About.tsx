@@ -14,14 +14,14 @@ export default function About() {
         borderRadius: '20px',
         textAlign: 'center'
       }}>
-        {/* Lab flask icon */}
+        {/* Alchemist flask icon */}
         <div style={{ fontSize: '5rem', marginBottom: '20px' }}>
-          🧪
+          ⚗️
         </div>
         
-        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Bottle For Mas</h1>
+        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Potion Sort</h1>
         <p style={{ fontSize: '1.3rem', marginBottom: '30px', opacity: 0.9 }}>
-          A beautiful, relaxing color sorting puzzle game
+          A magical color sorting puzzle game
         </p>
 
         <div style={{ textAlign: 'left', marginTop: '40px' }}>
@@ -29,7 +29,7 @@ export default function About() {
           <ul style={{ lineHeight: '2', fontSize: '1.1rem', opacity: 0.9 }}>
             <li>🎮 120 challenging levels</li>
             <li>🎨 6 beautiful animated backgrounds</li>
-            <li>🍾 5 unique bottle themes</li>
+            <li>⚗️ 5 unique flask themes</li>
             <li>💥 Satisfying particle effects</li>
             <li>🌊 Realistic liquid physics</li>
             <li>🏆 Progress tracking</li>
@@ -38,16 +38,16 @@ export default function About() {
 
           <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>🎯 How to Play</h2>
           <ol style={{ lineHeight: '2', fontSize: '1.1rem', opacity: 0.9 }}>
-            <li>Tap a bottle to select it</li>
-            <li>Tap another bottle to pour</li>
-            <li>Sort colors until each bottle has one color</li>
-            <li>Complete all bottles to win!</li>
+            <li>Tap a flask to select it</li>
+            <li>Tap another flask to pour</li>
+            <li>Sort potions until each flask has one color</li>
+            <li>Complete all flasks to win!</li>
           </ol>
 
           <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>👨‍💻 About</h2>
           <p style={{ lineHeight: '1.8', fontSize: '1.1rem', opacity: 0.9 }}>
-            Bottle For Mas is a passion project created to bring joy and relaxation 
-            through beautiful puzzle gameplay. Made with ❤️ using React and TypeScript.
+            Potion Sort is a magical puzzle game where you help the alchemist organize mystical elixirs. 
+            Made with ❤️ using React and TypeScript.
           </p>
 
           <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>📱 Follow Me</h2>

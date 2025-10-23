@@ -30,13 +30,13 @@ export default function QRCodePage() {
           <img src={qrCodeURL} alt="QR Code" style={{ width: '100%', maxWidth: '300px' }} />
         </div>
 
-        {/* Lab flask icon */}
+        {/* Alchemist flask icon */}
         <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
-          🧪
+          ⚗️
         </div>
 
         <p style={{ fontSize: '1.5rem', marginBottom: '15px', fontWeight: 'bold' }}>
-          Bottle For Mas
+          Potion Sort
         </p>
         <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '20px', wordBreak: 'break-all' }}>
           {gameURL}
@@ -61,7 +61,7 @@ export default function QRCodePage() {
           onClick={() => {
             const link = document.createElement('a');
             link.href = qrCodeURL;
-            link.download = 'bottle-for-mas-qr-code.png';
+            link.download = 'potion-sort-qr-code.png';
             link.click();
           }}
           style={{
