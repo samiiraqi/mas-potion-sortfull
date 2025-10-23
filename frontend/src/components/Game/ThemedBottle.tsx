@@ -1,4 +1,3 @@
-import ElementalEffects from './ElementalEffects';
 import FlaskFace from './FlaskFace';
 
 interface ThemedBottleProps {
@@ -65,26 +64,7 @@ export default function ThemedBottle({
         userSelect: 'none'
       }}
     >
-      {/* Elemental effects for each liquid layer */}
-      {filledColors.map((color, idx) => {
-        if (color === 'transparent') return null;
-        
-        const yStart = BOTTLE_HEIGHT * 0.95 - (idx + 1) * LIQUID_SECTION_HEIGHT;
-        
-        return (
-          <ElementalEffects
-            key={`effect-${idx}`}
-            color={color}
-            x={BOTTLE_WIDTH * 0.15}
-            y={yStart}
-            width={BOTTLE_WIDTH * 0.7}
-            height={LIQUID_SECTION_HEIGHT}
-            intensity={isFull ? 1.5 : 1}
-          />
-        );
-      })}
-
-      {/* Flask Face */}
+      {/* Flask Face - KEEP THIS! */}
       <FlaskFace
         x={position.x}
         y={position.y}
