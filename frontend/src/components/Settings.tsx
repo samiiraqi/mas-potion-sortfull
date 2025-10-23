@@ -9,6 +9,7 @@ export default function Settings({ onClose }: SettingsProps) {
   const [selectedTheme, setSelectedTheme] = useState('classic');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [unlockedLevels, setUnlockedLevels] = useState(1);
+  const [colorMode, setColorMode] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     const saved = localStorage.getItem('gameSettings');
@@ -18,6 +19,7 @@ export default function Settings({ onClose }: SettingsProps) {
         setSelectedBackground(settings.background || 'galaxy');
         setSelectedTheme(settings.theme || 'classic');
         setSoundEnabled(settings.sound !== false);
+        setColorMode(settings.colorMode || 'dark');
       } catch (e) {
         console.error('Error loading settings:', e);
       }
@@ -39,16 +41,10 @@ export default function Settings({ onClose }: SettingsProps) {
     const settings = {
       background: selectedBackground,
       theme: selectedTheme,
-      sound: soundEnabled
+      sound: soundEnabled,
+      colorMode: colorMode
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
-    
-    // Show what was saved
-    const bgName = backgrounds.find(b => b.id === selectedBackground)?.name || selectedBackground;
-    const themeName = themes.find(t => t.id === selectedTheme)?.name || selectedTheme;
-    
-    alert(`✅ Settings Saved!\n\n🎨 Background: ${bgName}\n🍾 Theme: ${themeName}\n🔊 Sound: ${soundEnabled ? 'ON' : 'OFF'}\n\nReloading to apply changes...`);
-    
     window.location.reload();
   };
 
@@ -69,6 +65,8 @@ export default function Settings({ onClose }: SettingsProps) {
     { id: 'potion', name: '🧙 Magic Potion', unlock: 80 }
   ];
 
+  const isDark = colorMode === 'dark';
+
   return (
     <div style={{
       position: 'fixed',
@@ -83,19 +81,70 @@ export default function Settings({ onClose }: SettingsProps) {
       zIndex: 10000
     }}>
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: isDark 
+          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          : 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
         padding: '30px',
         borderRadius: '20px',
         maxWidth: '500px',
         width: '90%',
         maxHeight: '90vh',
         overflowY: 'auto',
-        color: 'white'
+        color: isDark ? 'white' : '#333',
+        transition: 'all 0.5s ease'
       }}>
         <h2 style={{ margin: '0 0 10px 0', fontSize: '2rem', textAlign: 'center' }}>⚙️ Settings</h2>
         <p style={{ margin: '0 0 20px 0', textAlign: 'center', fontSize: '0.9rem', opacity: 0.8 }}>
-          🎮 Your Progress: Level {unlockedLevels} / 120
+          🎮 Level {unlockedLevels} / 120
         </p>
+
+        {/* COLOR MODE SELECTOR */}
+        <div style={{ marginBottom: '25px' }}>
+          <h3 style={{ fontSize: '1.3rem', marginBottom: '12px' }}>🎨 Color Mode</h3>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => setColorMode('dark')}
+              style={{
+                flex: 1,
+                padding: '15px',
+                background: colorMode === 'dark' 
+                  ? 'linear-gradient(135deg, #2c3e50, #34495e)'
+                  : 'rgba(255,255,255,0.3)',
+                border: colorMode === 'dark' ? '3px solid #34495e' : '2px solid rgba(255,255,255,0.2)',
+                borderRadius: '12px',
+                color: colorMode === 'dark' ? 'white' : '#333',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                fontWeight: colorMode === 'dark' ? 'bold' : 'normal',
+                transition: 'all 0.3s'
+              }}
+            >
+              🌙 Dark Mode
+              {colorMode === 'dark' && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
+            </button>
+
+            <button
+              onClick={() => setColorMode('light')}
+              style={{
+                flex: 1,
+                padding: '15px',
+                background: colorMode === 'light'
+                  ? 'linear-gradient(135deg, #fff5e6, #ffe4cc)'
+                  : 'rgba(255,255,255,0.3)',
+                border: colorMode === 'light' ? '3px solid #ffa500' : '2px solid rgba(255,255,255,0.2)',
+                borderRadius: '12px',
+                color: '#333',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                fontWeight: colorMode === 'light' ? 'bold' : 'normal',
+                transition: 'all 0.3s'
+              }}
+            >
+              ☀️ Light Mode
+              {colorMode === 'light' && <div style={{ fontSize: '0.8rem', marginTop: '5px', color: '#ffa500' }}>✓ Selected</div>}
+            </button>
+          </div>
+        </div>
 
         {/* Backgrounds */}
         <div style={{ marginBottom: '25px' }}>
@@ -111,21 +160,24 @@ export default function Settings({ onClose }: SettingsProps) {
                   onClick={() => !isLocked && setSelectedBackground(bg.id)}
                   style={{
                     padding: '12px',
-                    background: isSelected ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)',
-                    border: isSelected ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
+                    background: isSelected 
+                      ? (isDark ? 'rgba(255,215,0,0.4)' : 'rgba(255,165,0,0.3)')
+                      : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'),
+                    border: isSelected 
+                      ? (isDark ? '3px solid #FFD700' : '3px solid #FFA500') 
+                      : (isDark ? '2px solid rgba(255,255,255,0.2)' : '2px solid rgba(0,0,0,0.2)'),
                     borderRadius: '10px',
-                    color: isLocked ? 'rgba(255,255,255,0.4)' : 'white',
+                    color: isLocked ? (isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)') : (isDark ? 'white' : '#333'),
                     fontSize: '0.9rem',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
                     opacity: isLocked ? 0.5 : 1,
-                    fontWeight: isSelected ? 'bold' : 'normal',
-                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
+                    fontWeight: isSelected ? 'bold' : 'normal'
                   }}
                 >
                   {bg.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {bg.unlock}</div>}
-                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px', color: '#FFD700' }}>✓ SELECTED</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
                 </button>
               );
             })}
@@ -146,21 +198,24 @@ export default function Settings({ onClose }: SettingsProps) {
                   onClick={() => !isLocked && setSelectedTheme(th.id)}
                   style={{
                     padding: '12px',
-                    background: isSelected ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)',
-                    border: isSelected ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
+                    background: isSelected 
+                      ? (isDark ? 'rgba(255,215,0,0.4)' : 'rgba(255,165,0,0.3)')
+                      : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'),
+                    border: isSelected 
+                      ? (isDark ? '3px solid #FFD700' : '3px solid #FFA500')
+                      : (isDark ? '2px solid rgba(255,255,255,0.2)' : '2px solid rgba(0,0,0,0.2)'),
                     borderRadius: '10px',
-                    color: isLocked ? 'rgba(255,255,255,0.4)' : 'white',
+                    color: isLocked ? (isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)') : (isDark ? 'white' : '#333'),
                     fontSize: '0.9rem',
                     cursor: isLocked ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
                     opacity: isLocked ? 0.5 : 1,
-                    fontWeight: isSelected ? 'bold' : 'normal',
-                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
+                    fontWeight: isSelected ? 'bold' : 'normal'
                   }}
                 >
                   {th.name}
                   {isLocked && <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>🔒 Level {th.unlock}</div>}
-                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px', color: '#FFD700' }}>✓ SELECTED</div>}
+                  {isSelected && <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>✓ Selected</div>}
                 </button>
               );
             })}
@@ -174,10 +229,14 @@ export default function Settings({ onClose }: SettingsProps) {
             onClick={() => setSoundEnabled(!soundEnabled)}
             style={{
               padding: '12px 20px',
-              background: soundEnabled ? 'rgba(76,175,80,0.4)' : 'rgba(244,67,54,0.4)',
-              border: soundEnabled ? '3px solid #4CAF50' : '3px solid #F44336',
+              background: soundEnabled 
+                ? (isDark ? 'rgba(76,175,80,0.4)' : 'rgba(76,175,80,0.3)')
+                : (isDark ? 'rgba(244,67,54,0.4)' : 'rgba(244,67,54,0.3)'),
+              border: soundEnabled 
+                ? (isDark ? '3px solid #4CAF50' : '3px solid #66BB6A')
+                : (isDark ? '3px solid #F44336' : '3px solid #EF5350'),
               borderRadius: '10px',
-              color: 'white',
+              color: isDark ? 'white' : '#333',
               fontSize: '1rem',
               cursor: 'pointer',
               width: '100%',
@@ -195,14 +254,16 @@ export default function Settings({ onClose }: SettingsProps) {
             style={{
               flex: 1,
               padding: '15px',
-              background: 'linear-gradient(135deg, #11998e, #38ef7d)',
+              background: isDark
+                ? 'linear-gradient(135deg, #11998e, #38ef7d)'
+                : 'linear-gradient(135deg, #fa709a, #fee140)',
               border: 'none',
               borderRadius: '12px',
               color: 'white',
               fontSize: '1.1rem',
               fontWeight: 'bold',
               cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(17, 153, 142, 0.4)'
+              boxShadow: isDark ? '0 4px 15px rgba(17, 153, 142, 0.4)' : '0 4px 15px rgba(250, 112, 154, 0.4)'
             }}
           >
             ✅ Save & Apply
@@ -212,10 +273,10 @@ export default function Settings({ onClose }: SettingsProps) {
             style={{
               flex: 1,
               padding: '15px',
-              background: 'rgba(255,255,255,0.2)',
-              border: '2px solid rgba(255,255,255,0.3)',
+              background: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              border: isDark ? '2px solid rgba(255,255,255,0.3)' : '2px solid rgba(0,0,0,0.2)',
               borderRadius: '12px',
-              color: 'white',
+              color: isDark ? 'white' : '#333',
               fontSize: '1.1rem',
               fontWeight: 'bold',
               cursor: 'pointer'
@@ -223,15 +284,6 @@ export default function Settings({ onClose }: SettingsProps) {
           >
             ❌ Cancel
           </button>
-        </div>
-
-        {/* Unlock Info */}
-        <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#FFD700' }}>🎁 Unlock New Content!</p>
-          <p style={{ margin: 0, opacity: 0.9 }}>
-            Keep playing to unlock amazing backgrounds and bottle themes!<br/>
-            🔓 Next unlock at Level {Math.min(...[20, 40, 60, 80, 100].filter(l => l > unlockedLevels))}
-          </p>
         </div>
       </div>
     </div>
