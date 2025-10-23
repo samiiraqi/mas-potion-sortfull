@@ -6,7 +6,6 @@ import Fireworks from "./Fireworks";
 import LiquidPourAnimation from "./LiquidPourAnimation";
 import ParticleExplosion from "./ParticleExplosion";
 import ComboText from "./ComboText";
-import MagicParticles from "./MagicParticles";
 import ComboSystem from "./ComboSystem";
 import VictoryShare from "./VictoryShare";
 import { soundManager } from "../../utils/sounds";
@@ -401,13 +400,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     };
   };
 
-  const flaskPositions = bottles.map((_, idx) => getBottlePosition(idx));
   const completedLevels = progressManager.getCompletedCount();
 
   return (
     <>
       <AnimatedBackground theme={background} />
-      <MagicParticles flaskPositions={flaskPositions} />
+
+      {/* REMOVED: MagicParticles - no more floating sparkles! */}
 
       {showComboSystem && (
         <ComboSystem 
