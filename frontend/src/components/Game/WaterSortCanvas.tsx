@@ -6,6 +6,10 @@ import Fireworks from "./Fireworks";
 import LiquidPourAnimation from "./LiquidPourAnimation";
 import ParticleExplosion from "./ParticleExplosion";
 import ComboText from "./ComboText";
+import MagicParticles from "./MagicParticles";
+import ComboSystem from "./ComboSystem";
+import PerfectMoveTracker from "./PerfectMoveTracker";
+import VictoryShare from "./VictoryShare";
 import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
 
@@ -46,7 +50,6 @@ interface WaterSortCanvasProps {
 export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [currentLevel, setCurrentLevel] = useState(() => {
     const lastLevel = progressManager.getLastLevel();
-    console.log('🎮 Resuming from level:', lastLevel);
     return lastLevel;
   });
   
@@ -63,14 +66,22 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [recentCompletions, setRecentCompletions] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // NEW: Load settings from localStorage
+  // NEW: Combo system state
+  const [comboCount, setComboCount] = useState(0);
+  const [showComboSystem, setShowComboSystem] = useState(false);
+
+  // NEW: Perfect move tracking
+  const [optimalMoves] = useState(15); // This should come from level data
+
+  // NEW: Victory share
+  const [showVictoryShare, setShowVictoryShare] = useState(false);
+
   const [background, setBackground] = useState('galaxy');
   const [bottleTheme, setBottleTheme] = useState('classic');
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
     
-    // Load settings
     const saved = localStorage.getItem('gameSettings');
     if (saved) {
       const settings = JSON.parse(saved);
@@ -92,6 +103,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setShowVictory(false);
       setFireworks([]);
       setRecentCompletions([]);
+      setComboCount(0);
       soundManager.play("click");
     } catch (err) {
       console.error("Failed to load level:", err);
@@ -109,6 +121,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     progressManager.saveProgress(currentLevel, moves);
     setCurrentLevel(nextLevel);
     setShowVictory(false);
+    setShowVictoryShare(false);
   };
 
   const restartLevel = () => {
@@ -149,6 +162,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }, 3000);
     
     const recentCount = recent.filter(t => now - t < 3000).length;
+    
+    // Update combo count
+    setComboCount(recentCount);
+    setShowComboSystem(true);
     
     if (recentCount >= 3) {
       showComboText("TRIPLE COMBO! 🔥", bottleIdx);
@@ -278,6 +295,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       if (checkIfComplete(newBottles)) {
         setTimeout(() => {
           setShowVictory(true);
+          setShowVictoryShare(true);
           soundManager.play("success");
           progressManager.saveProgress(currentLevel, moves + 1);
           
@@ -386,12 +404,38 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     };
   };
 
+  // Get flask positions for magic particles
+  const flaskPositions = bottles.map((_, idx) => getBottlePosition(idx));
+
   const completedLevels = progressManager.getCompletedCount();
+  const isPerfect = moves <= optimalMoves;
 
   return (
     <>
-      {/* ANIMATED BACKGROUND */}
       <AnimatedBackground theme={background} />
+
+      {/* NEW: Magic particles floating around flasks */}
+      <MagicParticles flaskPositions={flaskPositions} />
+
+      {/* NEW: Combo system */}
+      {showComboSystem && (
+        <ComboSystem 
+          comboCount={comboCount} 
+          onComboEnd={() => {
+            setShowComboSystem(false);
+            setComboCount(0);
+          }} 
+        />
+      )}
+
+      {/* NEW: Perfect move tracker */}
+      {!showVictory && (
+        <PerfectMoveTracker 
+          currentMoves={moves} 
+          optimalMoves={optimalMoves} 
+          level={currentLevel}
+        />
+      )}
 
       <div style={{
         minHeight: "100vh", width: "100vw",
@@ -426,6 +470,17 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           />
         ))}
 
+        {/* NEW: Victory share popup */}
+        {showVictoryShare && !showVictory && (
+          <VictoryShare
+            level={currentLevel}
+            moves={moves}
+            isPerfect={isPerfect}
+            onShare={() => setShowVictoryShare(false)}
+            onClose={() => setShowVictoryShare(false)}
+          />
+        )}
+
         {showVictory && (
           <div style={{
             position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
@@ -433,11 +488,19 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             zIndex: 10000, textAlign: "center", color: "white", boxShadow: "0 0 60px rgba(255,215,0,0.6)",
             minWidth: isMobile ? "90%" : "400px"
           }}>
-            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>🎉</div>
-            <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#FFD700" }}>LEVEL COMPLETE!</h1>
+            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>
+              {isPerfect ? '⭐' : '🎉'}
+            </div>
+            <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: isPerfect ? "#FFD700" : "#4ECDC4" }}>
+              {isPerfect ? "PERFECT SCORE!" : "LEVEL COMPLETE!"}
+            </h1>
             <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
-            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>Completed in {moves} moves!</p>
-            <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>🏆 Total completed: {completedLevels}/120</p>
+            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>
+              Completed in {moves} moves! {isPerfect && '🏆'}
+            </p>
+            <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>
+              🏆 Total completed: {completedLevels}/120
+            </p>
             
             <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
               <button onClick={loadNextLevel} style={{
