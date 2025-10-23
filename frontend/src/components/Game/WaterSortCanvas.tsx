@@ -8,7 +8,6 @@ import ParticleExplosion from "./ParticleExplosion";
 import ComboText from "./ComboText";
 import MagicParticles from "./MagicParticles";
 import ComboSystem from "./ComboSystem";
-import PerfectMoveTracker from "./PerfectMoveTracker";
 import VictoryShare from "./VictoryShare";
 import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
@@ -66,14 +65,9 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [recentCompletions, setRecentCompletions] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // NEW: Combo system state
   const [comboCount, setComboCount] = useState(0);
   const [showComboSystem, setShowComboSystem] = useState(false);
 
-  // NEW: Perfect move tracking
-  const [optimalMoves] = useState(15); // This should come from level data
-
-  // NEW: Victory share
   const [showVictoryShare, setShowVictoryShare] = useState(false);
 
   const [background, setBackground] = useState('galaxy');
@@ -163,7 +157,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     
     const recentCount = recent.filter(t => now - t < 3000).length;
     
-    // Update combo count
     setComboCount(recentCount);
     setShowComboSystem(true);
     
@@ -404,20 +397,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     };
   };
 
-  // Get flask positions for magic particles
   const flaskPositions = bottles.map((_, idx) => getBottlePosition(idx));
-
   const completedLevels = progressManager.getCompletedCount();
-  const isPerfect = moves <= optimalMoves;
 
   return (
     <>
       <AnimatedBackground theme={background} />
-
-      {/* NEW: Magic particles floating around flasks */}
       <MagicParticles flaskPositions={flaskPositions} />
 
-      {/* NEW: Combo system */}
       {showComboSystem && (
         <ComboSystem 
           comboCount={comboCount} 
@@ -425,15 +412,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             setShowComboSystem(false);
             setComboCount(0);
           }} 
-        />
-      )}
-
-      {/* NEW: Perfect move tracker */}
-      {!showVictory && (
-        <PerfectMoveTracker 
-          currentMoves={moves} 
-          optimalMoves={optimalMoves} 
-          level={currentLevel}
         />
       )}
 
@@ -470,12 +448,11 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           />
         ))}
 
-        {/* NEW: Victory share popup */}
         {showVictoryShare && !showVictory && (
           <VictoryShare
             level={currentLevel}
             moves={moves}
-            isPerfect={isPerfect}
+            isPerfect={false}
             onShare={() => setShowVictoryShare(false)}
             onClose={() => setShowVictoryShare(false)}
           />
@@ -488,15 +465,11 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             zIndex: 10000, textAlign: "center", color: "white", boxShadow: "0 0 60px rgba(255,215,0,0.6)",
             minWidth: isMobile ? "90%" : "400px"
           }}>
-            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>
-              {isPerfect ? '⭐' : '🎉'}
-            </div>
-            <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: isPerfect ? "#FFD700" : "#4ECDC4" }}>
-              {isPerfect ? "PERFECT SCORE!" : "LEVEL COMPLETE!"}
-            </h1>
+            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>🎉</div>
+            <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#4ECDC4" }}>LEVEL COMPLETE!</h1>
             <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
             <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>
-              Completed in {moves} moves! {isPerfect && '🏆'}
+              Completed in {moves} moves!
             </p>
             <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>
               🏆 Total completed: {completedLevels}/120
@@ -519,33 +492,67 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         )}
 
         <div style={{
-          padding: isMobile ? "8px" : "12px", background: "rgba(0,0,0,0.3)", display: "flex",
-          justifyContent: "space-between", alignItems: "center", gap: "8px", flexShrink: 0
+          padding: isMobile ? "8px" : "12px", 
+          background: "rgba(0,0,0,0.3)", 
+          display: "flex",
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          gap: "8px", 
+          flexShrink: 0
         }}>
           <button onClick={onExit} style={{
-            padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,0,0,0.7)", border: "none",
-            borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+            padding: isMobile ? "6px 12px" : "8px 16px", 
+            background: "rgba(255,0,0,0.7)", 
+            border: "none",
+            borderRadius: "8px", 
+            color: "white", 
+            fontSize: isMobile ? "0.75rem" : "0.9rem", 
+            fontWeight: "bold", 
+            cursor: "pointer"
           }}>← EXIT</button>
 
           <div style={{
-            background: "rgba(255,255,255,0.2)", padding: isMobile ? "4px 10px" : "6px 15px", borderRadius: "10px",
-            color: "white", fontSize: isMobile ? "0.7rem" : "0.85rem", fontWeight: "bold"
-          }}>Level {currentLevel}/120 • Moves: {moves}</div>
+            background: "rgba(255,255,255,0.2)", 
+            padding: isMobile ? "4px 10px" : "6px 15px", 
+            borderRadius: "10px",
+            color: "white", 
+            fontSize: isMobile ? "0.7rem" : "0.85rem", 
+            fontWeight: "bold"
+          }}>
+            Level {currentLevel}/120 • Moves: {moves}
+          </div>
 
           <button onClick={restartLevel} style={{
-            padding: isMobile ? "6px 12px" : "8px 16px", background: "rgba(255,165,0,0.7)", border: "none",
-            borderRadius: "8px", color: "white", fontSize: isMobile ? "0.75rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+            padding: isMobile ? "6px 12px" : "8px 16px", 
+            background: "rgba(255,165,0,0.7)", 
+            border: "none",
+            borderRadius: "8px", 
+            color: "white", 
+            fontSize: isMobile ? "0.75rem" : "0.9rem", 
+            fontWeight: "bold", 
+            cursor: "pointer"
           }}>🔄 RESTART</button>
         </div>
 
         <div style={{
-          padding: isMobile ? "4px 8px" : "6px 12px", background: "rgba(0,0,0,0.2)", textAlign: "center",
-          color: "white", fontSize: isMobile ? "0.7rem" : "0.8rem", flexShrink: 0
+          padding: isMobile ? "4px 8px" : "6px 12px", 
+          background: "rgba(0,0,0,0.2)", 
+          textAlign: "center",
+          color: "white", 
+          fontSize: isMobile ? "0.7rem" : "0.8rem", 
+          flexShrink: 0
         }}>🏆 Progress: {completedLevels}/120 levels completed</div>
 
         <div style={{ 
-          flex: 1, overflowY: "auto", overflowX: "hidden", position: "relative", paddingBottom: "20px",
-          display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: isMobile ? "10px" : "20px", 
+          flex: 1, 
+          overflowY: "auto", 
+          overflowX: "hidden", 
+          position: "relative", 
+          paddingBottom: "20px",
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "flex-start", 
+          paddingTop: isMobile ? "10px" : "20px",
           WebkitOverflowScrolling: "touch"
         }}>
           <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
@@ -556,10 +563,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
               return (
                 <div key={idx} onClick={() => handleBottleClick(idx)} style={{
-                  position: "absolute", left: basePos.x, top: basePos.y,
+                  position: "absolute", 
+                  left: basePos.x, 
+                  top: basePos.y,
                   transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
-                  transformOrigin: "center center", cursor: showVictory || isAnimating ? "not-allowed" : "pointer",
-                  zIndex: isSelected ? 1000 : 1, transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+                  transformOrigin: "center center", 
+                  cursor: showVictory || isAnimating ? "not-allowed" : "pointer",
+                  zIndex: isSelected ? 1000 : 1, 
+                  transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
                   filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : isFull ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
                   opacity: showVictory || isAnimating ? 0.7 : 1
                 }}>
