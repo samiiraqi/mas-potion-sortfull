@@ -67,7 +67,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
   const [comboCount, setComboCount] = useState(0);
   const [showComboSystem, setShowComboSystem] = useState(false);
-
   const [showVictoryShare, setShowVictoryShare] = useState(false);
 
   const [background, setBackground] = useState('galaxy');
@@ -322,74 +321,19 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     );
   }
 
-  const bottleCount = bottles.length;
-  let COLS, scale, bottleSpacing, rowSpacing;
+  // FIXED GRID: 4 columns × 5 rows = 20 bottles
+  const COLS = 4;
+  const ROWS = 5;
   
-  if (isMobile) {
-    if (bottleCount <= 5) {
-      COLS = 3;
-      scale = 0.7;
-      bottleSpacing = 90;
-      rowSpacing = 120;
-    } else if (bottleCount <= 7) {
-      COLS = 3;
-      scale = 0.6;
-      bottleSpacing = 80;
-      rowSpacing = 110;
-    } else if (bottleCount <= 9) {
-      COLS = 4;
-      scale = 0.5;
-      bottleSpacing = 70;
-      rowSpacing = 95;
-    } else if (bottleCount <= 11) {
-      COLS = 4;
-      scale = 0.45;
-      bottleSpacing = 65;
-      rowSpacing = 90;
-    } else {
-      COLS = 4;
-      scale = 0.42;
-      bottleSpacing = 58;
-      rowSpacing = 85;
-    }
-  } else {
-    if (bottleCount <= 5) {
-      COLS = 3;
-      scale = 1.2;
-      bottleSpacing = 140;
-      rowSpacing = 200;
-    } else if (bottleCount <= 7) {
-      COLS = 4;
-      scale = 1.0;
-      bottleSpacing = 120;
-      rowSpacing = 180;
-    } else if (bottleCount <= 9) {
-      COLS = 5;
-      scale = 0.9;
-      bottleSpacing = 110;
-      rowSpacing = 165;
-    } else if (bottleCount <= 11) {
-      COLS = 5;
-      scale = 0.85;
-      bottleSpacing = 105;
-      rowSpacing = 160;
-    } else if (bottleCount <= 13) {
-      COLS = 6;
-      scale = 0.8;
-      bottleSpacing = 100;
-      rowSpacing = 150;
-    } else {
-      COLS = 6;
-      scale = 0.75;
-      bottleSpacing = 95;
-      rowSpacing = 145;
-    }
-  }
+  // Responsive sizing
+  const scale = isMobile ? 0.6 : 1.0;
+  const bottleSpacing = isMobile ? 85 : 120;
+  const rowSpacing = isMobile ? 140 : 180;
   
-  const numCols = Math.min(bottleCount, COLS);
-  const totalWidth = numCols * bottleSpacing;
+  const totalWidth = COLS * bottleSpacing;
+  const totalHeight = ROWS * rowSpacing;
   const startX = (window.innerWidth - totalWidth) / 2;
-  const startY = isMobile ? 10 : 20;
+  const startY = isMobile ? 80 : 100;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
@@ -405,8 +349,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   return (
     <>
       <AnimatedBackground theme={background} />
-
-      {/* REMOVED: MagicParticles - no more floating sparkles! */}
 
       {showComboSystem && (
         <ComboSystem 
@@ -544,7 +486,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           color: "white", 
           fontSize: isMobile ? "0.7rem" : "0.8rem", 
           flexShrink: 0
-        }}>🏆 Progress: {completedLevels}/120 levels completed</div>
+        }}>🏆 Progress: {completedLevels}/120 levels • 4×5 Grid Layout</div>
 
         <div style={{ 
           flex: 1, 
@@ -554,12 +496,11 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           paddingBottom: "20px",
           display: "flex", 
           justifyContent: "center", 
-          alignItems: "flex-start", 
-          paddingTop: isMobile ? "10px" : "20px",
+          alignItems: "flex-start",
           WebkitOverflowScrolling: "touch"
         }}>
-          <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
-            {bottles.map((colors, idx) => {
+          <div style={{ position: "relative", width: "100%", height: totalHeight + 100 }}>
+            {bottles.slice(0, 20).map((colors, idx) => {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
               const isPouring = pouringBottle === idx;
