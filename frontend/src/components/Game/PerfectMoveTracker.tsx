@@ -7,35 +7,40 @@ interface PerfectMoveTrackerProps {
 export default function PerfectMoveTracker({ currentMoves, optimalMoves, level }: PerfectMoveTrackerProps) {
   const isPerfect = currentMoves <= optimalMoves;
   const difference = currentMoves - optimalMoves;
+  const isMobile = window.innerWidth < 768;
 
   return (
     <div style={{
       position: 'fixed',
-      top: '60px',
-      right: '20px',
+      top: isMobile ? '120px' : '80px',
+      left: isMobile ? '50%' : 'auto',
+      right: isMobile ? 'auto' : '20px',
+      transform: isMobile ? 'translateX(-50%)' : 'none',
       background: isPerfect 
         ? 'linear-gradient(135deg, #FFD700, #FFA500)' 
-        : 'rgba(0,0,0,0.5)',
-      padding: '12px 20px',
+        : 'rgba(0,0,0,0.7)',
+      padding: isMobile ? '8px 15px' : '12px 20px',
       borderRadius: '15px',
       color: 'white',
       fontWeight: 'bold',
-      fontSize: '0.9rem',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+      fontSize: isMobile ? '0.75rem' : '0.9rem',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
       zIndex: 100,
       border: isPerfect ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)',
-      animation: isPerfect ? 'glow 1s ease-in-out infinite' : 'none'
+      animation: isPerfect ? 'glow 1s ease-in-out infinite' : 'none',
+      backdropFilter: 'blur(10px)',
+      maxWidth: isMobile ? '90%' : 'auto'
     }}>
-      <div style={{ fontSize: '1.1rem', marginBottom: '5px' }}>
+      <div style={{ fontSize: isMobile ? '0.9rem' : '1.1rem', marginBottom: '3px' }}>
         {isPerfect ? '⭐ PERFECT!' : '🎯 Challenge'}
       </div>
-      <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+      <div style={{ fontSize: isMobile ? '0.7rem' : '0.85rem', opacity: 0.9 }}>
         Moves: {currentMoves} / {optimalMoves}
         {difference > 0 && ` (+${difference})`}
       </div>
       {isPerfect && (
-        <div style={{ fontSize: '0.75rem', marginTop: '5px', opacity: 0.9 }}>
-          🏆 You're on track for a gold medal!
+        <div style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', marginTop: '3px', opacity: 0.9 }}>
+          🏆 Gold medal pace!
         </div>
       )}
 
