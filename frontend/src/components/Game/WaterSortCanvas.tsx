@@ -64,6 +64,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [comboEffects, setComboEffects] = useState<ComboEffect[]>([]);
   const [recentCompletions, setRecentCompletions] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [pouringBottle, setPouringBottle] = useState<number | null>(null);
 
   const [comboCount, setComboCount] = useState(0);
   const [showComboSystem, setShowComboSystem] = useState(false);
@@ -253,6 +254,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }
 
     setIsAnimating(true);
+    setPouringBottle(selectedBottle);
+    
     const fromPos = getBottlePosition(selectedBottle);
     const toPos = getBottlePosition(bottleIdx);
     
@@ -276,6 +279,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setMoves(moves + 1);
       setSelectedBottle(null);
       setIsAnimating(false);
+      setPouringBottle(null);
 
       setPourAnimations(prev => prev.filter(p => p.id !== pourAnim.id));
 
@@ -559,6 +563,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             {bottles.map((colors, idx) => {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
+              const isPouring = pouringBottle === idx;
               const basePos = getBottlePosition(idx);
 
               return (
@@ -582,6 +587,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                     isEmpty={colors.length === 0} 
                     isFull={isFull}
                     theme={bottleTheme}
+                    isPouring={isPouring}
                   />
                 </div>
               );

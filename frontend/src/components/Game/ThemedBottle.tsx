@@ -1,3 +1,6 @@
+import ElementalEffects from './ElementalEffects';
+import FlaskFace from './FlaskFace';
+
 interface ThemedBottleProps {
   colors: string[];
   position: { x: number; y: number };
@@ -6,6 +9,7 @@ interface ThemedBottleProps {
   isEmpty: boolean;
   isFull: boolean;
   theme?: string;
+  isPouring?: boolean;
 }
 
 export default function ThemedBottle({
@@ -15,7 +19,8 @@ export default function ThemedBottle({
   isSelected,
   isEmpty,
   isFull,
-  theme = 'classic'
+  theme = 'classic',
+  isPouring = false
 }: ThemedBottleProps) {
   const BOTTLE_HEIGHT = 160;
   const BOTTLE_WIDTH = 60;
@@ -26,12 +31,10 @@ export default function ThemedBottle({
     filledColors.unshift('transparent');
   }
 
-  // Alchemist Flask shape - completely different from test tubes!
   const getFlaskPath = () => {
     const w = BOTTLE_WIDTH;
     const h = BOTTLE_HEIGHT;
     
-    // Curved alchemist flask with narrow neck and round bottom
     return `
       M ${w * 0.4} 10
       L ${w * 0.4} ${h * 0.25}
@@ -62,6 +65,35 @@ export default function ThemedBottle({
         userSelect: 'none'
       }}
     >
+      {/* Elemental effects for each liquid layer */}
+      {filledColors.map((color, idx) => {
+        if (color === 'transparent') return null;
+        
+        const yStart = BOTTLE_HEIGHT * 0.95 - (idx + 1) * LIQUID_SECTION_HEIGHT;
+        
+        return (
+          <ElementalEffects
+            key={`effect-${idx}`}
+            color={color}
+            x={BOTTLE_WIDTH * 0.15}
+            y={yStart}
+            width={BOTTLE_WIDTH * 0.7}
+            height={LIQUID_SECTION_HEIGHT}
+            intensity={isFull ? 1.5 : 1}
+          />
+        );
+      })}
+
+      {/* Flask Face */}
+      <FlaskFace
+        x={position.x}
+        y={position.y}
+        isSelected={isSelected}
+        isEmpty={isEmpty}
+        isFull={isFull}
+        isPouring={isPouring}
+      />
+
       <svg width={BOTTLE_WIDTH} height={BOTTLE_HEIGHT} style={{ overflow: 'visible' }}>
         <defs>
           <linearGradient id={`flaskGradient-${position.x}-${position.y}`} x1="0%" y1="0%" x2="100%" y2="0%">
@@ -75,7 +107,7 @@ export default function ThemedBottle({
           </clipPath>
 
           <filter id={`glowEffect-${position.x}-${position.y}`}>
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -98,7 +130,10 @@ export default function ThemedBottle({
                 width={BOTTLE_WIDTH * 0.7}
                 height={LIQUID_SECTION_HEIGHT}
                 fill={color}
-                opacity={0.9}
+                opacity={0.85}
+                style={{
+                  filter: isFull ? `url(#glowEffect-${position.x}-${position.y})` : 'none'
+                }}
               />
             );
           })}
@@ -111,6 +146,9 @@ export default function ThemedBottle({
           stroke={isSelected ? '#FFD700' : isFull ? '#32CD32' : 'rgba(255,255,255,0.6)'}
           strokeWidth={isSelected ? 3 : 2}
           filter={isFull ? `url(#glowEffect-${position.x}-${position.y})` : undefined}
+          style={{
+            transition: 'all 0.3s ease'
+          }}
         />
 
         {/* Cork/Stopper at top */}
