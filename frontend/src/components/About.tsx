@@ -1,89 +1,31 @@
-export default function About() {
+interface AboutProps {
+  onBack: () => void;
+}
+
+export default function About({ onBack }: AboutProps) {
   return (
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '40px 20px',
+      padding: '20px',
       color: 'white'
     }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        background: 'rgba(255,255,255,0.1)',
-        padding: '40px',
-        borderRadius: '20px',
-        textAlign: 'center'
+      <button onClick={onBack} style={{
+        padding: '10px 20px',
+        background: 'rgba(255,255,255,0.2)',
+        border: '2px solid rgba(255,255,255,0.3)',
+        borderRadius: '10px',
+        color: 'white',
+        cursor: 'pointer',
+        marginBottom: '20px'
       }}>
-        {/* Alchemist flask icon */}
-        <div style={{ fontSize: '5rem', marginBottom: '20px' }}>
-          ⚗️
-        </div>
-        
-        <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Potion Sort</h1>
-        <p style={{ fontSize: '1.3rem', marginBottom: '30px', opacity: 0.9 }}>
-          A magical color sorting puzzle game
-        </p>
-
-        <div style={{ textAlign: 'left', marginTop: '40px' }}>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '15px' }}>✨ Features</h2>
-          <ul style={{ lineHeight: '2', fontSize: '1.1rem', opacity: 0.9 }}>
-            <li>🎮 120 challenging levels</li>
-            <li>🎨 6 beautiful animated backgrounds</li>
-            <li>⚗️ 5 unique flask themes</li>
-            <li>💥 Satisfying particle effects</li>
-            <li>🌊 Realistic liquid physics</li>
-            <li>🏆 Progress tracking</li>
-            <li>👥 Multiplayer mode</li>
-          </ul>
-
-          <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>🎯 How to Play</h2>
-          <ol style={{ lineHeight: '2', fontSize: '1.1rem', opacity: 0.9 }}>
-            <li>Tap a flask to select it</li>
-            <li>Tap another flask to pour</li>
-            <li>Sort potions until each flask has one color</li>
-            <li>Complete all flasks to win!</li>
-          </ol>
-
-          <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>👨‍💻 About</h2>
-          <p style={{ lineHeight: '1.8', fontSize: '1.1rem', opacity: 0.9 }}>
-            Potion Sort is a magical puzzle game where you help the alchemist organize mystical elixirs. 
-            Made with ❤️ using React and TypeScript.
-          </p>
-
-          <h2 style={{ fontSize: '1.8rem', marginTop: '40px', marginBottom: '15px' }}>📱 Follow Me</h2>
-          <p style={{ lineHeight: '1.8', fontSize: '1.1rem', opacity: 0.9 }}>
-            Instagram: <a 
-              href="https://instagram.com/_sami_mas" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ 
-                color: '#E1306C', 
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                fontSize: '1.2rem'
-              }}
-            >
-              @_sami_mas
-            </a>
-          </p>
-        </div>
-
-        <button
-          onClick={() => window.history.back()}
-          style={{
-            marginTop: '40px',
-            padding: '15px 30px',
-            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
-            border: 'none',
-            borderRadius: '12px',
-            color: 'white',
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-        >
-          ← Back
-        </button>
+        ← Back
+      </button>
+      
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <h1>About Potion Sort</h1>
+        <p>A magical puzzle game where you sort colorful potions!</p>
+        <p>Created with React and TypeScript.</p>
       </div>
     </div>
   );
