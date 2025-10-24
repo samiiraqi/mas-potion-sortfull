@@ -18,7 +18,11 @@ interface WaterSortCanvasProps {
 }
 
 export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
-  const [currentLevel, setCurrentLevel] = useState(() => progressManager.getLastLevel());
+  const [currentLevel, setCurrentLevel] = useState(() => {
+    const lastLevel = progressManager.getLastLevel();
+    return lastLevel > 0 ? lastLevel : 1; // FIX: Never start at 0!
+  });
+  
   const [bottles, setBottles] = useState<string[][]>([]);
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [moves, setMoves] = useState(0);
@@ -30,8 +34,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [bottleTheme, setBottleTheme] = useState('classic');
   const [hintFrom, setHintFrom] = useState<number | null>(null);
   const [hintTo, setHintTo] = useState<number | null>(null);
-  
-  // UNDO SYSTEM
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
   const [undosRemaining, setUndosRemaining] = useState(3);
 
@@ -46,11 +48,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   }, []);
 
   useEffect(() => {
-    loadLevel(currentLevel);
+    if (currentLevel >= 1 && currentLevel <= 120) {
+      loadLevel(currentLevel);
+    }
   }, [currentLevel]);
 
   const loadLevel = async (levelId: number) => {
     try {
+      console.log('Loading level:', levelId);
       const res = await axios.get(`${API_URL}/api/v1/levels/${levelId}`);
       setBottles(res.data.bottles);
       setMoves(0);
@@ -104,7 +109,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
-  // HINT SYSTEM
   const showHint = () => {
     setHintFrom(null);
     setHintTo(null);
@@ -133,10 +137,9 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       }
     }
     
-    alert("🤔 No obvious moves found. Try restarting!");
+    alert("🤔 No obvious moves found!");
   };
 
-  // UNDO SYSTEM
   const undoMove = () => {
     if (moveHistory.length === 0) {
       alert("❌ No moves to undo!");
@@ -144,7 +147,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }
     
     if (undosRemaining <= 0) {
-      alert("❌ No undos remaining! You had 3 undos per level.");
+      alert("❌ No undos remaining!");
       return;
     }
 
@@ -205,7 +208,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       return;
     }
 
-    // SAVE STATE BEFORE MOVE (for undo)
     setMoveHistory([...moveHistory, {
       bottles: bottles.map(b => [...b]),
       moves: moves
@@ -284,8 +286,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     };
   };
 
-  const completedLevels = progressManager.getCompletedCount();
-
   return (
     <>
       <AnimatedBackground theme={background} />
@@ -302,8 +302,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             minWidth: isMobile ? "90%" : "400px"
           }}>
             <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#4ECDC4" }}>LEVEL COMPLETE!</h1>
-            <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
-            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>Completed in {moves} moves!</p>
+            <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px" }}>Level {currentLevel} of 120</p>
+            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px" }}>Completed in {moves} moves!</p>
             
             <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap", marginTop: "20px" }}>
               <button onClick={loadNextLevel} style={{
