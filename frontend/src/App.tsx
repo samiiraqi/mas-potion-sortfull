@@ -8,20 +8,17 @@ export default function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
-  // Beautiful loading screen
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 3000);
   }, []);
 
   const handleStartGame = (level?: number) => {
     if (level) {
-      // User selected a specific level
       setSelectedLevel(level);
       progressManager.saveProgress(level, 0);
     } else {
-      // Start from last played level (or level 1)
       const lastLevel = progressManager.getLastLevel();
       setSelectedLevel(lastLevel > 0 ? lastLevel : 1);
     }
@@ -33,7 +30,6 @@ export default function App() {
     setSelectedLevel(null);
   };
 
-  // BEAUTIFUL LOADING SCREEN
   if (loading) {
     return (
       <div style={{
@@ -43,64 +39,153 @@ export default function App() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'white'
+        color: 'white',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
+        {/* Animated bubbles */}
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              bottom: '-100px',
+              left: `${Math.random() * 100}%`,
+              width: `${20 + Math.random() * 60}px`,
+              height: `${20 + Math.random() * 60}px`,
+              background: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.3)`,
+              borderRadius: '50%',
+              animation: `float ${3 + Math.random() * 4}s ease-in infinite`,
+              animationDelay: `${Math.random() * 3}s`,
+              boxShadow: '0 0 20px rgba(255,255,255,0.3)'
+            }}
+          />
+        ))}
+
+        {/* Main potion icon */}
         <div style={{
-          fontSize: '5rem',
+          fontSize: '6rem',
           marginBottom: '30px',
-          animation: 'bounce 1s infinite'
+          animation: 'bounce 1.5s ease-in-out infinite',
+          filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))'
         }}>
           🧪
         </div>
         
         <h1 style={{
-          fontSize: 'clamp(2rem, 6vw, 4rem)',
+          fontSize: 'clamp(3rem, 8vw, 5rem)',
           margin: '0 0 20px 0',
-          textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          textShadow: '0 4px 20px rgba(0,0,0,0.5)',
           fontWeight: 'bold',
-          animation: 'fadeIn 1s'
+          animation: 'fadeIn 1s ease-in',
+          background: 'linear-gradient(45deg, #FFD700, #FFA500, #FF69B4, #4ECDC4)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundSize: '300% 300%',
+          animation: 'gradient 3s ease infinite, fadeIn 1s ease-in'
         }}>
           POTION SORT
         </h1>
 
         <p style={{
-          fontSize: '1.2rem',
+          fontSize: '1.3rem',
           opacity: 0.9,
-          marginBottom: '40px',
-          animation: 'fadeIn 1.5s'
+          marginBottom: '50px',
+          animation: 'fadeIn 1.5s ease-in'
         }}>
           Loading magical potions...
         </p>
 
-        {/* Loading bar */}
+        {/* Animated loading bar */}
         <div style={{
-          width: '300px',
-          height: '8px',
+          width: '350px',
+          height: '12px',
           background: 'rgba(255,255,255,0.2)',
-          borderRadius: '10px',
-          overflow: 'hidden'
+          borderRadius: '20px',
+          overflow: 'hidden',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
         }}>
           <div style={{
             height: '100%',
-            background: 'linear-gradient(90deg, #11998e, #38ef7d)',
-            animation: 'loading 2s ease-in-out'
+            background: 'linear-gradient(90deg, #11998e, #38ef7d, #FFD700)',
+            animation: 'loading 3s ease-in-out',
+            borderRadius: '20px',
+            boxShadow: '0 0 20px rgba(56, 239, 125, 0.6)'
+          }} />
+        </div>
+
+        {/* Rotating circles */}
+        <div style={{
+          position: 'absolute',
+          width: '300px',
+          height: '300px',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          opacity: 0.1,
+          animation: 'spin 10s linear infinite'
+        }}>
+          <div style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            border: '3px solid white',
+            borderRadius: '50%'
+          }} />
+          <div style={{
+            position: 'absolute',
+            width: '80%',
+            height: '80%',
+            top: '10%',
+            left: '10%',
+            border: '3px solid white',
+            borderRadius: '50%'
           }} />
         </div>
 
         <style>{`
           @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.1); }
           }
 
           @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
           }
 
           @keyframes loading {
             from { width: 0%; }
             to { width: 100%; }
+          }
+
+          @keyframes float {
+            0% { 
+              transform: translateY(0) translateX(0);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            90% {
+              opacity: 1;
+            }
+            100% { 
+              transform: translateY(-100vh) translateX(${Math.random() > 0.5 ? '' : '-'}${Math.random() * 100}px);
+              opacity: 0;
+            }
+          }
+
+          @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+
+          @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
           }
         `}</style>
       </div>
