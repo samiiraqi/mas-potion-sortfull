@@ -2,8 +2,6 @@ import { useState } from 'react';
 import Settings from './Settings';
 import About from './About';
 import Privacy from './Privacy';
-import QRGenerator from './QRGenerator';
-import Multiplayer from './Multiplayer';
 import LevelSelect from './LevelSelect';
 
 interface HomeProps {
@@ -14,15 +12,11 @@ export default function Home({ onStartGame }: HomeProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
-  const [showQR, setShowQR] = useState(false);
-  const [showMultiplayer, setShowMultiplayer] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
 
   if (showSettings) return <Settings onClose={() => setShowSettings(false)} />;
   if (showAbout) return <About onBack={() => setShowAbout(false)} />;
   if (showPrivacy) return <Privacy onBack={() => setShowPrivacy(false)} />;
-  if (showQR) return <QRGenerator onBack={() => setShowQR(false)} />;
-  if (showMultiplayer) return <Multiplayer onBack={() => setShowMultiplayer(false)} />;
   if (showLevelSelect) return <LevelSelect onSelectLevel={(level) => { setShowLevelSelect(false); onStartGame(level); }} onBack={() => setShowLevelSelect(false)} currentLevel={1} />;
 
   return (
@@ -91,20 +85,6 @@ export default function Home({ onStartGame }: HomeProps) {
           📊 SELECT LEVEL
         </button>
 
-        <button onClick={() => setShowMultiplayer(true)} style={{
-          padding: '15px 30px',
-          fontSize: '1.2rem',
-          background: 'rgba(255,255,255,0.2)',
-          border: '2px solid rgba(255,255,255,0.3)',
-          borderRadius: '12px',
-          color: 'white',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          transition: 'all 0.3s'
-        }}>
-          🎮 MULTIPLAYER
-        </button>
-
         <button onClick={() => setShowSettings(true)} style={{
           padding: '15px 30px',
           fontSize: '1.2rem',
@@ -130,6 +110,19 @@ export default function Home({ onStartGame }: HomeProps) {
           transition: 'all 0.3s'
         }}>
           ℹ️ About
+        </button>
+
+        <button onClick={() => setShowPrivacy(true)} style={{
+          padding: '10px 20px',
+          fontSize: '0.9rem',
+          background: 'transparent',
+          border: '2px solid rgba(255,255,255,0.2)',
+          borderRadius: '10px',
+          color: 'white',
+          cursor: 'pointer',
+          transition: 'all 0.3s'
+        }}>
+          🔒 Privacy
         </button>
       </div>
     </div>
