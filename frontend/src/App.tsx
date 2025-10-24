@@ -28,7 +28,7 @@ export default function App() {
   const handleStartGame = (level?: number) => {
     if (level) {
       setSelectedLevel(level);
-      progressManager.saveProgress(level, 0);
+      progressManager.setCurrentLevel(level, 0);
     } else {
       const lastLevel = progressManager.getLastLevel();
       setSelectedLevel(lastLevel > 0 ? lastLevel : 1);

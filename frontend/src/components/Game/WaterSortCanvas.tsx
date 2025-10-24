@@ -81,7 +81,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       onExit();
       return;
     }
-    progressManager.saveProgress(currentLevel, moves);
+    progressManager.completeLevelAndAdvance(currentLevel, moves);
     setCurrentLevel(nextLevel);
     setShowVictory(false);
   };

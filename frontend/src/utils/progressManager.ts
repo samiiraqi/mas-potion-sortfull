@@ -24,7 +24,7 @@ class ProgressManager {
     };
   }
 
-  private saveProgress(data: ProgressData): void {
+  private saveProgressData(data: ProgressData): void {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       console.log('✅ Progress saved:', data);
@@ -41,7 +41,7 @@ class ProgressManager {
   }
 
   // Save progress when completing a level
-  saveProgress(levelId: number, moves: number): void {
+  completeLevelAndAdvance(levelId: number, moves: number): void {
     const progress = this.getProgress();
     
     // Mark level as completed
@@ -51,14 +51,14 @@ class ProgressManager {
     // Update last level to next level
     progress.lastLevel = levelId + 1;
     
-    this.saveProgress(progress);
+    this.saveProgressData(progress);
   }
 
   // Update current level (when user selects a level or exits)
   setCurrentLevel(levelId: number): void {
     const progress = this.getProgress();
     progress.lastLevel = levelId;
-    this.saveProgress(progress);
+    this.saveProgressData(progress);
     console.log('💾 Current level saved:', levelId);
   }
 
