@@ -77,13 +77,12 @@ export default function App() {
           margin: '0 0 20px 0',
           textShadow: '0 4px 20px rgba(0,0,0,0.5)',
           fontWeight: 'bold',
-          animation: 'fadeIn 1s ease-in',
           background: 'linear-gradient(45deg, #FFD700, #FFA500, #FF69B4, #4ECDC4)',
+          backgroundSize: '300% 300%',
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          backgroundSize: '300% 300%',
-          animation: 'gradient 3s ease infinite, fadeIn 1s ease-in'
+          animation: 'gradient 3s ease infinite'
         }}>
           POTION SORT
         </h1>
@@ -172,7 +171,7 @@ export default function App() {
               opacity: 1;
             }
             100% { 
-              transform: translateY(-100vh) translateX(${Math.random() > 0.5 ? '' : '-'}${Math.random() * 100}px);
+              transform: translateY(-100vh) translateX(50px);
               opacity: 0;
             }
           }
