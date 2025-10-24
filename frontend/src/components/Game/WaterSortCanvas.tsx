@@ -8,6 +8,11 @@ import { progressManager } from "../../utils/progressManager";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
+interface MoveHistory {
+  bottles: string[][];
+  moves: number;
+}
+
 interface WaterSortCanvasProps {
   onExit: () => void;
 }
@@ -23,6 +28,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [background, setBackground] = useState('galaxy');
   const [bottleTheme, setBottleTheme] = useState('classic');
+  const [hintFrom, setHintFrom] = useState<number | null>(null);
+  const [hintTo, setHintTo] = useState<number | null>(null);
+  
+  // UNDO SYSTEM
+  const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
+  const [undosRemaining, setUndosRemaining] = useState(3);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -41,12 +52,15 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const loadLevel = async (levelId: number) => {
     try {
       const res = await axios.get(`${API_URL}/api/v1/levels/${levelId}`);
-      console.log('📦 Loaded level', levelId);
       setBottles(res.data.bottles);
       setMoves(0);
       setSelectedBottle(null);
       setShowVictory(false);
       setFireworks([]);
+      setHintFrom(null);
+      setHintTo(null);
+      setMoveHistory([]);
+      setUndosRemaining(3);
       soundManager.play("click");
     } catch (err) {
       console.error("Failed to load level:", err);
@@ -90,100 +104,125 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
+  // HINT SYSTEM
+  const showHint = () => {
+    setHintFrom(null);
+    setHintTo(null);
+
+    for (let from = 0; from < bottles.length; from++) {
+      if (bottles[from].length === 0) continue;
+      
+      const topColor = bottles[from][bottles[from].length - 1];
+      
+      for (let to = 0; to < bottles.length; to++) {
+        if (from === to) continue;
+        if (bottles[to].length >= 4) continue;
+        
+        if (bottles[to].length === 0 || bottles[to][bottles[to].length - 1] === topColor) {
+          setHintFrom(from);
+          setHintTo(to);
+          soundManager.play("select");
+          
+          setTimeout(() => {
+            setHintFrom(null);
+            setHintTo(null);
+          }, 3000);
+          
+          return;
+        }
+      }
+    }
+    
+    alert("🤔 No obvious moves found. Try restarting!");
+  };
+
+  // UNDO SYSTEM
+  const undoMove = () => {
+    if (moveHistory.length === 0) {
+      alert("❌ No moves to undo!");
+      return;
+    }
+    
+    if (undosRemaining <= 0) {
+      alert("❌ No undos remaining! You had 3 undos per level.");
+      return;
+    }
+
+    const lastState = moveHistory[moveHistory.length - 1];
+    setBottles(lastState.bottles.map(b => [...b]));
+    setMoves(lastState.moves);
+    setMoveHistory(moveHistory.slice(0, -1));
+    setUndosRemaining(undosRemaining - 1);
+    soundManager.play("click");
+  };
+
   const handleBottleClick = (bottleIdx: number) => {
     if (showVictory || isAnimating) return;
 
-    // First click - select bottle
     if (selectedBottle === null) {
       if (bottles[bottleIdx].length === 0) return;
       soundManager.play("select");
       setSelectedBottle(bottleIdx);
-      console.log('✅ Selected bottle', bottleIdx, ':', bottles[bottleIdx]);
       return;
     }
 
-    // Clicking same bottle - deselect
     if (selectedBottle === bottleIdx) {
       setSelectedBottle(null);
-      console.log('❌ Deselected');
       return;
     }
-
-    // Second click - pour
-    console.log('🔄 POUR ACTION:');
-    console.log('   FROM bottle', selectedBottle, ':', JSON.stringify(bottles[selectedBottle]));
-    console.log('   TO bottle', bottleIdx, ':', JSON.stringify(bottles[bottleIdx]));
 
     const fromBottle = bottles[selectedBottle];
     const toBottle = bottles[bottleIdx];
 
-    // Validation
     if (fromBottle.length === 0) {
-      console.log('   ❌ From bottle is empty');
       setSelectedBottle(null);
       return;
     }
 
     if (toBottle.length >= 4) {
-      console.log('   ❌ To bottle is full');
       setSelectedBottle(null);
       return;
     }
 
-    // Get top color (last element = top)
     const topColor = fromBottle[fromBottle.length - 1];
-    console.log('   🎨 Top color:', topColor);
 
-    // Check if colors match
     if (toBottle.length > 0 && toBottle[toBottle.length - 1] !== topColor) {
-      console.log('   ❌ Colors dont match');
       setSelectedBottle(null);
       return;
     }
 
-    // Count consecutive same colors from top
     let count = 1;
     for (let i = fromBottle.length - 2; i >= 0; i--) {
-      if (fromBottle[i] === topColor) {
-        count++;
-      } else {
-        break;
-      }
+      if (fromBottle[i] === topColor) count++;
+      else break;
     }
-    console.log('   📊 Consecutive pieces:', count);
 
     const spaceAvailable = 4 - toBottle.length;
     const pourCount = Math.min(count, spaceAvailable);
-    console.log('   💧 Will pour:', pourCount, 'pieces');
 
     if (pourCount === 0) {
       setSelectedBottle(null);
       return;
     }
 
+    // SAVE STATE BEFORE MOVE (for undo)
+    setMoveHistory([...moveHistory, {
+      bottles: bottles.map(b => [...b]),
+      moves: moves
+    }]);
+
     setIsAnimating(true);
 
     setTimeout(() => {
-      // CRITICAL FIX: Create deep copies of bottles
       const newBottles: string[][] = bottles.map(bottle => [...bottle]);
 
-      console.log('   BEFORE POUR:');
-      console.log('      From:', JSON.stringify(newBottles[selectedBottle]));
-      console.log('      To:', JSON.stringify(newBottles[bottleIdx]));
-
-      // Remove pieces from source bottle
       for (let i = 0; i < pourCount; i++) {
         newBottles[selectedBottle].pop();
       }
 
-      // Add pieces to target bottle
       for (let i = 0; i < pourCount; i++) {
         newBottles[bottleIdx].push(topColor);
       }
-
-      console.log('   AFTER POUR:');
-      console.log('      From:', JSON.stringify(newBottles[selectedBottle]));
-      console.log('      To:', JSON.stringify(newBottles[bottleIdx]));
 
       soundManager.play("pour");
       setBottles(newBottles);
@@ -283,43 +322,67 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         )}
 
         <div style={{
-          padding: isMobile ? "8px" : "12px", 
+          padding: isMobile ? "6px" : "10px", 
           background: "rgba(0,0,0,0.3)", 
           display: "flex",
           justifyContent: "space-between", 
           alignItems: "center", 
-          gap: "8px", 
-          flexShrink: 0
+          gap: isMobile ? "4px" : "8px", 
+          flexShrink: 0,
+          flexWrap: "wrap"
         }}>
           <button onClick={onExit} style={{
-            padding: isMobile ? "6px 12px" : "8px 16px", 
+            padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "rgba(255,0,0,0.7)", 
             border: "none",
             borderRadius: "8px", 
             color: "white", 
-            fontSize: isMobile ? "0.75rem" : "0.9rem", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", 
             fontWeight: "bold", 
             cursor: "pointer"
           }}>← EXIT</button>
 
           <div style={{
             background: "rgba(255,255,255,0.2)", 
-            padding: isMobile ? "4px 10px" : "6px 15px", 
-            borderRadius: "10px",
+            padding: isMobile ? "4px 8px" : "6px 12px", 
+            borderRadius: "8px",
             color: "white", 
-            fontSize: isMobile ? "0.7rem" : "0.85rem", 
+            fontSize: isMobile ? "0.65rem" : "0.8rem", 
             fontWeight: "bold"
           }}>
-            Level {currentLevel}/120 • Moves: {moves}
+            Lv {currentLevel} • {moves} moves
           </div>
 
+          <button onClick={undoMove} disabled={moveHistory.length === 0 || undosRemaining === 0} style={{
+            padding: isMobile ? "6px 10px" : "8px 16px", 
+            background: moveHistory.length === 0 || undosRemaining === 0 ? "rgba(128,128,128,0.5)" : "rgba(138,43,226,0.7)", 
+            border: "none",
+            borderRadius: "8px", 
+            color: "white", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", 
+            fontWeight: "bold", 
+            cursor: moveHistory.length === 0 || undosRemaining === 0 ? "not-allowed" : "pointer",
+            opacity: moveHistory.length === 0 || undosRemaining === 0 ? 0.5 : 1
+          }}>↩️ {undosRemaining}</button>
+
+          <button onClick={showHint} style={{
+            padding: isMobile ? "6px 10px" : "8px 16px", 
+            background: "rgba(255,215,0,0.7)", 
+            border: "none",
+            borderRadius: "8px", 
+            color: "white", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", 
+            fontWeight: "bold", 
+            cursor: "pointer"
+          }}>💡</button>
+
           <button onClick={restartLevel} style={{
-            padding: isMobile ? "6px 12px" : "8px 16px", 
+            padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "rgba(255,165,0,0.7)", 
             border: "none",
             borderRadius: "8px", 
             color: "white", 
-            fontSize: isMobile ? "0.75rem" : "0.9rem", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", 
             fontWeight: "bold", 
             cursor: "pointer"
           }}>🔄</button>
@@ -339,6 +402,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
               const basePos = getBottlePosition(idx);
+              const isHintSource = hintFrom === idx;
+              const isHintTarget = hintTo === idx;
 
               return (
                 <div key={idx} onClick={() => handleBottleClick(idx)} style={{
@@ -350,7 +415,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                   cursor: "pointer",
                   zIndex: isSelected ? 1000 : 1, 
                   transition: "all 0.3s",
-                  filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))"
+                  filter: isSelected 
+                    ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" 
+                    : isHintSource 
+                    ? "drop-shadow(0 0 30px rgba(0,255,0,1))"
+                    : isHintTarget
+                    ? "drop-shadow(0 0 30px rgba(0,255,255,1))"
+                    : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
+                  animation: isHintSource || isHintTarget ? 'pulse 1s infinite' : 'none'
                 }}>
                   <ThemedBottle 
                     colors={colors} 
@@ -367,6 +439,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             })}
           </div>
         </div>
+
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+          }
+        `}</style>
       </div>
     </>
   );
