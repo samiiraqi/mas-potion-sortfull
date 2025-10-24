@@ -11,7 +11,7 @@ export default function App() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 3500);
   }, []);
 
   const handleStartGame = (level?: number) => {
@@ -34,7 +34,7 @@ export default function App() {
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -43,148 +43,233 @@ export default function App() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Animated bubbles */}
-        {[...Array(15)].map((_, i) => (
+        {/* Floating colorful bubbles */}
+        {[...Array(20)].map((_, i) => {
+          const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+          return (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                bottom: '-150px',
+                left: `${Math.random() * 100}%`,
+                width: `${30 + Math.random() * 80}px`,
+                height: `${30 + Math.random() * 80}px`,
+                background: colors[Math.floor(Math.random() * colors.length)],
+                borderRadius: '50%',
+                animation: `float ${4 + Math.random() * 6}s ease-in infinite`,
+                animationDelay: `${Math.random() * 4}s`,
+                boxShadow: `0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}`,
+                opacity: 0.7
+              }}
+            />
+          );
+        })}
+
+        {/* Sparkle effects */}
+        {[...Array(30)].map((_, i) => (
           <div
-            key={i}
+            key={`star-${i}`}
             style={{
               position: 'absolute',
-              bottom: '-100px',
-              left: `${Math.random() * 100}%`,
-              width: `${20 + Math.random() * 60}px`,
-              height: `${20 + Math.random() * 60}px`,
-              background: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.3)`,
+              width: '3px',
+              height: '3px',
+              background: 'white',
               borderRadius: '50%',
-              animation: `float ${3 + Math.random() * 4}s ease-in infinite`,
-              animationDelay: `${Math.random() * 3}s`,
-              boxShadow: '0 0 20px rgba(255,255,255,0.3)'
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animation: `twinkle ${1 + Math.random() * 2}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+              boxShadow: '0 0 10px white'
             }}
           />
         ))}
 
-        {/* Main potion icon */}
+        {/* Main content */}
         <div style={{
-          fontSize: '6rem',
-          marginBottom: '30px',
-          animation: 'bounce 1.5s ease-in-out infinite',
-          filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))'
+          zIndex: 10,
+          textAlign: 'center',
+          animation: 'fadeInUp 1s ease-out'
         }}>
-          🧪
-        </div>
-        
-        <h1 style={{
-          fontSize: 'clamp(3rem, 8vw, 5rem)',
-          margin: '0 0 20px 0',
-          textShadow: '0 4px 20px rgba(0,0,0,0.5)',
-          fontWeight: 'bold',
-          background: 'linear-gradient(45deg, #FFD700, #FFA500, #FF69B4, #4ECDC4)',
-          backgroundSize: '300% 300%',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          animation: 'gradient 3s ease infinite'
-        }}>
-          POTION SORT
-        </h1>
-
-        <p style={{
-          fontSize: '1.3rem',
-          opacity: 0.9,
-          marginBottom: '50px',
-          animation: 'fadeIn 1.5s ease-in'
-        }}>
-          Loading magical potions...
-        </p>
-
-        {/* Animated loading bar */}
-        <div style={{
-          width: '350px',
-          height: '12px',
-          background: 'rgba(255,255,255,0.2)',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-        }}>
+          {/* Animated potion bottles */}
           <div style={{
-            height: '100%',
-            background: 'linear-gradient(90deg, #11998e, #38ef7d, #FFD700)',
-            animation: 'loading 3s ease-in-out',
-            borderRadius: '20px',
-            boxShadow: '0 0 20px rgba(56, 239, 125, 0.6)'
-          }} />
+            display: 'flex',
+            gap: '20px',
+            marginBottom: '40px',
+            justifyContent: 'center'
+          }}>
+            {['🧪', '⚗️', '🧴'].map((emoji, i) => (
+              <div
+                key={i}
+                style={{
+                  fontSize: '4rem',
+                  animation: `bounce ${1 + i * 0.2}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.3}s`,
+                  filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))',
+                  transform: 'scale(1)'
+                }}
+              >
+                {emoji}
+              </div>
+            ))}
+          </div>
+          
+          <h1 style={{
+            fontSize: 'clamp(3rem, 10vw, 6rem)',
+            margin: '0 0 30px 0',
+            fontWeight: 'bold',
+            background: 'linear-gradient(45deg, #FFD700, #FFA500, #FF1493, #00CED1, #32CD32, #FFD700)',
+            backgroundSize: '400% 400%',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            animation: 'gradientShift 4s ease infinite',
+            textShadow: '0 0 80px rgba(255,255,255,0.5)',
+            letterSpacing: '3px'
+          }}>
+            POTION SORT
+          </h1>
+
+          <div style={{
+            fontSize: '1.5rem',
+            marginBottom: '50px',
+            opacity: 0.95,
+            animation: 'pulse 2s ease-in-out infinite',
+            textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+          }}>
+            ✨ Mixing magical potions... ✨
+          </div>
+
+          {/* Beautiful loading bar */}
+          <div style={{
+            width: '400px',
+            maxWidth: '90vw',
+            height: '16px',
+            background: 'rgba(255,255,255,0.2)',
+            borderRadius: '30px',
+            overflow: 'hidden',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid rgba(255,255,255,0.3)'
+          }}>
+            <div style={{
+              height: '100%',
+              background: 'linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #FFA07A, #FFD700)',
+              backgroundSize: '200% 100%',
+              animation: 'loadingBar 3.5s ease-in-out, shimmer 2s ease-in-out infinite',
+              borderRadius: '30px',
+              boxShadow: '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.5)'
+            }} />
+          </div>
+
+          {/* Loading percentage */}
+          <div style={{
+            marginTop: '20px',
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            animation: 'fadeIn 2s ease-in',
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+          }}>
+            Preparing your magical adventure...
+          </div>
         </div>
 
-        {/* Rotating circles */}
+        {/* Rotating magical circle */}
         <div style={{
           position: 'absolute',
-          width: '300px',
-          height: '300px',
+          width: '500px',
+          height: '500px',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          opacity: 0.1,
-          animation: 'spin 10s linear infinite'
+          opacity: 0.08,
+          animation: 'spin 20s linear infinite'
         }}>
-          <div style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            border: '3px solid white',
-            borderRadius: '50%'
-          }} />
-          <div style={{
-            position: 'absolute',
-            width: '80%',
-            height: '80%',
-            top: '10%',
-            left: '10%',
-            border: '3px solid white',
-            borderRadius: '50%'
-          }} />
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                width: `${100 - i * 20}%`,
+                height: `${100 - i * 20}%`,
+                top: `${i * 10}%`,
+                left: `${i * 10}%`,
+                border: '4px solid white',
+                borderRadius: '50%',
+                animation: `spin ${15 - i * 5}s linear infinite`
+              }}
+            />
+          ))}
         </div>
 
         <style>{`
           @keyframes bounce {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); }
+            50% { transform: translateY(-40px) scale(1.2); }
           }
 
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+          @keyframes fadeInUp {
+            from { 
+              opacity: 0; 
+              transform: translateY(50px); 
+            }
+            to { 
+              opacity: 1; 
+              transform: translateY(0); 
+            }
           }
 
-          @keyframes loading {
+          @keyframes loadingBar {
             from { width: 0%; }
             to { width: 100%; }
           }
 
           @keyframes float {
             0% { 
-              transform: translateY(0) translateX(0);
+              transform: translateY(0) translateX(0) scale(1);
               opacity: 0;
             }
             10% {
-              opacity: 1;
+              opacity: 0.8;
             }
             90% {
-              opacity: 1;
+              opacity: 0.8;
             }
             100% { 
-              transform: translateY(-100vh) translateX(50px);
+              transform: translateY(-120vh) translateX(${Math.random() > 0.5 ? '' : '-'}${Math.random() * 150}px) scale(1.5);
               opacity: 0;
             }
           }
 
-          @keyframes gradient {
+          @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
           }
 
+          @keyframes shimmer {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+          }
+
           @keyframes spin {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+
+          @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.5); }
+          }
+
+          @keyframes pulse {
+            0%, 100% { opacity: 0.95; }
+            50% { opacity: 1; }
+          }
+
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
           }
         `}</style>
       </div>
