@@ -13,68 +13,32 @@ import { progressManager } from "../../utils/progressManager";
 
 const API_URL = "https://water-sort-backend.onrender.com";
 
-interface FireworkData {
-  id: number;
-  x: number;
-  y: number;
-  color: string;
-}
-
-interface PourAnimation {
-  id: number;
-  fromPos: { x: number; y: number };
-  toPos: { x: number; y: number };
-  color: string;
-}
-
-interface ParticleEffect {
-  id: number;
-  x: number;
-  y: number;
-  color: string;
-}
-
-interface ComboEffect {
-  id: number;
-  text: string;
-  x: number;
-  y: number;
-}
-
 interface WaterSortCanvasProps {
   onExit: () => void;
 }
 
 export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
-  const [currentLevel, setCurrentLevel] = useState(() => {
-    const lastLevel = progressManager.getLastLevel();
-    return lastLevel;
-  });
-  
+  const [currentLevel, setCurrentLevel] = useState(() => progressManager.getLastLevel());
   const [bottles, setBottles] = useState<string[][]>([]);
   const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
   const [moves, setMoves] = useState(0);
-  const [fireworks, setFireworks] = useState<FireworkData[]>([]);
+  const [fireworks, setFireworks] = useState<any[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [showVictory, setShowVictory] = useState(false);
-  
-  const [pourAnimations, setPourAnimations] = useState<PourAnimation[]>([]);
-  const [particleEffects, setParticleEffects] = useState<ParticleEffect[]>([]);
-  const [comboEffects, setComboEffects] = useState<ComboEffect[]>([]);
+  const [pourAnimations, setPourAnimations] = useState<any[]>([]);
+  const [particleEffects, setParticleEffects] = useState<any[]>([]);
+  const [comboEffects, setComboEffects] = useState<any[]>([]);
   const [recentCompletions, setRecentCompletions] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [pouringBottle, setPouringBottle] = useState<number | null>(null);
-
   const [comboCount, setComboCount] = useState(0);
   const [showComboSystem, setShowComboSystem] = useState(false);
   const [showVictoryShare, setShowVictoryShare] = useState(false);
-
   const [background, setBackground] = useState('galaxy');
   const [bottleTheme, setBottleTheme] = useState('classic');
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
-    
     const saved = localStorage.getItem('gameSettings');
     if (saved) {
       const settings = JSON.parse(saved);
@@ -90,6 +54,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const loadLevel = async (levelId: number) => {
     try {
       const res = await axios.get(`${API_URL}/api/v1/levels/${levelId}`);
+      console.log('📦 Loaded level', levelId, ':', res.data.bottles);
       setBottles(res.data.bottles);
       setMoves(0);
       setSelectedBottle(null);
@@ -110,7 +75,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       onExit();
       return;
     }
-    
     progressManager.saveProgress(currentLevel, moves);
     setCurrentLevel(nextLevel);
     setShowVictory(false);
@@ -127,71 +91,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return bottle.every(color => color === bottle[0]);
   };
 
-  const triggerParticleExplosion = (bottleIdx: number, color: string) => {
-    const pos = getBottlePosition(bottleIdx);
-    const screenX = pos.x + 30;
-    const screenY = pos.y + 50;
-    
-    const particle: ParticleEffect = {
-      id: Date.now(),
-      x: screenX,
-      y: screenY,
-      color: color
-    };
-    
-    setParticleEffects(prev => [...prev, particle]);
-    setTimeout(() => {
-      setParticleEffects(prev => prev.filter(p => p.id !== particle.id));
-    }, 1000);
-  };
-
-  const checkCombo = (bottleIdx: number) => {
-    const now = Date.now();
-    const recent = [...recentCompletions, now];
-    setRecentCompletions(recent);
-    
-    setTimeout(() => {
-      setRecentCompletions(prev => prev.filter(t => now - t < 3000));
-    }, 3000);
-    
-    const recentCount = recent.filter(t => now - t < 3000).length;
-    
-    setComboCount(recentCount);
-    setShowComboSystem(true);
-    
-    if (recentCount >= 3) {
-      showComboText("TRIPLE COMBO! 🔥", bottleIdx);
-    } else if (recentCount === 2) {
-      showComboText("DOUBLE! 💥", bottleIdx);
-    }
-  };
-
-  const showComboText = (text: string, bottleIdx: number) => {
-    const pos = getBottlePosition(bottleIdx);
-    
-    const combo: ComboEffect = {
-      id: Date.now(),
-      text: text,
-      x: pos.x + 30,
-      y: pos.y - 50
-    };
-    
-    setComboEffects(prev => [...prev, combo]);
-    setTimeout(() => {
-      setComboEffects(prev => prev.filter(c => c.id !== combo.id));
-    }, 1500);
-  };
-
   const checkIfComplete = (newBottles: string[][]): boolean => {
     let completedBottles = 0;
     let emptyBottles = 0;
-    
     for (const bottle of newBottles) {
       if (bottle.length === 0) {
         emptyBottles++;
-        continue;
-      }
-      if (bottle.length === 4 && bottle.every(color => color === bottle[0])) {
+      } else if (bottle.length === 4 && bottle.every(color => color === bottle[0])) {
         completedBottles++;
       } else {
         return false;
@@ -201,23 +107,32 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
+    console.log('🖱️ Clicked bottle', bottleIdx, ':', bottles[bottleIdx]);
+    
     if (showVictory || isAnimating) return;
 
+    // Select bottle
     if (selectedBottle === null) {
       if (bottles[bottleIdx].length === 0) return;
       soundManager.play("select");
       setSelectedBottle(bottleIdx);
+      console.log('✅ Selected bottle', bottleIdx);
       return;
     }
 
+    // Deselect if clicking same bottle
     if (selectedBottle === bottleIdx) {
       setSelectedBottle(null);
+      console.log('❌ Deselected');
       return;
     }
 
-    // FIXED LOGIC: Work with copies
-    const fromBottle = [...bottles[selectedBottle]];
-    const toBottle = [...bottles[bottleIdx]];
+    console.log('🔄 Pouring from bottle', selectedBottle, 'to bottle', bottleIdx);
+    console.log('   From:', bottles[selectedBottle]);
+    console.log('   To:', bottles[bottleIdx]);
+
+    const fromBottle = bottles[selectedBottle];
+    const toBottle = bottles[bottleIdx];
 
     if (fromBottle.length === 0) {
       setSelectedBottle(null);
@@ -229,27 +144,27 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       return;
     }
 
-    // Get the TOP color (last element in array)
+    // Get TOP color (last in array = top of bottle)
     const topColor = fromBottle[fromBottle.length - 1];
+    console.log('   Top color to pour:', topColor);
 
-    // Check if we can pour into target bottle
+    // Check if can pour
     if (toBottle.length > 0 && toBottle[toBottle.length - 1] !== topColor) {
+      console.log('   ❌ Cannot pour - colors dont match');
       setSelectedBottle(null);
       return;
     }
 
-    // Count how many pieces of the same color are on top
+    // Count same colors on top
     let count = 1;
     for (let i = fromBottle.length - 2; i >= 0; i--) {
-      if (fromBottle[i] === topColor) {
-        count++;
-      } else {
-        break;
-      }
+      if (fromBottle[i] === topColor) count++;
+      else break;
     }
 
     const spaceAvailable = 4 - toBottle.length;
     const pourCount = Math.min(count, spaceAvailable);
+    console.log('   💧 Pouring', pourCount, 'pieces of', topColor);
 
     if (pourCount === 0) {
       setSelectedBottle(null);
@@ -258,31 +173,33 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
     setIsAnimating(true);
     setPouringBottle(selectedBottle);
-    
-    const fromPos = getBottlePosition(selectedBottle);
-    const toPos = getBottlePosition(bottleIdx);
-    
-    const pourAnim: PourAnimation = {
-      id: Date.now(),
-      fromPos: { x: fromPos.x + 30, y: fromPos.y + 40 },
-      toPos: { x: toPos.x + 30, y: toPos.y + 60 },
-      color: topColor
-    };
-    
-    setPourAnimations(prev => [...prev, pourAnim]);
 
     setTimeout(() => {
-      // FIXED: Create proper copies and modify them correctly
-      const newBottles = bottles.map(b => [...b]);
-      
-      // Pour pieces one by one
-      for (let i = 0; i < pourCount; i++) {
-        const piece = newBottles[selectedBottle].pop();
-        if (piece) {
-          newBottles[bottleIdx].push(piece);
+      // Create NEW array with modifications
+      const newBottles = bottles.map((bottle, idx) => {
+        if (idx === selectedBottle) {
+          // Remove pieces from source
+          const copy = [...bottle];
+          for (let i = 0; i < pourCount; i++) {
+            copy.pop();
+          }
+          console.log('   After pour FROM:', copy);
+          return copy;
+        } else if (idx === bottleIdx) {
+          // Add pieces to target
+          const copy = [...bottle];
+          for (let i = 0; i < pourCount; i++) {
+            copy.push(topColor);
+          }
+          console.log('   After pour TO:', copy);
+          return copy;
+        } else {
+          return [...bottle];
         }
-      }
+      });
 
+      console.log('✅ Pour complete! New state:', newBottles);
+      
       soundManager.play("pour");
       setBottles(newBottles);
       setMoves(moves + 1);
@@ -290,32 +207,15 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setIsAnimating(false);
       setPouringBottle(null);
 
-      setPourAnimations(prev => prev.filter(p => p.id !== pourAnim.id));
-
       if (checkBottleFull(newBottles[bottleIdx])) {
-        triggerParticleExplosion(bottleIdx, newBottles[bottleIdx][0]);
         soundManager.play("success");
-        checkCombo(bottleIdx);
       }
 
       if (checkIfComplete(newBottles)) {
         setTimeout(() => {
           setShowVictory(true);
-          setShowVictoryShare(true);
           soundManager.play("success");
           progressManager.saveProgress(currentLevel, moves + 1);
-          
-          for (let i = 0; i < 8; i++) {
-            setTimeout(() => {
-              const fw: FireworkData = {
-                id: Date.now() + i,
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight / 2,
-                color: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'][i]
-              };
-              setFireworks(prev => [...prev, fw]);
-            }, i * 150);
-          }
         }, 500);
       }
     }, 400);
@@ -332,35 +232,26 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     );
   }
 
-  // FIXED GRID: 4 columns × 5 rows = 20 bottles
+  // FIXED LAYOUT FOR ALL 20 BOTTLES
   const COLS = 4;
-  const ROWS = 5;
-  
-  // Better responsive sizing
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
   
-  let scale, bottleSpacing, rowSpacing, startX, startY;
+  let scale, bottleSpacing, rowSpacing;
   
   if (isMobile) {
-    // Mobile: fit everything on screen
-    scale = 0.7;
-    bottleSpacing = Math.min(windowWidth / 5, 85);
-    rowSpacing = Math.min((windowHeight - 200) / 6, 130);
-    
-    const totalWidth = COLS * bottleSpacing;
-    startX = (windowWidth - totalWidth) / 2;
-    startY = 120;
+    scale = 0.55;
+    bottleSpacing = windowWidth / 4.5;
+    rowSpacing = (windowHeight - 220) / 5.5;
   } else {
-    // Desktop: centered and properly spaced
-    scale = 1.0;
-    bottleSpacing = 130;
-    rowSpacing = 190;
-    
-    const totalWidth = COLS * bottleSpacing;
-    startX = (windowWidth - totalWidth) / 2;
-    startY = 130;
+    scale = 0.95;
+    bottleSpacing = 140;
+    rowSpacing = 185;
   }
+  
+  const totalWidth = COLS * bottleSpacing;
+  const startX = (windowWidth - totalWidth) / 2 + (bottleSpacing / 2);
+  const startY = isMobile ? 150 : 140;
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
@@ -377,59 +268,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     <>
       <AnimatedBackground theme={background} />
 
-      {showComboSystem && (
-        <ComboSystem 
-          comboCount={comboCount} 
-          onComboEnd={() => {
-            setShowComboSystem(false);
-            setComboCount(0);
-          }} 
-        />
-      )}
-
       <div style={{
         minHeight: "100vh", width: "100vw",
         position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", userSelect: "none", overflow: "hidden"
       }}>
-        {fireworks.map(fw => <Fireworks key={fw.id} x={fw.x} y={fw.y} color={fw.color} />)}
-        {pourAnimations.map(anim => (
-          <LiquidPourAnimation
-            key={anim.id}
-            fromPos={anim.fromPos}
-            toPos={anim.toPos}
-            color={anim.color}
-            onComplete={() => {}}
-          />
-        ))}
-        {particleEffects.map(effect => (
-          <ParticleExplosion
-            key={effect.id}
-            x={effect.x}
-            y={effect.y}
-            color={effect.color}
-            onComplete={() => {}}
-          />
-        ))}
-        {comboEffects.map(combo => (
-          <ComboText
-            key={combo.id}
-            text={combo.text}
-            x={combo.x}
-            y={combo.y}
-            onComplete={() => {}}
-          />
-        ))}
-
-        {showVictoryShare && !showVictory && (
-          <VictoryShare
-            level={currentLevel}
-            moves={moves}
-            isPerfect={false}
-            onShare={() => setShowVictoryShare(false)}
-            onClose={() => setShowVictoryShare(false)}
-          />
-        )}
-
         {showVictory && (
           <div style={{
             position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
@@ -437,27 +279,21 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             zIndex: 10000, textAlign: "center", color: "white", boxShadow: "0 0 60px rgba(255,215,0,0.6)",
             minWidth: isMobile ? "90%" : "400px"
           }}>
-            <div style={{ fontSize: isMobile ? "3rem" : "5rem", marginBottom: "20px", animation: "bounce 0.6s infinite alternate" }}>🎉</div>
             <h1 style={{ fontSize: isMobile ? "1.8rem" : "3rem", margin: "0 0 15px 0", color: "#4ECDC4" }}>LEVEL COMPLETE!</h1>
             <p style={{ fontSize: isMobile ? "1rem" : "1.3rem", marginBottom: "10px", opacity: 0.9 }}>Level {currentLevel} of 120</p>
-            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>
-              Completed in {moves} moves!
-            </p>
-            <p style={{ fontSize: isMobile ? "0.85rem" : "1rem", marginBottom: "35px", opacity: 0.7 }}>
-              🏆 Total completed: {completedLevels}/120
-            </p>
+            <p style={{ fontSize: isMobile ? "0.9rem" : "1.1rem", marginBottom: "10px", opacity: 0.8 }}>Completed in {moves} moves!</p>
             
-            <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap", marginTop: "20px" }}>
               <button onClick={loadNextLevel} style={{
                 padding: isMobile ? "14px 30px" : "18px 45px", background: "linear-gradient(135deg, #11998e, #38ef7d)",
                 border: "none", borderRadius: "15px", color: "white", fontSize: isMobile ? "1rem" : "1.3rem",
-                fontWeight: "bold", cursor: "pointer", boxShadow: "0 6px 25px rgba(17, 153, 142, 0.4)", transition: "all 0.3s"
-              }}>➡️ NEXT LEVEL</button>
+                fontWeight: "bold", cursor: "pointer"
+              }}>➡️ NEXT</button>
               
               <button onClick={onExit} style={{
                 padding: isMobile ? "14px 30px" : "18px 45px", background: "rgba(255,255,255,0.15)",
                 border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
-                fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer", transition: "all 0.3s"
+                fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer"
               }}>🏠 EXIT</button>
             </div>
           </div>
@@ -503,34 +339,22 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontSize: isMobile ? "0.75rem" : "0.9rem", 
             fontWeight: "bold", 
             cursor: "pointer"
-          }}>🔄 RESTART</button>
+          }}>🔄</button>
         </div>
-
-        <div style={{
-          padding: isMobile ? "4px 8px" : "6px 12px", 
-          background: "rgba(0,0,0,0.2)", 
-          textAlign: "center",
-          color: "white", 
-          fontSize: isMobile ? "0.7rem" : "0.8rem", 
-          flexShrink: 0
-        }}>🏆 Progress: {completedLevels}/120 levels</div>
 
         <div style={{ 
           flex: 1, 
           overflowY: "auto", 
           overflowX: "hidden", 
-          position: "relative", 
-          paddingBottom: "20px",
+          position: "relative",
           display: "flex", 
           justifyContent: "center", 
-          alignItems: "flex-start",
-          WebkitOverflowScrolling: "touch"
+          alignItems: "flex-start"
         }}>
-          <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
             {bottles.map((colors, idx) => {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
-              const isPouring = pouringBottle === idx;
               const basePos = getBottlePosition(idx);
 
               return (
@@ -540,11 +364,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                   top: basePos.y,
                   transform: `scale(${scale}) ${isSelected ? 'translateY(-8px) scale(1.1)' : ''}`,
                   transformOrigin: "center center", 
-                  cursor: showVictory || isAnimating ? "not-allowed" : "pointer",
+                  cursor: "pointer",
                   zIndex: isSelected ? 1000 : 1, 
-                  transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-                  filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : isFull ? "drop-shadow(0 0 15px rgba(255,215,0,0.6))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
-                  opacity: showVictory || isAnimating ? 0.7 : 1
+                  transition: "all 0.3s",
+                  filter: isSelected ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))"
                 }}>
                   <ThemedBottle 
                     colors={colors} 
@@ -554,15 +377,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                     isEmpty={colors.length === 0} 
                     isFull={isFull}
                     theme={bottleTheme}
-                    isPouring={isPouring}
+                    isPouring={false}
                   />
                 </div>
               );
             })}
           </div>
         </div>
-
-        <style>{`@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }`}</style>
       </div>
     </>
   );
