@@ -25,9 +25,10 @@ export default function ThemedBottle({
   const BOTTLE_WIDTH = 60;
   const LIQUID_SECTION_HEIGHT = 35;
 
-  // REVERSED: Fill from TOP to BOTTOM (correct logic!)
-  const filledColors = [...colors].reverse(); // REVERSE the array!
+  // DON'T REVERSE! Use colors as-is from backend
+  const filledColors = [...colors];
   
+  // Pad with transparent if needed
   while (filledColors.length < 4) {
     filledColors.push('transparent');
   }
@@ -96,13 +97,14 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* LIQUID FILLS FROM TOP - Start from top of bottle */}
+        {/* Liquid layers - FILL FROM BOTTOM TO TOP (normal physics!) */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
           {filledColors.map((color, idx) => {
             if (color === 'transparent') return null;
             
-            // START FROM TOP! (idx=0 is at top of bottle)
-            const yStart = BOTTLE_HEIGHT * 0.25 + idx * LIQUID_SECTION_HEIGHT;
+            // Calculate position from BOTTOM up (reverse index)
+            const reverseIdx = filledColors.filter(c => c !== 'transparent').length - 1 - idx;
+            const yStart = BOTTLE_HEIGHT * 0.95 - (reverseIdx + 1) * LIQUID_SECTION_HEIGHT;
             
             return (
               <rect
