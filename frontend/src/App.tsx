@@ -5,13 +5,24 @@ import { progressManager } from './utils/progressManager';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3500);
+    // Smooth loading progress
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => setLoading(false), 500);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 70); // Takes 7 seconds total (70ms * 100 = 7000ms)
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleStartGame = (level?: number) => {
@@ -44,7 +55,7 @@ export default function App() {
         overflow: 'hidden'
       }}>
         {/* Floating colorful bubbles */}
-        {[...Array(20)].map((_, i) => {
+        {[...Array(25)].map((_, i) => {
           const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
           return (
             <div
@@ -57,8 +68,8 @@ export default function App() {
                 height: `${30 + Math.random() * 80}px`,
                 background: colors[Math.floor(Math.random() * colors.length)],
                 borderRadius: '50%',
-                animation: `float ${4 + Math.random() * 6}s ease-in infinite`,
-                animationDelay: `${Math.random() * 4}s`,
+                animation: `float ${5 + Math.random() * 8}s ease-in infinite`,
+                animationDelay: `${Math.random() * 5}s`,
                 boxShadow: `0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}`,
                 opacity: 0.7
               }}
@@ -67,20 +78,20 @@ export default function App() {
         })}
 
         {/* Sparkle effects */}
-        {[...Array(30)].map((_, i) => (
+        {[...Array(40)].map((_, i) => (
           <div
             key={`star-${i}`}
             style={{
               position: 'absolute',
-              width: '3px',
-              height: '3px',
+              width: '4px',
+              height: '4px',
               background: 'white',
               borderRadius: '50%',
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animation: `twinkle ${1 + Math.random() * 2}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              boxShadow: '0 0 10px white'
+              animation: `twinkle ${1.5 + Math.random() * 2.5}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 3}s`,
+              boxShadow: '0 0 15px white'
             }}
           />
         ))}
@@ -94,18 +105,18 @@ export default function App() {
           {/* Animated potion bottles */}
           <div style={{
             display: 'flex',
-            gap: '20px',
-            marginBottom: '40px',
+            gap: '25px',
+            marginBottom: '50px',
             justifyContent: 'center'
           }}>
             {['🧪', '⚗️', '🧴'].map((emoji, i) => (
               <div
                 key={i}
                 style={{
-                  fontSize: '4rem',
-                  animation: `bounce ${1 + i * 0.2}s ease-in-out infinite`,
+                  fontSize: '5rem',
+                  animation: `bounce ${1.2 + i * 0.2}s ease-in-out infinite`,
                   animationDelay: `${i * 0.3}s`,
-                  filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))',
+                  filter: 'drop-shadow(0 15px 40px rgba(0,0,0,0.4))',
                   transform: 'scale(1)'
                 }}
               >
@@ -131,8 +142,8 @@ export default function App() {
           </h1>
 
           <div style={{
-            fontSize: '1.5rem',
-            marginBottom: '50px',
+            fontSize: '1.6rem',
+            marginBottom: '60px',
             opacity: 0.95,
             animation: 'pulse 2s ease-in-out infinite',
             textShadow: '0 2px 10px rgba(0,0,0,0.3)'
@@ -140,52 +151,72 @@ export default function App() {
             ✨ Mixing magical potions... ✨
           </div>
 
-          {/* Beautiful loading bar */}
+          {/* Beautiful loading bar with percentage */}
           <div style={{
-            width: '400px',
+            width: '450px',
             maxWidth: '90vw',
-            height: '16px',
-            background: 'rgba(255,255,255,0.2)',
-            borderRadius: '30px',
-            overflow: 'hidden',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid rgba(255,255,255,0.3)'
+            margin: '0 auto'
           }}>
             <div style={{
-              height: '100%',
-              background: 'linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #FFA07A, #FFD700)',
-              backgroundSize: '200% 100%',
-              animation: 'loadingBar 3.5s ease-in-out, shimmer 2s ease-in-out infinite',
+              height: '20px',
+              background: 'rgba(255,255,255,0.2)',
               borderRadius: '30px',
-              boxShadow: '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.5)'
-            }} />
+              overflow: 'hidden',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(255,255,255,0.3)',
+              position: 'relative'
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${loadingProgress}%`,
+                background: 'linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #FFA07A, #FFD700)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 2s ease-in-out infinite',
+                borderRadius: '30px',
+                boxShadow: '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.5)',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+
+            {/* Loading percentage text */}
+            <div style={{
+              marginTop: '25px',
+              fontSize: '1.8rem',
+              fontWeight: 'bold',
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+              animation: 'fadeIn 1s ease-in'
+            }}>
+              {loadingProgress}%
+            </div>
           </div>
 
-          {/* Loading percentage */}
+          {/* Loading message */}
           <div style={{
-            marginTop: '20px',
+            marginTop: '30px',
             fontSize: '1.2rem',
-            fontWeight: 'bold',
             animation: 'fadeIn 2s ease-in',
             textShadow: '0 2px 10px rgba(0,0,0,0.5)'
           }}>
-            Preparing your magical adventure...
+            {loadingProgress < 30 && '🎨 Preparing colorful potions...'}
+            {loadingProgress >= 30 && loadingProgress < 60 && '✨ Mixing magical ingredients...'}
+            {loadingProgress >= 60 && loadingProgress < 90 && '🧪 Adding sparkles...'}
+            {loadingProgress >= 90 && '🎉 Almost ready!'}
           </div>
         </div>
 
-        {/* Rotating magical circle */}
+        {/* Rotating magical circles */}
         <div style={{
           position: 'absolute',
-          width: '500px',
-          height: '500px',
+          width: '600px',
+          height: '600px',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           opacity: 0.08,
-          animation: 'spin 20s linear infinite'
+          animation: 'spin 25s linear infinite'
         }}>
-          {[...Array(3)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <div
               key={i}
               style={{
@@ -196,7 +227,7 @@ export default function App() {
                 left: `${i * 10}%`,
                 border: '4px solid white',
                 borderRadius: '50%',
-                animation: `spin ${15 - i * 5}s linear infinite`
+                animation: `spin ${20 - i * 5}s linear infinite`
               }}
             />
           ))}
@@ -217,11 +248,6 @@ export default function App() {
               opacity: 1; 
               transform: translateY(0); 
             }
-          }
-
-          @keyframes loadingBar {
-            from { width: 0%; }
-            to { width: 100%; }
           }
 
           @keyframes float {
@@ -259,7 +285,7 @@ export default function App() {
 
           @keyframes twinkle {
             0%, 100% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.5); }
+            50% { opacity: 1; transform: scale(1.8); }
           }
 
           @keyframes pulse {
