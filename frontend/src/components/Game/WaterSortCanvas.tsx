@@ -215,6 +215,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       return;
     }
 
+    // FIXED LOGIC: Work with copies
     const fromBottle = [...bottles[selectedBottle]];
     const toBottle = [...bottles[bottleIdx]];
 
@@ -228,15 +229,19 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       return;
     }
 
-    if (toBottle.length > 0 && fromBottle[fromBottle.length - 1] !== toBottle[toBottle.length - 1]) {
+    // Get the TOP color (last element in array)
+    const topColor = fromBottle[fromBottle.length - 1];
+
+    // Check if we can pour into target bottle
+    if (toBottle.length > 0 && toBottle[toBottle.length - 1] !== topColor) {
       setSelectedBottle(null);
       return;
     }
 
-    const colorToPour = fromBottle[fromBottle.length - 1];
+    // Count how many pieces of the same color are on top
     let count = 1;
     for (let i = fromBottle.length - 2; i >= 0; i--) {
-      if (fromBottle[i] === colorToPour) {
+      if (fromBottle[i] === topColor) {
         count++;
       } else {
         break;
@@ -261,15 +266,21 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       id: Date.now(),
       fromPos: { x: fromPos.x + 30, y: fromPos.y + 40 },
       toPos: { x: toPos.x + 30, y: toPos.y + 60 },
-      color: colorToPour
+      color: topColor
     };
     
     setPourAnimations(prev => [...prev, pourAnim]);
 
     setTimeout(() => {
-      const newBottles = [...bottles];
+      // FIXED: Create proper copies and modify them correctly
+      const newBottles = bottles.map(b => [...b]);
+      
+      // Pour pieces one by one
       for (let i = 0; i < pourCount; i++) {
-        newBottles[bottleIdx].push(newBottles[selectedBottle].pop()!);
+        const piece = newBottles[selectedBottle].pop();
+        if (piece) {
+          newBottles[bottleIdx].push(piece);
+        }
       }
 
       soundManager.play("pour");
@@ -325,15 +336,31 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const COLS = 4;
   const ROWS = 5;
   
-  // Responsive sizing
-  const scale = isMobile ? 0.6 : 1.0;
-  const bottleSpacing = isMobile ? 85 : 120;
-  const rowSpacing = isMobile ? 140 : 180;
+  // Better responsive sizing
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
   
-  const totalWidth = COLS * bottleSpacing;
-  const totalHeight = ROWS * rowSpacing;
-  const startX = (window.innerWidth - totalWidth) / 2;
-  const startY = isMobile ? 80 : 100;
+  let scale, bottleSpacing, rowSpacing, startX, startY;
+  
+  if (isMobile) {
+    // Mobile: fit everything on screen
+    scale = 0.7;
+    bottleSpacing = Math.min(windowWidth / 5, 85);
+    rowSpacing = Math.min((windowHeight - 200) / 6, 130);
+    
+    const totalWidth = COLS * bottleSpacing;
+    startX = (windowWidth - totalWidth) / 2;
+    startY = 120;
+  } else {
+    // Desktop: centered and properly spaced
+    scale = 1.0;
+    bottleSpacing = 130;
+    rowSpacing = 190;
+    
+    const totalWidth = COLS * bottleSpacing;
+    startX = (windowWidth - totalWidth) / 2;
+    startY = 130;
+  }
 
   const getBottlePosition = (idx: number) => {
     const row = Math.floor(idx / COLS);
@@ -486,7 +513,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           color: "white", 
           fontSize: isMobile ? "0.7rem" : "0.8rem", 
           flexShrink: 0
-        }}>🏆 Progress: {completedLevels}/120 levels • 4×5 Grid Layout</div>
+        }}>🏆 Progress: {completedLevels}/120 levels</div>
 
         <div style={{ 
           flex: 1, 
@@ -499,8 +526,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           alignItems: "flex-start",
           WebkitOverflowScrolling: "touch"
         }}>
-          <div style={{ position: "relative", width: "100%", height: totalHeight + 100 }}>
-            {bottles.slice(0, 20).map((colors, idx) => {
+          <div style={{ position: "relative", width: "100%", minHeight: "100%" }}>
+            {bottles.map((colors, idx) => {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
               const isPouring = pouringBottle === idx;
