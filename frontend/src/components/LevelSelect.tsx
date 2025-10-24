@@ -3,14 +3,14 @@ import { progressManager } from '../utils/progressManager';
 interface LevelSelectProps {
   onSelectLevel: (level: number) => void;
   onBack: () => void;
+  currentLevel: number;
 }
 
-export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps) {
+export default function LevelSelect({ onSelectLevel, onBack, currentLevel }: LevelSelectProps) {
   const completedLevels = progressManager.getCompletedCount();
   const lastLevel = progressManager.getLastLevel();
   const isMobile = window.innerWidth < 768;
 
-  // Show 20 levels per page
   const levels = Array.from({ length: 120 }, (_, i) => i + 1);
 
   const isLevelUnlocked = (level: number) => {
@@ -36,7 +36,7 @@ export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps)
       overflowY: 'auto'
     }}>
       <div style={{
-        maxWidth: '800px',
+        maxWidth: '900px',
         margin: '0 auto'
       }}>
         {/* Header */}
@@ -59,7 +59,7 @@ export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps)
               cursor: 'pointer'
             }}
           >
-            ← Back
+            ← Back to Game
           </button>
 
           <h1 style={{
@@ -82,15 +82,29 @@ export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps)
           </div>
         </div>
 
+        {/* Current Level Indicator */}
+        <div style={{
+          background: 'rgba(255,215,0,0.2)',
+          border: '2px solid rgba(255,215,0,0.5)',
+          padding: '15px',
+          borderRadius: '12px',
+          marginBottom: '20px',
+          textAlign: 'center',
+          color: 'white'
+        }}>
+          📍 Currently on Level {currentLevel}
+        </div>
+
         {/* Level Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(8, 1fr)',
+          gridTemplateColumns: isMobile ? 'repeat(5, 1fr)' : 'repeat(10, 1fr)',
           gap: '10px'
         }}>
           {levels.map(level => {
             const unlocked = isLevelUnlocked(level);
             const completed = isLevelCompleted(level);
+            const isCurrent = level === currentLevel;
 
             return (
               <button
@@ -99,17 +113,21 @@ export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps)
                 disabled={!unlocked}
                 style={{
                   padding: isMobile ? '15px 10px' : '20px',
-                  background: completed
+                  background: isCurrent
+                    ? 'linear-gradient(135deg, #FFD700, #FFA500)'
+                    : completed
                     ? 'linear-gradient(135deg, #11998e, #38ef7d)'
                     : unlocked
                     ? 'rgba(255,255,255,0.2)'
                     : 'rgba(0,0,0,0.3)',
-                  border: completed
+                  border: isCurrent
+                    ? '3px solid #FFD700'
+                    : completed
                     ? '3px solid #38ef7d'
                     : '2px solid rgba(255,255,255,0.2)',
                   borderRadius: '12px',
                   color: unlocked ? 'white' : 'rgba(255,255,255,0.3)',
-                  fontSize: isMobile ? '1rem' : '1.2rem',
+                  fontSize: isMobile ? '0.9rem' : '1.1rem',
                   fontWeight: 'bold',
                   cursor: unlocked ? 'pointer' : 'not-allowed',
                   transition: 'all 0.3s',
@@ -135,13 +153,23 @@ export default function LevelSelect({ onSelectLevel, onBack }: LevelSelectProps)
                     ✓
                   </div>
                 )}
+                {isCurrent && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '2px',
+                    left: '2px',
+                    fontSize: '0.8rem'
+                  }}>
+                    📍
+                  </div>
+                )}
                 {!unlocked && (
                   <div style={{
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    fontSize: '1.5rem'
+                    fontSize: '1.2rem'
                   }}>
                     🔒
                   </div>
