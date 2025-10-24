@@ -23,40 +23,8 @@ export default function ThemedBottle({
 }: ThemedBottleProps) {
   const BOTTLE_HEIGHT = 160;
   const BOTTLE_WIDTH = 60;
-  const BOTTLE_START_Y = BOTTLE_HEIGHT * 0.25; // Where liquid area starts
-  const LIQUID_AREA_HEIGHT = BOTTLE_HEIGHT * 0.7; // Total liquid area
-
-  console.log('🎨 Rendering bottle with colors:', colors);
-
-  // Calculate layer height based on actual number of pieces
-  const numPieces = colors.length;
-  const layerHeight = numPieces > 0 ? LIQUID_AREA_HEIGHT / 4 : 0; // Always divide by 4 (max capacity)
-
-  // Display colors from bottom to top (first element = bottom)
-  // Visual rendering should show them from bottom up
-  
-  const getFlaskPath = () => {
-    const w = BOTTLE_WIDTH;
-    const h = BOTTLE_HEIGHT;
-    
-    return `
-      M ${w * 0.4} 10
-      L ${w * 0.4} ${h * 0.25}
-      Q ${w * 0.35} ${h * 0.35} ${w * 0.25} ${h * 0.45}
-      Q ${w * 0.15} ${h * 0.6} ${w * 0.15} ${h * 0.75}
-      L ${w * 0.15} ${h * 0.9}
-      Q ${w * 0.15} ${h * 0.95} ${w * 0.25} ${h * 0.95}
-      L ${w * 0.75} ${h * 0.95}
-      Q ${w * 0.85} ${h * 0.95} ${w * 0.85} ${h * 0.9}
-      L ${w * 0.85} ${h * 0.75}
-      Q ${w * 0.85} ${h * 0.6} ${w * 0.75} ${h * 0.45}
-      Q ${w * 0.65} ${h * 0.35} ${w * 0.6} ${h * 0.25}
-      L ${w * 0.6} 10
-      Q ${w * 0.6} 5 ${w * 0.5} 5
-      Q ${w * 0.4} 5 ${w * 0.4} 10
-      Z
-    `;
-  };
+  const LAYER_HEIGHT = 28; // Fixed height per layer
+  const BOTTLE_BOTTOM = 152; // Bottom of liquid area
 
   return (
     <div
@@ -87,7 +55,23 @@ export default function ThemedBottle({
           </linearGradient>
 
           <clipPath id={`flaskClip-${position.x}-${position.y}`}>
-            <path d={getFlaskPath()} />
+            <path d={`
+              M ${BOTTLE_WIDTH * 0.4} 10
+              L ${BOTTLE_WIDTH * 0.4} ${BOTTLE_HEIGHT * 0.25}
+              Q ${BOTTLE_WIDTH * 0.35} ${BOTTLE_HEIGHT * 0.35} ${BOTTLE_WIDTH * 0.25} ${BOTTLE_HEIGHT * 0.45}
+              Q ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.6} ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.75}
+              L ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.9}
+              Q ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.95} ${BOTTLE_WIDTH * 0.25} ${BOTTLE_HEIGHT * 0.95}
+              L ${BOTTLE_WIDTH * 0.75} ${BOTTLE_HEIGHT * 0.95}
+              Q ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.95} ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.9}
+              L ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.75}
+              Q ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.6} ${BOTTLE_WIDTH * 0.75} ${BOTTLE_HEIGHT * 0.45}
+              Q ${BOTTLE_WIDTH * 0.65} ${BOTTLE_HEIGHT * 0.35} ${BOTTLE_WIDTH * 0.6} ${BOTTLE_HEIGHT * 0.25}
+              L ${BOTTLE_WIDTH * 0.6} 10
+              Q ${BOTTLE_WIDTH * 0.6} 5 ${BOTTLE_WIDTH * 0.5} 5
+              Q ${BOTTLE_WIDTH * 0.4} 5 ${BOTTLE_WIDTH * 0.4} 10
+              Z
+            `} />
           </clipPath>
 
           <filter id={`glowEffect-${position.x}-${position.y}`}>
@@ -99,35 +83,31 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* Render layers from BOTTOM to TOP */}
+        {/* Render liquid from BOTTOM UP */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
           {colors.map((color, idx) => {
-            // Calculate Y position from BOTTOM
-            // idx=0 should be at bottom, idx=3 at top
-            const layersFromBottom = numPieces - idx - 1; // Reverse index
-            const yStart = (BOTTLE_HEIGHT * 0.95) - ((layersFromBottom + 1) * layerHeight);
-            
-            console.log(`Layer ${idx} (${color}): yStart=${yStart}, layerHeight=${layerHeight}`);
+            // Start from BOTTOM: idx=0 is at bottom, idx=3 is at top
+            // Calculate Y position from bottom
+            const yStart = BOTTLE_BOTTOM - ((idx + 1) * LAYER_HEIGHT);
             
             return (
               <g key={idx}>
-                {/* Color layer */}
                 <rect
                   x={BOTTLE_WIDTH * 0.15}
                   y={yStart}
                   width={BOTTLE_WIDTH * 0.7}
-                  height={layerHeight}
+                  height={LAYER_HEIGHT}
                   fill={color}
                   opacity={0.9}
                 />
                 
-                {/* Separator line */}
+                {/* Separator line between layers */}
                 {idx < colors.length - 1 && (
                   <line
                     x1={BOTTLE_WIDTH * 0.15}
-                    y1={yStart + layerHeight}
+                    y1={yStart}
                     x2={BOTTLE_WIDTH * 0.85}
-                    y2={yStart + layerHeight}
+                    y2={yStart}
                     stroke="rgba(0,0,0,0.4)"
                     strokeWidth="1.5"
                   />
@@ -137,16 +117,30 @@ export default function ThemedBottle({
           })}
         </g>
 
-        {/* Flask glass outline */}
+        {/* Flask outline */}
         <path
-          d={getFlaskPath()}
+          d={`
+            M ${BOTTLE_WIDTH * 0.4} 10
+            L ${BOTTLE_WIDTH * 0.4} ${BOTTLE_HEIGHT * 0.25}
+            Q ${BOTTLE_WIDTH * 0.35} ${BOTTLE_HEIGHT * 0.35} ${BOTTLE_WIDTH * 0.25} ${BOTTLE_HEIGHT * 0.45}
+            Q ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.6} ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.75}
+            L ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.9}
+            Q ${BOTTLE_WIDTH * 0.15} ${BOTTLE_HEIGHT * 0.95} ${BOTTLE_WIDTH * 0.25} ${BOTTLE_HEIGHT * 0.95}
+            L ${BOTTLE_WIDTH * 0.75} ${BOTTLE_HEIGHT * 0.95}
+            Q ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.95} ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.9}
+            L ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.75}
+            Q ${BOTTLE_WIDTH * 0.85} ${BOTTLE_HEIGHT * 0.6} ${BOTTLE_WIDTH * 0.75} ${BOTTLE_HEIGHT * 0.45}
+            Q ${BOTTLE_WIDTH * 0.65} ${BOTTLE_HEIGHT * 0.35} ${BOTTLE_WIDTH * 0.6} ${BOTTLE_HEIGHT * 0.25}
+            L ${BOTTLE_WIDTH * 0.6} 10
+            Q ${BOTTLE_WIDTH * 0.6} 5 ${BOTTLE_WIDTH * 0.5} 5
+            Q ${BOTTLE_WIDTH * 0.4} 5 ${BOTTLE_WIDTH * 0.4} 10
+            Z
+          `}
           fill={`url(#flaskGradient-${position.x}-${position.y})`}
           stroke={isSelected ? '#FFD700' : isFull ? '#32CD32' : 'rgba(255,255,255,0.6)'}
           strokeWidth={isSelected ? 3 : 2}
           filter={isFull ? `url(#glowEffect-${position.x}-${position.y})` : undefined}
-          style={{
-            transition: 'all 0.3s ease'
-          }}
+          style={{ transition: 'all 0.3s ease' }}
         />
 
         {/* Cork */}
