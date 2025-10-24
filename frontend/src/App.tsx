@@ -10,7 +10,6 @@ export default function App() {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   useEffect(() => {
-    // Smooth loading progress
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -20,7 +19,7 @@ export default function App() {
         }
         return prev + 1;
       });
-    }, 70); // Takes 7 seconds total (70ms * 100 = 7000ms)
+    }, 70);
 
     return () => clearInterval(interval);
   }, []);
@@ -28,7 +27,7 @@ export default function App() {
   const handleStartGame = (level?: number) => {
     if (level) {
       setSelectedLevel(level);
-      progressManager.setCurrentLevel(level, 0);
+      progressManager.setCurrentLevel(level);
     } else {
       const lastLevel = progressManager.getLastLevel();
       setSelectedLevel(lastLevel > 0 ? lastLevel : 1);
@@ -54,7 +53,6 @@ export default function App() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Floating colorful bubbles */}
         {[...Array(25)].map((_, i) => {
           const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
           return (
@@ -77,7 +75,6 @@ export default function App() {
           );
         })}
 
-        {/* Sparkle effects */}
         {[...Array(40)].map((_, i) => (
           <div
             key={`star-${i}`}
@@ -96,13 +93,11 @@ export default function App() {
           />
         ))}
 
-        {/* Main content */}
         <div style={{
           zIndex: 10,
           textAlign: 'center',
           animation: 'fadeInUp 1s ease-out'
         }}>
-          {/* Animated potion bottles */}
           <div style={{
             display: 'flex',
             gap: '25px',
@@ -151,7 +146,6 @@ export default function App() {
             ✨ Mixing magical potions... ✨
           </div>
 
-          {/* Beautiful loading bar with percentage */}
           <div style={{
             width: '450px',
             maxWidth: '90vw',
@@ -179,7 +173,6 @@ export default function App() {
               }} />
             </div>
 
-            {/* Loading percentage text */}
             <div style={{
               marginTop: '25px',
               fontSize: '1.8rem',
@@ -191,7 +184,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Loading message */}
           <div style={{
             marginTop: '30px',
             fontSize: '1.2rem',
@@ -205,7 +197,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Rotating magical circles */}
         <div style={{
           position: 'absolute',
           width: '600px',
@@ -240,31 +231,15 @@ export default function App() {
           }
 
           @keyframes fadeInUp {
-            from { 
-              opacity: 0; 
-              transform: translateY(50px); 
-            }
-            to { 
-              opacity: 1; 
-              transform: translateY(0); 
-            }
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
           }
 
           @keyframes float {
-            0% { 
-              transform: translateY(0) translateX(0) scale(1);
-              opacity: 0;
-            }
-            10% {
-              opacity: 0.8;
-            }
-            90% {
-              opacity: 0.8;
-            }
-            100% { 
-              transform: translateY(-120vh) translateX(${Math.random() > 0.5 ? '' : '-'}${Math.random() * 150}px) scale(1.5);
-              opacity: 0;
-            }
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) translateX(50px) scale(1.5); opacity: 0; }
           }
 
           @keyframes gradientShift {

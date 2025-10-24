@@ -249,7 +249,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         setTimeout(() => {
           setShowVictory(true);
           soundManager.play("success");
-          progressManager.saveProgress(currentLevel, moves + 1);
+          progressManager.completeLevelAndAdvance(currentLevel, moves);
         }, 500);
       }
     }, 400);
