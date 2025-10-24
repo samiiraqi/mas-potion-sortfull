@@ -25,12 +25,14 @@ export default function ThemedBottle({
   const BOTTLE_WIDTH = 60;
   const LIQUID_SECTION_HEIGHT = 35;
 
-  // DON'T REVERSE! Use colors as-is from backend
-  const filledColors = [...colors];
+  // Array structure: [bottom, ..., ..., top]
+  // Visual rendering: top should be at the TOP of the bottle!
+  // So we need to REVERSE for display!
+  const displayColors = [...colors].reverse();
   
-  // Pad with transparent if needed
-  while (filledColors.length < 4) {
-    filledColors.push('transparent');
+  // Pad with transparent
+  while (displayColors.length < 4) {
+    displayColors.unshift('transparent');
   }
 
   const getFlaskPath = () => {
@@ -97,14 +99,13 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* Liquid layers - FILL FROM BOTTOM TO TOP (normal physics!) */}
+        {/* Render from TOP to BOTTOM visually */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
-          {filledColors.map((color, idx) => {
+          {displayColors.map((color, idx) => {
             if (color === 'transparent') return null;
             
-            // Calculate position from BOTTOM up (reverse index)
-            const reverseIdx = filledColors.filter(c => c !== 'transparent').length - 1 - idx;
-            const yStart = BOTTLE_HEIGHT * 0.95 - (reverseIdx + 1) * LIQUID_SECTION_HEIGHT;
+            // Start from top of bottle (idx=0 is at top)
+            const yStart = BOTTLE_HEIGHT * 0.25 + idx * LIQUID_SECTION_HEIGHT;
             
             return (
               <rect
@@ -123,7 +124,6 @@ export default function ThemedBottle({
           })}
         </g>
 
-        {/* Flask glass outline */}
         <path
           d={getFlaskPath()}
           fill={`url(#flaskGradient-${position.x}-${position.y})`}
@@ -135,7 +135,6 @@ export default function ThemedBottle({
           }}
         />
 
-        {/* Cork at top */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={7}
@@ -146,7 +145,6 @@ export default function ThemedBottle({
           strokeWidth={1}
         />
 
-        {/* Shimmer */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.35}
           cy={BOTTLE_HEIGHT * 0.5}
