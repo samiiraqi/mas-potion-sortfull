@@ -23,17 +23,14 @@ export default function ThemedBottle({
 }: ThemedBottleProps) {
   const BOTTLE_HEIGHT = 160;
   const BOTTLE_WIDTH = 60;
-  const LIQUID_SECTION_HEIGHT = 35;
 
-  // Array structure: [bottom, ..., ..., top]
-  // Visual rendering: top should be at the TOP of the bottle!
-  // So we need to REVERSE for display!
+  // FIXED: Calculate layer height based on how many colors we have
+  const numColors = colors.length;
+  const USABLE_HEIGHT = BOTTLE_HEIGHT * 0.65; // Use 65% of bottle for liquid
+  const LAYER_HEIGHT = numColors > 0 ? USABLE_HEIGHT / numColors : 0;
+
+  // Display from top to bottom (reverse the array)
   const displayColors = [...colors].reverse();
-  
-  // Pad with transparent
-  while (displayColors.length < 4) {
-    displayColors.unshift('transparent');
-  }
 
   const getFlaskPath = () => {
     const w = BOTTLE_WIDTH;
@@ -99,31 +96,44 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* Render from TOP to BOTTOM visually */}
+        {/* EQUAL SIZED LAYERS - Start from top of bottle */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
           {displayColors.map((color, idx) => {
-            if (color === 'transparent') return null;
-            
-            // Start from top of bottle (idx=0 is at top)
-            const yStart = BOTTLE_HEIGHT * 0.25 + idx * LIQUID_SECTION_HEIGHT;
+            // Calculate Y position from top
+            const yStart = BOTTLE_HEIGHT * 0.25 + (idx * LAYER_HEIGHT);
             
             return (
-              <rect
-                key={idx}
-                x={BOTTLE_WIDTH * 0.15}
-                y={yStart}
-                width={BOTTLE_WIDTH * 0.7}
-                height={LIQUID_SECTION_HEIGHT}
-                fill={color}
-                opacity={0.85}
-                style={{
-                  filter: isFull ? `url(#glowEffect-${position.x}-${position.y})` : 'none'
-                }}
-              />
+              <g key={idx}>
+                {/* Main color layer */}
+                <rect
+                  x={BOTTLE_WIDTH * 0.15}
+                  y={yStart}
+                  width={BOTTLE_WIDTH * 0.7}
+                  height={LAYER_HEIGHT}
+                  fill={color}
+                  opacity={0.9}
+                  style={{
+                    filter: isFull ? `url(#glowEffect-${position.x}-${position.y})` : 'none'
+                  }}
+                />
+                
+                {/* Black separator line between colors */}
+                {idx < displayColors.length - 1 && (
+                  <line
+                    x1={BOTTLE_WIDTH * 0.15}
+                    y1={yStart + LAYER_HEIGHT}
+                    x2={BOTTLE_WIDTH * 0.85}
+                    y2={yStart + LAYER_HEIGHT}
+                    stroke="rgba(0,0,0,0.3)"
+                    strokeWidth="1"
+                  />
+                )}
+              </g>
             );
           })}
         </g>
 
+        {/* Flask glass outline */}
         <path
           d={getFlaskPath()}
           fill={`url(#flaskGradient-${position.x}-${position.y})`}
@@ -135,6 +145,7 @@ export default function ThemedBottle({
           }}
         />
 
+        {/* Cork */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={7}
@@ -145,6 +156,7 @@ export default function ThemedBottle({
           strokeWidth={1}
         />
 
+        {/* Shimmer */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.35}
           cy={BOTTLE_HEIGHT * 0.5}
