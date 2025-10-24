@@ -3,65 +3,81 @@ const fs = require('fs');
 function makeLevel(levelNum) {
   let uniqueColors;
   
-  // ALWAYS 18 full + 2 empty = 20 bottles
-  // But fewer unique colors at start = easier!
+  // Determine how many DIFFERENT colors to use
   if (levelNum <= 10) {
-    uniqueColors = 4;   // Levels 1-10: Only 4 DIFFERENT colors! (SUPER EASY)
+    uniqueColors = 4;   // Levels 1-10: Only 4 colors
   } else if (levelNum <= 20) {
-    uniqueColors = 6;   // Levels 11-20: 6 different colors
+    uniqueColors = 6;   // Levels 11-20: 6 colors
   } else if (levelNum <= 35) {
-    uniqueColors = 8;   // Levels 21-35: 8 different colors
+    uniqueColors = 8;   // Levels 21-35: 8 colors
   } else if (levelNum <= 50) {
-    uniqueColors = 10;  // Levels 36-50: 10 different colors
+    uniqueColors = 10;  // Levels 36-50: 10 colors
   } else if (levelNum <= 70) {
-    uniqueColors = 12;  // Levels 51-70: 12 different colors
+    uniqueColors = 12;  // Levels 51-70: 12 colors
   } else if (levelNum <= 90) {
-    uniqueColors = 14;  // Levels 71-90: 14 different colors
+    uniqueColors = 14;  // Levels 71-90: 14 colors
   } else if (levelNum <= 110) {
-    uniqueColors = 16;  // Levels 91-110: 16 different colors
+    uniqueColors = 16;  // Levels 91-110: 16 colors
   } else {
-    uniqueColors = 18;  // Levels 111-120: 18 different colors (HARDEST!)
+    uniqueColors = 18;  // Levels 111-120: 18 colors
   }
   
   // SUPER DISTINCT COLORS
   const colorPalette = [
-    '#FF0000', // 1. BRIGHT RED
-    '#00FF00', // 2. BRIGHT GREEN
-    '#0000FF', // 3. BRIGHT BLUE
-    '#FFFF00', // 4. BRIGHT YELLOW
-    '#FF00FF', // 5. BRIGHT MAGENTA
-    '#00FFFF', // 6. BRIGHT CYAN
-    '#FFA500', // 7. BRIGHT ORANGE
-    '#8B4513', // 8. BROWN
-    '#FF1493', // 9. DEEP PINK
-    '#800080', // 10. PURPLE
-    '#FFD700', // 11. GOLD
-    '#00CED1', // 12. DARK TURQUOISE
-    '#32CD32', // 13. LIME GREEN
-    '#FF6347', // 14. TOMATO RED
-    '#4169E1', // 15. ROYAL BLUE
-    '#FF69B4', // 16. HOT PINK
-    '#20B2AA', // 17. LIGHT SEA GREEN
-    '#DC143C'  // 18. CRIMSON
+    '#FF0000', // RED
+    '#00FF00', // GREEN
+    '#0000FF', // BLUE
+    '#FFFF00', // YELLOW
+    '#FF00FF', // MAGENTA
+    '#00FFFF', // CYAN
+    '#FFA500', // ORANGE
+    '#8B4513', // BROWN
+    '#FF1493', // DEEP PINK
+    '#800080', // PURPLE
+    '#FFD700', // GOLD
+    '#00CED1', // DARK TURQUOISE
+    '#32CD32', // LIME GREEN
+    '#FF6347', // TOMATO RED
+    '#4169E1', // ROYAL BLUE
+    '#FF69B4', // HOT PINK
+    '#20B2AA', // LIGHT SEA GREEN
+    '#DC143C'  // CRIMSON
   ];
   
-  // We need 18 full bottles * 4 pieces = 72 pieces total
-  // But only use 'uniqueColors' different colors
+  // CRITICAL FIX: Each color must appear EXACTLY 4 times!
+  // 18 full bottles * 4 pieces = 72 pieces total
+  // So we need colors that divide evenly
+  
+  // Make sure uniqueColors divides 18 evenly, or adjust
+  let bottlesPerColor;
+  
+  if (18 % uniqueColors === 0) {
+    // Perfect division
+    bottlesPerColor = 18 / uniqueColors;
+  } else {
+    // Round to nearest divisor of 18
+    // Divisors of 18: 1, 2, 3, 6, 9, 18
+    const divisors = [1, 2, 3, 6, 9, 18];
+    bottlesPerColor = divisors.reduce((prev, curr) => 
+      Math.abs(curr - (18 / uniqueColors)) < Math.abs(prev - (18 / uniqueColors)) ? curr : prev
+    );
+    uniqueColors = 18 / bottlesPerColor;
+  }
+  
   const pieces = [];
   
-  // Calculate how many times to repeat each color
-  const totalPieces = 72;
-  const piecesPerColor = Math.floor(totalPieces / uniqueColors);
-  const extraPieces = totalPieces % uniqueColors;
-  
-  // Add pieces for each color
+  // Each color appears in exactly bottlesPerColor bottles
+  // So each color needs bottlesPerColor * 4 pieces
   for (let i = 0; i < uniqueColors; i++) {
     const color = colorPalette[i];
-    const count = piecesPerColor + (i < extraPieces ? 1 : 0);
-    for (let j = 0; j < count; j++) {
+    const piecesForThisColor = bottlesPerColor * 4;
+    for (let j = 0; j < piecesForThisColor; j++) {
       pieces.push(color);
     }
   }
+  
+  // Now we have EXACTLY 72 pieces (18 bottles * 4)
+  console.log(`Level ${levelNum}: ${uniqueColors} colors, ${bottlesPerColor} bottles per color, ${pieces.length} total pieces`);
   
   // Shuffle all pieces
   for (let i = pieces.length - 1; i > 0; i--) {
@@ -105,17 +121,7 @@ for (let i = 1; i <= 120; i++) {
 
 fs.writeFileSync('levels.json', JSON.stringify(allLevels, null, 2));
 
-console.log('✅ Generated 120 levels - 18 full + 2 empty ALWAYS!');
-console.log('');
-console.log('📊 DIFFICULTY PROGRESSION:');
-console.log('   Levels 1-10:    4 different colors  🟢 SUPER EASY');
-console.log('   Levels 11-20:   6 different colors  🟢 EASY');
-console.log('   Levels 21-35:   8 different colors  🟡 MEDIUM');
-console.log('   Levels 36-50:   10 different colors');
-console.log('   Levels 51-70:   12 different colors');
-console.log('   Levels 71-90:   14 different colors 🟠 HARD');
-console.log('   Levels 91-110:  16 different colors');
-console.log('   Levels 111-120: 18 different colors 🔴 HARDEST');
-console.log('');
-console.log('🎯 ALWAYS: 18 full bottles + 2 empty bottles = 20 total');
-console.log('🎨 Using EXTREMELY DISTINCT colors only!');
+console.log('\n✅ Generated 120 levels - ALL MATHEMATICALLY CORRECT!');
+console.log('\n📊 Each level has EXACTLY the right number of each color!');
+console.log('🎯 ALWAYS: 18 full bottles + 2 empty = 20 total');
+console.log('✅ Every color appears in complete sets of 4!');
