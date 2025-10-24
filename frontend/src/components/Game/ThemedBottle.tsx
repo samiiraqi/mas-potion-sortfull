@@ -25,9 +25,11 @@ export default function ThemedBottle({
   const BOTTLE_WIDTH = 60;
   const LIQUID_SECTION_HEIGHT = 35;
 
-  const filledColors = [...colors];
+  // REVERSED: Fill from TOP to BOTTOM (correct logic!)
+  const filledColors = [...colors].reverse(); // REVERSE the array!
+  
   while (filledColors.length < 4) {
-    filledColors.unshift('transparent');
+    filledColors.push('transparent');
   }
 
   const getFlaskPath = () => {
@@ -64,7 +66,6 @@ export default function ThemedBottle({
         userSelect: 'none'
       }}
     >
-      {/* Flask Face - KEEP THIS! */}
       <FlaskFace
         x={position.x}
         y={position.y}
@@ -95,12 +96,13 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* Liquid layers inside flask */}
+        {/* LIQUID FILLS FROM TOP - Start from top of bottle */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
           {filledColors.map((color, idx) => {
             if (color === 'transparent') return null;
             
-            const yStart = BOTTLE_HEIGHT * 0.95 - (idx + 1) * LIQUID_SECTION_HEIGHT;
+            // START FROM TOP! (idx=0 is at top of bottle)
+            const yStart = BOTTLE_HEIGHT * 0.25 + idx * LIQUID_SECTION_HEIGHT;
             
             return (
               <rect
@@ -131,7 +133,7 @@ export default function ThemedBottle({
           }}
         />
 
-        {/* Cork/Stopper at top */}
+        {/* Cork at top */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={7}
@@ -142,7 +144,7 @@ export default function ThemedBottle({
           strokeWidth={1}
         />
 
-        {/* Shimmer effect on glass */}
+        {/* Shimmer */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.35}
           cy={BOTTLE_HEIGHT * 0.5}

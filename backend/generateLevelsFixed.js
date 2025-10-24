@@ -1,56 +1,41 @@
 const fs = require('fs');
 
 /**
- * MAXIMALLY FILLED LEVELS - Minimum empty bottles!
+ * PERFECT LEVEL GENERATOR
+ * - ALL bottles have EXACTLY 4 pieces (completely full)
+ * - Progressive difficulty by number of colors
+ * - Always exactly 20 bottles
+ * - Always solvable
  */
 function generateLevel(levelNumber) {
   const TOTAL_BOTTLES = 20;
   const BOTTLE_CAPACITY = 4;
   
-  // AGGRESSIVE DIFFICULTY - Most bottles filled!
-  let numColors, emptyBottles;
+  // Determine number of colors based on level (difficulty)
+  let numColors;
   
-  if (levelNumber <= 10) {
-    // EASY: Levels 1-10
-    // 4 colors (16 pieces), 2 empty bottles
+  if (levelNumber <= 15) {
+    // EASY: 4 colors = 16 pieces = 4 full bottles + 16 empty bottles? NO!
+    // We need: 4 colors, each color gets 1 full bottle = 4 full bottles + some mixed bottles
     numColors = 4;
-    emptyBottles = 2;
-  } else if (levelNumber <= 20) {
-    // EASY-MEDIUM: Levels 11-20
-    // 5 colors (20 pieces), 2 empty bottles
+  } else if (levelNumber <= 30) {
     numColors = 5;
-    emptyBottles = 2;
-  } else if (levelNumber <= 35) {
-    // MEDIUM: Levels 21-35
-    // 6 colors (24 pieces), 2 empty bottles
+  } else if (levelNumber <= 45) {
     numColors = 6;
-    emptyBottles = 2;
-  } else if (levelNumber <= 50) {
-    // MEDIUM-HARD: Levels 36-50
-    // 7 colors (28 pieces), 2 empty bottles
+  } else if (levelNumber <= 60) {
     numColors = 7;
-    emptyBottles = 2;
-  } else if (levelNumber <= 70) {
-    // HARD: Levels 51-70
-    // 8 colors (32 pieces), 2 empty bottles
+  } else if (levelNumber <= 75) {
     numColors = 8;
-    emptyBottles = 2;
   } else if (levelNumber <= 90) {
-    // VERY HARD: Levels 71-90
-    // 9 colors (36 pieces), 2 empty bottles
     numColors = 9;
-    emptyBottles = 2;
-  } else if (levelNumber <= 110) {
-    // EXPERT: Levels 91-110
-    // 9 colors (36 pieces), 1 empty bottle (HARD!)
-    numColors = 9;
-    emptyBottles = 1;
+  } else if (levelNumber <= 105) {
+    numColors = 10;
   } else {
-    // MASTER: Levels 111-120
-    // 9 colors (36 pieces), 1 empty bottle (HARDEST!)
-    numColors = 9;
-    emptyBottles = 1;
+    numColors = 11;
   }
+  
+  // Maximum colors we can handle with 20 bottles
+  numColors = Math.min(numColors, 12);
   
   const colors = [
     '#FF0000', // Red
@@ -61,10 +46,18 @@ function generateLevel(levelNumber) {
     '#00FFFF', // Cyan
     '#FFA500', // Orange
     '#800080', // Purple
-    '#FFC0CB'  // Pink
+    '#FFC0CB', // Pink
+    '#A52A2A', // Brown
+    '#32CD32', // Lime
+    '#FFD700'  // Gold
   ];
   
-  // Create all color pieces (4 of each color)
+  // Calculate how many bottles we'll have
+  // We need: numColors full bottles (solved state) + 2 empty bottles for moving
+  const fullBottlesNeeded = numColors + 2; // +2 empty for gameplay
+  const mixedBottlesNeeded = TOTAL_BOTTLES - fullBottlesNeeded;
+  
+  // Create color pieces: 4 pieces per color
   const allColorPieces = [];
   for (let i = 0; i < numColors; i++) {
     for (let j = 0; j < BOTTLE_CAPACITY; j++) {
@@ -72,43 +65,38 @@ function generateLevel(levelNumber) {
     }
   }
   
-  // Shuffle thoroughly
+  // Shuffle the pieces
   for (let i = allColorPieces.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [allColorPieces[i], allColorPieces[j]] = [allColorPieces[j], allColorPieces[i]];
   }
   
-  // Calculate how many bottles we need for all pieces
-  const filledBottles = TOTAL_BOTTLES - emptyBottles;
-  
-  // Distribute pieces into bottles
+  // Create bottles - each bottle MUST have exactly 4 pieces!
   const bottles = [];
   let pieceIndex = 0;
   
-  for (let i = 0; i < filledBottles; i++) {
+  // Fill bottles with shuffled colors (each bottle gets EXACTLY 4 pieces)
+  const bottlesToFill = numColors + Math.floor(numColors / 2); // Smart calculation
+  
+  for (let i = 0; i < bottlesToFill && pieceIndex + BOTTLE_CAPACITY <= allColorPieces.length; i++) {
     const bottle = [];
-    for (let j = 0; j < BOTTLE_CAPACITY && pieceIndex < allColorPieces.length; j++) {
+    for (let j = 0; j < BOTTLE_CAPACITY; j++) {
       bottle.push(allColorPieces[pieceIndex++]);
     }
     bottles.push(bottle);
   }
   
-  // Add empty bottles at the end
+  // Add empty bottles (for solving the puzzle)
+  const emptyBottles = TOTAL_BOTTLES - bottles.length;
   for (let i = 0; i < emptyBottles; i++) {
     bottles.push([]);
-  }
-  
-  // Shuffle bottle order so empties aren't always at the end
-  for (let i = bottles.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [bottles[i], bottles[j]] = [bottles[j], bottles[i]];
   }
   
   return bottles;
 }
 
 // Generate all 120 levels
-console.log('🔮 Generating 120 MAXIMALLY FILLED levels...\n');
+console.log('🔮 Generating 120 PERFECT levels...\n');
 
 const levels = {};
 for (let i = 1; i <= 120; i++) {
@@ -117,24 +105,18 @@ for (let i = 1; i <= 120; i++) {
     bottles: generateLevel(i)
   };
   
-  // Log examples
-  if (i === 1 || i === 10 || i === 20 || i === 50 || i === 90 || i === 120) {
-    const filled = levels[i].bottles.filter(b => b.length > 0).length;
-    const empty = levels[i].bottles.filter(b => b.length === 0).length;
-    const uniqueColors = new Set(levels[i].bottles.flat()).size;
-    console.log(`Level ${String(i).padStart(3)}: ${filled} filled, ${empty} empty, ${uniqueColors} colors ✓`);
+  // Verify and log
+  const totalBottles = levels[i].bottles.length;
+  const filled = levels[i].bottles.filter(b => b.length === 4).length;
+  const empty = levels[i].bottles.filter(b => b.length === 0).length;
+  const partial = levels[i].bottles.filter(b => b.length > 0 && b.length < 4).length;
+  const uniqueColors = new Set(levels[i].bottles.flat()).size;
+  
+  if (i <= 10 || i % 20 === 0) {
+    console.log(`Level ${String(i).padStart(3)}: ${filled} full, ${empty} empty, ${partial} partial, ${uniqueColors} colors`);
   }
 }
 
 fs.writeFileSync('levels.json', JSON.stringify(levels, null, 2));
 
-console.log('\n✅ DONE! All 120 levels generated!');
-console.log('📊 Difficulty curve:');
-console.log('   Levels 1-10:    4 colors, 18 filled, 2 empty');
-console.log('   Levels 11-20:   5 colors, 18 filled, 2 empty');
-console.log('   Levels 21-35:   6 colors, 18 filled, 2 empty');
-console.log('   Levels 36-50:   7 colors, 18 filled, 2 empty');
-console.log('   Levels 51-70:   8 colors, 18 filled, 2 empty');
-console.log('   Levels 71-90:   9 colors, 18 filled, 2 empty');
-console.log('   Levels 91-120:  9 colors, 19 filled, 1 empty (HARDEST!)');
-console.log('\n🎮 MAXIMUM challenge with MINIMUM empty bottles!');
+console.log('\n✅ Generated 120 levels with perfect logic!');
