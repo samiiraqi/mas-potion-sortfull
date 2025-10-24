@@ -20,7 +20,7 @@ interface WaterSortCanvasProps {
 export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [currentLevel, setCurrentLevel] = useState(() => {
     const lastLevel = progressManager.getLastLevel();
-    return lastLevel > 0 ? lastLevel : 1; // FIX: Never start at 0!
+    return lastLevel > 0 ? lastLevel : 1;
   });
   
   const [bottles, setBottles] = useState<string[][]>([]);
@@ -50,6 +50,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   useEffect(() => {
     if (currentLevel >= 1 && currentLevel <= 120) {
       loadLevel(currentLevel);
+      // Save current level whenever it changes
+      progressManager.setCurrentLevel(currentLevel);
     }
   }, [currentLevel]);
 
@@ -87,6 +89,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const restartLevel = () => {
     loadLevel(currentLevel);
     soundManager.play("click");
+  };
+
+  const handleExit = () => {
+    // Save current level before exiting
+    progressManager.setCurrentLevel(currentLevel);
+    console.log('💾 Saving level', currentLevel, 'before exit');
+    onExit();
   };
 
   const checkBottleFull = (bottle: string[]): boolean => {
@@ -312,7 +321,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                 fontWeight: "bold", cursor: "pointer"
               }}>➡️ NEXT</button>
               
-              <button onClick={onExit} style={{
+              <button onClick={handleExit} style={{
                 padding: isMobile ? "14px 30px" : "18px 45px", background: "rgba(255,255,255,0.15)",
                 border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
                 fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer"
@@ -331,7 +340,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
           flexShrink: 0,
           flexWrap: "wrap"
         }}>
-          <button onClick={onExit} style={{
+          <button onClick={handleExit} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "rgba(255,0,0,0.7)", 
             border: "none",
