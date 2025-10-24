@@ -50,7 +50,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   useEffect(() => {
     if (currentLevel >= 1 && currentLevel <= 120) {
       loadLevel(currentLevel);
-      // Save current level whenever it changes
       progressManager.setCurrentLevel(currentLevel);
     }
   }, [currentLevel]);
@@ -76,24 +75,22 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
   const loadNextLevel = () => {
     const nextLevel = currentLevel + 1;
-  const loadNextLevel = () => {
-    const nextLevel = currentLevel + 1;
     if (nextLevel > 120) {
       alert("🎉 Congratulations! You completed all 120 levels!");
       handleExit();
       return;
     }
-    // Save completion of current level
     progressManager.completeLevelAndAdvance(currentLevel, moves);
-    // Move to next level
     setCurrentLevel(nextLevel);
     setShowVictory(false);
   };
+
+  const restartLevel = () => {
+    loadLevel(currentLevel);
     soundManager.play("click");
   };
 
   const handleExit = () => {
-    // Save current level before exiting
     progressManager.setCurrentLevel(currentLevel);
     console.log('💾 Saving level', currentLevel, 'before exit');
     onExit();
@@ -250,7 +247,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         setTimeout(() => {
           setShowVictory(true);
           soundManager.play("success");
-          progressManager.completeLevelAndAdvance(currentLevel, moves);
         }, 500);
       }
     }, 400);
