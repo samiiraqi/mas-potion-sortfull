@@ -23,15 +23,18 @@ export default function ThemedBottle({
 }: ThemedBottleProps) {
   const BOTTLE_HEIGHT = 160;
   const BOTTLE_WIDTH = 60;
+  const BOTTLE_START_Y = BOTTLE_HEIGHT * 0.25; // Where liquid area starts
+  const LIQUID_AREA_HEIGHT = BOTTLE_HEIGHT * 0.7; // Total liquid area
 
-  // FIXED: Calculate layer height based on how many colors we have
-  const numColors = colors.length;
-  const USABLE_HEIGHT = BOTTLE_HEIGHT * 0.65; // Use 65% of bottle for liquid
-  const LAYER_HEIGHT = numColors > 0 ? USABLE_HEIGHT / numColors : 0;
+  console.log('🎨 Rendering bottle with colors:', colors);
 
-  // Display from top to bottom (reverse the array)
-  const displayColors = [...colors].reverse();
+  // Calculate layer height based on actual number of pieces
+  const numPieces = colors.length;
+  const layerHeight = numPieces > 0 ? LIQUID_AREA_HEIGHT / 4 : 0; // Always divide by 4 (max capacity)
 
+  // Display colors from bottom to top (first element = bottom)
+  // Visual rendering should show them from bottom up
+  
   const getFlaskPath = () => {
     const w = BOTTLE_WIDTH;
     const h = BOTTLE_HEIGHT;
@@ -96,36 +99,37 @@ export default function ThemedBottle({
           </filter>
         </defs>
 
-        {/* EQUAL SIZED LAYERS - Start from top of bottle */}
+        {/* Render layers from BOTTOM to TOP */}
         <g clipPath={`url(#flaskClip-${position.x}-${position.y})`}>
-          {displayColors.map((color, idx) => {
-            // Calculate Y position from top
-            const yStart = BOTTLE_HEIGHT * 0.25 + (idx * LAYER_HEIGHT);
+          {colors.map((color, idx) => {
+            // Calculate Y position from BOTTOM
+            // idx=0 should be at bottom, idx=3 at top
+            const layersFromBottom = numPieces - idx - 1; // Reverse index
+            const yStart = (BOTTLE_HEIGHT * 0.95) - ((layersFromBottom + 1) * layerHeight);
+            
+            console.log(`Layer ${idx} (${color}): yStart=${yStart}, layerHeight=${layerHeight}`);
             
             return (
               <g key={idx}>
-                {/* Main color layer */}
+                {/* Color layer */}
                 <rect
                   x={BOTTLE_WIDTH * 0.15}
                   y={yStart}
                   width={BOTTLE_WIDTH * 0.7}
-                  height={LAYER_HEIGHT}
+                  height={layerHeight}
                   fill={color}
                   opacity={0.9}
-                  style={{
-                    filter: isFull ? `url(#glowEffect-${position.x}-${position.y})` : 'none'
-                  }}
                 />
                 
-                {/* Black separator line between colors */}
-                {idx < displayColors.length - 1 && (
+                {/* Separator line */}
+                {idx < colors.length - 1 && (
                   <line
                     x1={BOTTLE_WIDTH * 0.15}
-                    y1={yStart + LAYER_HEIGHT}
+                    y1={yStart + layerHeight}
                     x2={BOTTLE_WIDTH * 0.85}
-                    y2={yStart + LAYER_HEIGHT}
-                    stroke="rgba(0,0,0,0.3)"
-                    strokeWidth="1"
+                    y2={yStart + layerHeight}
+                    stroke="rgba(0,0,0,0.4)"
+                    strokeWidth="1.5"
                   />
                 )}
               </g>
