@@ -39,9 +39,18 @@ const ThemedBottle = memo(function ThemedBottle({
         willChange: 'transform'
       }}
     >
+      {/* Add beautiful face and bubbles */}
+      <FlaskFace
+        x={0}
+        y={0}
+        isSelected={isSelected}
+        isEmpty={isEmpty}
+        isFull={isFull}
+        isPouring={isPouring}
+      />
+
       <svg width={BOTTLE_WIDTH} height={BOTTLE_HEIGHT} style={{ overflow: 'visible' }}>
         <defs>
-          {/* Simplified gradients */}
           <linearGradient id={`shine-${position.x}-${position.y}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopOpacity={0.3} stopColor="white" />
             <stop offset="50%" stopOpacity={0.6} stopColor="white" />
@@ -68,7 +77,6 @@ const ThemedBottle = memo(function ThemedBottle({
           </clipPath>
         </defs>
 
-        {/* Liquid layers - optimized rendering */}
         <g clipPath={`url(#clip-${position.x}-${position.y})`}>
           {colors.map((color, idx) => {
             const yStart = BOTTLE_BOTTOM - ((idx + 1) * LAYER_HEIGHT);
@@ -83,7 +91,6 @@ const ThemedBottle = memo(function ThemedBottle({
                   fill={color}
                 />
                 
-                {/* Separator */}
                 {idx < colors.length - 1 && (
                   <rect
                     x={BOTTLE_WIDTH * 0.12}
@@ -99,7 +106,6 @@ const ThemedBottle = memo(function ThemedBottle({
           })}
         </g>
 
-        {/* Bottle outline */}
         <path
           d={`
             M ${BOTTLE_WIDTH * 0.35} 8
@@ -122,16 +128,14 @@ const ThemedBottle = memo(function ThemedBottle({
           strokeWidth={isSelected ? 2.5 : 2}
         />
 
-        {/* Simplified shine */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.28}
           cy={BOTTLE_HEIGHT * 0.45}
           rx={BOTTLE_WIDTH * 0.1}
           ry={BOTTLE_HEIGHT * 0.15}
-          fill="url(#shine-${position.x}-${position.y})"
+          fill={`url(#shine-${position.x}-${position.y})`}
         />
 
-        {/* Cork */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={6}

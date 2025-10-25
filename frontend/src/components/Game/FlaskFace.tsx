@@ -1,144 +1,88 @@
+import { useEffect, useState } from 'react';
+
 interface FlaskFaceProps {
   x: number;
   y: number;
   isSelected: boolean;
   isEmpty: boolean;
   isFull: boolean;
-  isPouring?: boolean;
+  isPouring: boolean;
 }
 
 export default function FlaskFace({ x, y, isSelected, isEmpty, isFull, isPouring }: FlaskFaceProps) {
-  const getExpression = () => {
-    if (isFull) return 'happy';
-    if (isPouring) return 'excited';
-    if (isSelected) return 'nervous';
-    if (isEmpty) return 'sleepy';
-    return 'neutral';
-  };
+  const [bubbles, setBubbles] = useState<Array<{ id: number; x: number; delay: number }>>([]);
 
-  const expression = getExpression();
+  useEffect(() => {
+    if (isFull) {
+      // Create beautiful bubbles when bottle is full!
+      const newBubbles = Array.from({ length: 8 }, (_, i) => ({
+        id: Date.now() + i,
+        x: 15 + Math.random() * 30,
+        delay: Math.random() * 0.5
+      }));
+      setBubbles(newBubbles);
 
-  const getEyes = () => {
-    switch (expression) {
-      case 'happy':
-        return { left: '^', right: '^', color: '#FFD700' };
-      case 'excited':
-        return { left: 'O', right: 'O', color: '#4ECDC4' };
-      case 'nervous':
-        return { left: '@', right: '@', color: '#FF6B6B' };
-      case 'sleepy':
-        return { left: '-', right: '-', color: '#999' };
-      default:
-        return { left: '•', right: '•', color: '#333' };
+      // Clear bubbles after animation
+      const timer = setTimeout(() => setBubbles([]), 3000);
+      return () => clearTimeout(timer);
     }
-  };
-
-  const getMouth = () => {
-    switch (expression) {
-      case 'happy':
-        return { shape: 'U', color: '#FFD700' };
-      case 'excited':
-        return { shape: 'O', color: '#FF69B4' };
-      case 'nervous':
-        return { shape: '~', color: '#FF6B6B' };
-      case 'sleepy':
-        return { shape: '_', color: '#999' };
-      default:
-        return { shape: '-', color: '#666' };
-    }
-  };
-
-  const eyes = getEyes();
-  const mouth = getMouth();
+  }, [isFull]);
 
   return (
     <div style={{
       position: 'absolute',
-      left: x + 15,
-      top: y + 40,
-      width: '30px',
-      height: '40px',
+      left: x,
+      top: y,
       pointerEvents: 'none',
-      zIndex: 10,
-      animation: isPouring ? 'bounce 0.5s ease-in-out' : 'none'
+      zIndex: 1000
     }}>
-      {/* Left Eye */}
-      <div style={{
-        position: 'absolute',
-        left: '8px',
-        top: '10px',
-        fontSize: '10px',
-        fontWeight: 'bold',
-        color: eyes.color,
-        textShadow: `0 0 4px ${eyes.color}`,
-        animation: 'blink 3s infinite'
-      }}>
-        {eyes.left}
-      </div>
-
-      {/* Right Eye */}
-      <div style={{
-        position: 'absolute',
-        right: '8px',
-        top: '10px',
-        fontSize: '10px',
-        fontWeight: 'bold',
-        color: eyes.color,
-        textShadow: `0 0 4px ${eyes.color}`,
-        animation: 'blink 3s infinite'
-      }}>
-        {eyes.right}
-      </div>
-
-      {/* Mouth */}
-      <div style={{
-        position: 'absolute',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        top: '22px',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        color: mouth.color,
-        textShadow: `0 0 4px ${mouth.color}`
-      }}>
-        {mouth.shape}
-      </div>
-
-      {/* Love hearts when full */}
-      {isFull && (
-        <>
-          <div style={{
-            position: 'absolute',
-            left: '-5px',
-            top: '5px',
-            fontSize: '8px',
-            animation: 'heartFloat 2s ease-in-out infinite'
-          }}>💕</div>
-          <div style={{
-            position: 'absolute',
-            right: '-5px',
-            top: '5px',
-            fontSize: '8px',
-            animation: 'heartFloat 2s ease-in-out infinite 0.5s'
-          }}>💕</div>
-        </>
+      {/* Cute face on bottle */}
+      {!isEmpty && (
+        <div style={{
+          position: 'absolute',
+          top: '50px',
+          left: '15px',
+          fontSize: '1.5rem',
+          animation: isSelected ? 'bounce 0.5s ease' : 'none'
+        }}>
+          {isSelected ? '😊' : isFull ? '🌟' : '😌'}
+        </div>
       )}
 
+      {/* Beautiful bubbles when full */}
+      {bubbles.map(bubble => (
+        <div
+          key={bubble.id}
+          style={{
+            position: 'absolute',
+            bottom: '60px',
+            left: `${bubble.x}px`,
+            width: '8px',
+            height: '8px',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.8), rgba(100,200,255,0.4))',
+            borderRadius: '50%',
+            animation: `bubbleRise 2s ease-out ${bubble.delay}s`,
+            boxShadow: '0 0 10px rgba(255,255,255,0.6)',
+            pointerEvents: 'none'
+          }}
+        />
+      ))}
+
       <style>{`
-        @keyframes blink {
-          0%, 48%, 52%, 100% { opacity: 1; }
-          50% { opacity: 0.2; }
+        @keyframes bubbleRise {
+          0% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-150px) scale(0.3);
+            opacity: 0;
+          }
         }
-        
+
         @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        
-        @keyframes heartFloat {
-          0% { transform: translateY(0) scale(0); opacity: 0; }
-          50% { transform: translateY(-10px) scale(1); opacity: 1; }
-          100% { transform: translateY(-20px) scale(0.5); opacity: 0; }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
         }
       `}</style>
     </div>
