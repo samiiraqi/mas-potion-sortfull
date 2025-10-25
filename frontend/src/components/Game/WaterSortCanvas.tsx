@@ -74,15 +74,29 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const loadNextLevel = () => {
+    console.log("🔵 NEXT button clicked!");
+    console.log("   Current level:", currentLevel);
+    console.log("   Moves:", moves);
+    
     const nextLevel = currentLevel + 1;
+    console.log("   Next level will be:", nextLevel);
+    
     if (nextLevel > 120) {
       alert("🎉 Congratulations! You completed all 120 levels!");
       handleExit();
       return;
     }
+    
+    console.log("   Saving progress...");
     progressManager.completeLevelAndAdvance(currentLevel, moves);
+    
+    console.log("   Setting current level to:", nextLevel);
     setCurrentLevel(nextLevel);
+    
+    console.log("   Closing victory screen...");
     setShowVictory(false);
+    
+    console.log("🟢 loadNextLevel complete!");
   };
 
   const restartLevel = () => {
