@@ -11,7 +11,13 @@ class ProgressManager {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const data = JSON.parse(stored);
+        // CRITICAL FIX: Ensure objects exist
+        return {
+          lastLevel: data.lastLevel || 1,
+          completedLevels: data.completedLevels || {},
+          levelMoves: data.levelMoves || {}
+        };
       }
     } catch (error) {
       console.error('Error reading progress:', error);
@@ -26,35 +32,45 @@ class ProgressManager {
 
   private saveProgressData(data: ProgressData): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      console.log('✅ Progress saved:', data);
+      // CRITICAL FIX: Ensure all properties exist before saving
+      const safeData = {
+        lastLevel: data.lastLevel || 1,
+        completedLevels: data.completedLevels || {},
+        levelMoves: data.levelMoves || {}
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safeData));
+      console.log('✅ Progress saved:', safeData);
     } catch (error) {
       console.error('Error saving progress:', error);
     }
   }
 
-  // Get the last level the player was on
   getLastLevel(): number {
     const progress = this.getProgress();
     console.log('📖 Loading last level:', progress.lastLevel);
     return progress.lastLevel || 1;
   }
 
-  // Save progress when completing a level
   completeLevelAndAdvance(levelId: number, moves: number): void {
+    console.log('💾 Completing level', levelId, 'with', moves, 'moves');
     const progress = this.getProgress();
     
-    // Mark level as completed
+    // CRITICAL FIX: Ensure objects exist
+    if (!progress.completedLevels) {
+      progress.completedLevels = {};
+    }
+    if (!progress.levelMoves) {
+      progress.levelMoves = {};
+    }
+    
     progress.completedLevels[levelId] = true;
     progress.levelMoves[levelId] = moves;
-    
-    // Update last level to next level
     progress.lastLevel = levelId + 1;
     
+    console.log('   Updated progress:', progress);
     this.saveProgressData(progress);
   }
 
-  // Update current level (when user selects a level or exits)
   setCurrentLevel(levelId: number): void {
     const progress = this.getProgress();
     progress.lastLevel = levelId;
@@ -62,19 +78,16 @@ class ProgressManager {
     console.log('💾 Current level saved:', levelId);
   }
 
-  // Check if a level is completed
   isLevelCompleted(levelId: number): boolean {
     const progress = this.getProgress();
-    return progress.completedLevels[levelId] === true;
+    return progress.completedLevels && progress.completedLevels[levelId] === true;
   }
 
-  // Get number of completed levels
   getCompletedCount(): number {
     const progress = this.getProgress();
-    return Object.keys(progress.completedLevels).length;
+    return progress.completedLevels ? Object.keys(progress.completedLevels).length : 0;
   }
 
-  // Reset all progress
   resetProgress(): void {
     localStorage.removeItem(STORAGE_KEY);
     console.log('🔄 Progress reset');
