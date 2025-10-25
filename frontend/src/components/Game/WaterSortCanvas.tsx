@@ -396,6 +396,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             cursor: "pointer"
           }}>💡</button>
 
+          <button onClick={() => alert("🤖 Robot feature coming soon! Follow @orouk.sami on Instagram for updates!")} style={{
+            padding: isMobile ? "6px 10px" : "8px 16px", 
+            background: "linear-gradient(135deg, #667eea, #764ba2)", 
+            border: "none", borderRadius: "8px", color: "white", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+          }}>🤖 ROBOT</button>
+
           <button onClick={restartLevel} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "rgba(255,165,0,0.7)", 
