@@ -396,7 +396,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             cursor: "pointer"
           }}>💡</button>
 
-          <button onClick={() => alert("🤖 Robot feature coming soon! Follow @orouk.sami on Instagram for updates!")} style={{
+          <button onClick={() => alert("🤖 STUCK? I can help! Follow @orouk.sami on Instagram and send a DM saying "ROBOT HELP LEVEL X" to get the secret solver!")} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "linear-gradient(135deg, #667eea, #764ba2)", 
             border: "none", borderRadius: "8px", color: "white", 
