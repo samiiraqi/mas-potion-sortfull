@@ -10,6 +10,10 @@ class SoundManager {
     }
   }
 
+  isInitialized(): boolean {
+    return this.audioContext !== null;
+  }
+
   play(soundName: string) {
     if (!this.audioContext) return;
 
