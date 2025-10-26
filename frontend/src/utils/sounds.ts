@@ -6,16 +6,14 @@ class SoundManager {
     if (this.initialized) return;
     
     try {
-      // Better mobile support
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      // Resume context for mobile browsers
       if (this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
       
       this.initialized = true;
-      console.log('🔊 Enhanced sound system initialized');
+      console.log('🔊 Gentle sound system initialized');
     } catch (error) {
       console.warn('Sound system failed:', error);
     }
@@ -31,14 +29,13 @@ class SoundManager {
       return;
     }
 
-    // Resume context if suspended (mobile fix)
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }
 
     try {
       if (soundName === 'pour') {
-        this.playBeautifulPour();
+        this.playGentlePour();
       } else if (soundName === 'select') {
         this.playSelectSound();
       } else if (soundName === 'victory') {
@@ -51,37 +48,36 @@ class SoundManager {
     }
   }
 
-  private playBeautifulPour() {
+  private playGentlePour() {
     const ctx = this.audioContext!;
     
-    // Create a gentle, pleasant pouring sound
+    // Create very gentle water drop sound
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
     const filter = ctx.createBiquadFilter();
     
-    // Connect audio nodes
     oscillator.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
     
-    // Beautiful liquid sound - like gentle water
+    // Soft sine wave
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(150, ctx.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.4);
+    oscillator.frequency.setValueAtTime(220, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.3);
     
-    // Soft low-pass filter for smoothness
+    // Heavy filtering for smoothness
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(800, ctx.currentTime);
-    filter.Q.setValueAtTime(1, ctx.currentTime);
+    filter.frequency.setValueAtTime(500, ctx.currentTime);
+    filter.Q.setValueAtTime(0.5, ctx.currentTime);
     
-    // Gentle volume envelope
+    // Very gentle volume
     gainNode.gain.setValueAtTime(0, ctx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.05);
-    gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.3);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    gainNode.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+    gainNode.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     
     oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.5);
+    oscillator.stop(ctx.currentTime + 0.4);
   }
 
   private playSelectSound() {
@@ -92,21 +88,19 @@ class SoundManager {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(600, ctx.currentTime);
-    oscillator.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.1);
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(440, ctx.currentTime);
     
-    gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    gainNode.gain.setValueAtTime(0.03, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
     
     oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.15);
+    oscillator.stop(ctx.currentTime + 0.1);
   }
 
   private playVictorySound() {
     const ctx = this.audioContext!;
     
-    // Play pleasant chord
     [261, 329, 392].forEach((freq, i) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
@@ -114,14 +108,14 @@ class SoundManager {
       oscillator.connect(gainNode);
       gainNode.connect(ctx.destination);
       
-      oscillator.type = 'sine';
+      oscillator.type = 'triangle';
       oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
       
-      gainNode.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.1);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+      gainNode.gain.setValueAtTime(0.02, ctx.currentTime + i * 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
       
       oscillator.start(ctx.currentTime + i * 0.1);
-      oscillator.stop(ctx.currentTime + 1.2);
+      oscillator.stop(ctx.currentTime + 0.8);
     });
   }
 
@@ -133,14 +127,14 @@ class SoundManager {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(600, ctx.currentTime);
     
-    gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    gainNode.gain.setValueAtTime(0.02, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
     
     oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.08);
+    oscillator.stop(ctx.currentTime + 0.05);
   }
 }
 

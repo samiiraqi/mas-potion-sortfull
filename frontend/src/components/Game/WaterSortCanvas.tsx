@@ -212,6 +212,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
+    // Enable audio on mobile
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      soundManager.init();
+    }
     console.log("🔊 Attempting to play sound...");    soundManager.play("select");
     // Enable audio context on first interaction
     if (!soundManager.isInitialized()) {
