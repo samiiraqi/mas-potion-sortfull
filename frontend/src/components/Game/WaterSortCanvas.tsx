@@ -212,6 +212,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
+    console.log("🔊 Attempting to play sound...");    soundManager.play("select");
     // Enable audio context on first interaction
     if (!soundManager.isInitialized()) {
       soundManager.init();
