@@ -38,6 +38,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [hintTo, setHintTo] = useState<number | null>(null);
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
   const [undosRemaining, setUndosRemaining] = useState(3);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setHintTo(null);
       setMoveHistory([]);
       setUndosRemaining(3);
+      setHintsRemaining(3);
       soundManager.play("click");
     } catch (err) {
       console.error("Failed to load level:", err);
@@ -134,6 +136,11 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const showHint = () => {
+    if (hintsRemaining <= 0) {
+      alert("No hints remaining! Use the Robot button for more help (password required).");
+      return;
+    }
+    
     setHintFrom(null);
     setHintTo(null);
 
@@ -149,6 +156,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         if (bottles[to].length === 0 || bottles[to][bottles[to].length - 1] === topColor) {
           setHintFrom(from);
           setHintTo(to);
+          setHintsRemaining(hintsRemaining - 1);
           soundManager.play("select");
           
           setTimeout(() => {
@@ -161,7 +169,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       }
     }
     
-    alert("🤔 No obvious moves found!");
+    alert("No obvious moves found!");
   };
 
   const solveWithRobot = async () => {
@@ -441,7 +449,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontSize: isMobile ? "0.7rem" : "0.9rem", 
             fontWeight: "bold", 
             cursor: "pointer"
-          }}>💡</button>
+          }}>💡 {hintsRemaining}</button>
 
           <button onClick={() => setShowPasswordDialog(true)} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
