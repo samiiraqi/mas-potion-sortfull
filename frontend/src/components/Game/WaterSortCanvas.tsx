@@ -42,6 +42,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
+    // Initialize sound system
+    soundManager.init();
     setIsMobile(window.innerWidth < 768);
     const saved = localStorage.getItem('gameSettings');
     if (saved) {
@@ -52,6 +54,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   }, []);
 
   useEffect(() => {
+    // Initialize sound system
+    soundManager.init();
     if (currentLevel >= 1 && currentLevel <= 120) {
       loadLevel(currentLevel);
       progressManager.setCurrentLevel(currentLevel);
@@ -208,6 +212,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
+    // Enable audio context on first interaction
+    if (soundManager && !soundManager.audioContext) {
+      soundManager.init();
+    }
     if (showVictory || isAnimating) return;
 
     if (selectedBottle === null) {
