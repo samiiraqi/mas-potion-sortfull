@@ -1,162 +1,114 @@
 class SoundManager {
   private audioContext: AudioContext | null = null;
-  private sounds: { [key: string]: AudioBuffer } = {};
+  private initialized = false;
 
   async init() {
+    if (this.initialized) return;
+    
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      console.log('🔊 Enhanced sound system initialized');
-      
-      // Generate beautiful pour sounds
-      await this.generateSounds();
+      this.initialized = true;
+      console.log('🔊 Sound system initialized');
     } catch (error) {
-      console.warn('Sound system failed to initialize:', error);
+      console.warn('Sound system failed:', error);
     }
   }
 
-  private async generateSounds() {
-    if (!this.audioContext) return;
-
-    // Create beautiful liquid pour sound with harmonics
-    this.sounds.pour = this.createLiquidPourSound();
-    this.sounds.select = this.createSelectSound();
-    this.sounds.victory = this.createVictorySound();
-    this.sounds.hint = this.createHintSound();
-    this.sounds.click = this.createClickSound();
-  }
-
-  private createLiquidPourSound(): AudioBuffer {
-    const ctx = this.audioContext!;
-    const duration = 0.8;
-    const sampleRate = ctx.sampleRate;
-    const buffer = ctx.createBuffer(2, duration * sampleRate, sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
-      
-      for (let i = 0; i < data.length; i++) {
-        const t = i / sampleRate;
-        
-        // Create liquid-like sound with multiple frequency components
-        const bubbleFreq = 200 + Math.sin(t * 15) * 50; // Bubbling effect
-        const flowFreq = 80 + Math.sin(t * 8) * 20;     // Flow sound
-        const sparkleFreq = 800 + Math.sin(t * 25) * 200; // High sparkle
-        
-        // Combine frequencies with different envelopes
-        const bubble = Math.sin(2 * Math.PI * bubbleFreq * t) * Math.exp(-t * 3);
-        const flow = Math.sin(2 * Math.PI * flowFreq * t) * Math.exp(-t * 2);
-        const sparkle = Math.sin(2 * Math.PI * sparkleFreq * t) * Math.exp(-t * 5) * 0.3;
-        
-        // Add filtered noise for realistic liquid texture
-        const noise = (Math.random() - 0.5) * 0.1 * Math.exp(-t * 4);
-        
-        // Combine all elements
-        data[i] = (bubble * 0.4 + flow * 0.4 + sparkle * 0.3 + noise) * 0.6;
-      }
-    }
-    
-    return buffer;
-  }
-
-  private createSelectSound(): AudioBuffer {
-    const ctx = this.audioContext!;
-    const duration = 0.3;
-    const buffer = ctx.createBuffer(2, duration * ctx.sampleRate, ctx.sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
-      
-      for (let i = 0; i < data.length; i++) {
-        const t = i / ctx.sampleRate;
-        const freq = 800 + t * 400; // Rising tone
-        const envelope = Math.exp(-t * 8);
-        data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.3;
-      }
-    }
-    
-    return buffer;
-  }
-
-  private createVictorySound(): AudioBuffer {
-    const ctx = this.audioContext!;
-    const duration = 2.0;
-    const buffer = ctx.createBuffer(2, duration * ctx.sampleRate, ctx.sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
-      
-      for (let i = 0; i < data.length; i++) {
-        const t = i / ctx.sampleRate;
-        
-        // Triumphant chord progression
-        const note1 = Math.sin(2 * Math.PI * 523 * t); // C5
-        const note2 = Math.sin(2 * Math.PI * 659 * t); // E5  
-        const note3 = Math.sin(2 * Math.PI * 784 * t); // G5
-        
-        const envelope = Math.exp(-t * 0.8);
-        data[i] = (note1 + note2 + note3) * envelope * 0.2;
-      }
-    }
-    
-    return buffer;
-  }
-
-  private createHintSound(): AudioBuffer {
-    const ctx = this.audioContext!;
-    const duration = 0.5;
-    const buffer = ctx.createBuffer(2, duration * ctx.sampleRate, ctx.sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
-      
-      for (let i = 0; i < data.length; i++) {
-        const t = i / ctx.sampleRate;
-        const freq = 600 + Math.sin(t * 10) * 100; // Gentle warble
-        const envelope = Math.exp(-t * 2);
-        data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.25;
-      }
-    }
-    
-    return buffer;
-  }
-
-  private createClickSound(): AudioBuffer {
-    const ctx = this.audioContext!;
-    const duration = 0.15;
-    const buffer = ctx.createBuffer(2, duration * ctx.sampleRate, ctx.sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
-      
-      for (let i = 0; i < data.length; i++) {
-        const t = i / ctx.sampleRate;
-        const freq = 1200;
-        const envelope = Math.exp(-t * 20);
-        data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.2;
-      }
-    }
-    
-    return buffer;
+  isInitialized(): boolean {
+    return this.initialized;
   }
 
   play(soundName: string) {
-    if (!this.audioContext || !this.sounds[soundName]) return;
+    if (!this.audioContext) {
+      this.init(); // Try to initialize if not ready
+      return;
+    }
 
     try {
-      const source = this.audioContext.createBufferSource();
-      const gainNode = this.audioContext.createGain();
-      
-      source.buffer = this.sounds[soundName];
-      source.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-      
-      // Add subtle reverb for depth
-      gainNode.gain.setValueAtTime(0.8, this.audioContext.currentTime);
-      
-      source.start();
+      if (soundName === 'pour') {
+        this.playPourSound();
+      } else if (soundName === 'select') {
+        this.playSelectSound();
+      } else if (soundName === 'victory') {
+        this.playVictorySound();
+      } else {
+        this.playClickSound();
+      }
     } catch (error) {
-      console.warn('Failed to play sound:', error);
+      console.warn('Sound play failed:', error);
     }
+  }
+
+  private playPourSound() {
+    const ctx = this.audioContext!;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    // Beautiful liquid pour frequency
+    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.5);
+    
+    // Smooth volume envelope
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.6);
+  }
+
+  private playSelectSound() {
+    const ctx = this.audioContext!;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.2);
+  }
+
+  private playVictorySound() {
+    const ctx = this.audioContext!;
+    
+    [523, 659, 784].forEach((freq, i) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+      
+      oscillator.start(ctx.currentTime + i * 0.1);
+      oscillator.stop(ctx.currentTime + 1.5);
+    });
+  }
+
+  private playClickSound() {
+    const ctx = this.audioContext!;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.frequency.setValueAtTime(1200, ctx.currentTime);
+    gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.1);
   }
 }
 
