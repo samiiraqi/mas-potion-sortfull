@@ -6,6 +6,8 @@ import Fireworks from "./Fireworks";
 import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
 
+import { solvePuzzle } from "./solver";
+import PasswordDialog from "./PasswordDialog";
 const API_URL = "https://water-sort-backend.onrender.com";
 
 interface MoveHistory {
@@ -36,6 +38,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [hintTo, setHintTo] = useState<number | null>(null);
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
   const [undosRemaining, setUndosRemaining] = useState(3);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -161,6 +164,22 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     alert("🤔 No obvious moves found!");
   };
 
+  const solveWithRobot = async () => {
+    const solution = solvePuzzle(bottles);
+    
+    if (solution.length === 0) {
+      alert("Robot suggests: Try restarting this level!");
+      return;
+    }
+    
+    const move = solution[0];
+    alert(`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
+    
+    // Highlight the suggested bottles
+    setSelectedBottle(move.from);
+    setTimeout(() => setSelectedBottle(null), 2000);
+  };
+
   const undoMove = () => {
     if (moveHistory.length === 0) {
       alert("❌ No moves to undo!");
@@ -273,6 +292,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white"
       }}>
         <h2>Loading level {currentLevel}...</h2>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
       </div>
     );
   }
@@ -337,7 +363,21 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                 border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
                 fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer"
               }}>🏠 EXIT</button>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
             </div>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
           </div>
         )}
 
@@ -371,6 +411,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontWeight: "bold"
           }}>
             Lv {currentLevel} • {moves} moves
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
           </div>
 
           <button onClick={undoMove} disabled={moveHistory.length === 0 || undosRemaining === 0} style={{
@@ -396,7 +443,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             cursor: "pointer"
           }}>💡</button>
 
-          <button onClick={() => alert("🤖 STUCK? I can help! Follow @orouk.sami on Instagram and send a DM saying 'ROBOT HELP LEVEL X' to get the secret solver!")} style={{
+          <button onClick={() => setShowPasswordDialog(true)} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
             background: "linear-gradient(135deg, #667eea, #764ba2)", 
             border: "none", borderRadius: "8px", color: "white", 
@@ -413,6 +460,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontWeight: "bold", 
             cursor: "pointer"
           }}>🔄</button>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
         </div>
 
         <div style={{ 
@@ -461,10 +515,31 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                     theme={bottleTheme}
                     isPouring={false}
                   />
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
                 </div>
               );
             })}
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
           </div>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
         </div>
 
         <style>{`
@@ -473,6 +548,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             50% { opacity: 0.6; }
           }
         `}</style>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
       </div>
     </>
   );
