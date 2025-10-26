@@ -1,23 +1,54 @@
 class SoundManager {
-  private initialized = false;
+  private audioContext: AudioContext | null = null;
 
   async init() {
-    if (this.initialized) return;
-    this.initialized = true;
-    console.log('🔊 Simple audio system ready');
-  }
-
-  isInitialized(): boolean {
-    return this.initialized;
+    try {
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('🔊 Sound system initialized');
+    } catch (error) {
+      console.warn('Sound system failed to initialize:', error);
+    }
   }
 
   play(soundName: string) {
-    // For now, just console log instead of making bad sounds
-    console.log(`🔊 Playing: ${soundName}`);
-    
-    // You could add actual audio files here later:
-    // const audio = new Audio('/sounds/pour.mp3');
-    // audio.play();
+    if (!this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      if (soundName === 'pour') {
+        oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(150, this.audioContext.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 0.4);
+      } else if (soundName === 'select') {
+        oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 0.2);
+      } else if (soundName === 'victory') {
+        oscillator.frequency.setValueAtTime(523, this.audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 1);
+      } else {
+        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 0.1);
+      }
+    } catch (error) {
+      console.warn('Failed to play sound:', error);
+    }
   }
 }
 
