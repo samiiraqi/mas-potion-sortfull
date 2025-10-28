@@ -1,9 +1,26 @@
 import React from 'react';
 import './About.css';
 
-const About = () => {
+const About = ({ onBack }: { onBack?: () => void }) => {
   return (
     <div className="about-container">
+      {onBack && (
+        <button 
+          onClick={onBack} 
+          style={{ 
+            marginBottom: '20px', 
+            padding: '10px 20px', 
+            background: '#667eea', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '8px', 
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
+        >
+          ← Back to Game
+        </button>
+      )}
       <div className="about-header">
         <div className="logo">🧪</div>
         <h1>About Potion Sort</h1>
