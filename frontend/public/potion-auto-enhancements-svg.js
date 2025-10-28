@@ -16,7 +16,7 @@
     const CONFIG = {
         particlesEnabled: true,
         animationsEnabled: true,
-        statsEnabled: true,
+        statsEnabled: false,  // DISABLED - was blocking title
         comboEnabled: true,
         achievementsEnabled: true,
         confettiEnabled: true,
