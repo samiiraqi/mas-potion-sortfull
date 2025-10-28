@@ -29,7 +29,9 @@
         combo: 0,
         timeStarted: null,
         lastClickTime: 0,
-        achievements: []
+        achievements: [],
+        currentLevel: null,
+        lastLevel: null
     };
 
     // Initialize
@@ -63,6 +65,9 @@
             subtree: true,
             attributes: true
         });
+        
+        // Also check periodically for level changes
+        setInterval(detectLevelCompletion, 1000);
     }
 
     function handleBottleClick(e) {
@@ -114,8 +119,53 @@
     }
 
     function checkGameState() {
-        // This could be enhanced to detect level completion
-        // For now, we'll let the user trigger it manually
+        // Detect level completion by watching for level changes
+        detectLevelCompletion();
+    }
+
+    function detectLevelCompletion() {
+        // Look for level indicators in the page
+        const bodyText = document.body.innerText;
+        const levelMatch = bodyText.match(/Level\s*[:\s]*(\d+)/i) || 
+                          bodyText.match(/Niveau\s*[:\s]*(\d+)/i) ||
+                          bodyText.match(/(\d+)\s*\/\s*\d+/); // Match "4/100" style
+        
+        if (levelMatch) {
+            const currentLevel = parseInt(levelMatch[1]);
+            
+            // Initialize on first detection
+            if (state.lastLevel === null) {
+                state.lastLevel = currentLevel;
+                state.currentLevel = currentLevel;
+                return;
+            }
+            
+            // Level increased = previous level completed!
+            if (currentLevel > state.lastLevel) {
+                console.log(`🎊 Level ${state.lastLevel} Complete! Moving to Level ${currentLevel}!`);
+                
+                // CONFETTI TIME! 🎊
+                createConfetti({ count: 200 });
+                
+                // Big achievement popup
+                setTimeout(() => {
+                    showAchievement(
+                        `Level ${state.lastLevel} Complete! 🎉`,
+                        `Great job! Starting Level ${currentLevel}!`,
+                        '🏆'
+                    );
+                }, 500);
+                
+                // Bonus score
+                state.score += 500;
+                updateStat('score', state.score);
+                
+                // Reset for new level
+                state.lastLevel = currentLevel;
+                state.currentLevel = currentLevel;
+                state.combo = 0;
+            }
+        }
     }
 
     // Particle System
