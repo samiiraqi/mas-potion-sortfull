@@ -1,0 +1,133 @@
+.privacy-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: white;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.privacy-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding: 50px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  color: white;
+}
+
+.logo {
+  font-size: 100px;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.privacy-header h1 {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.last-updated {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.highlight-box {
+  background: #fff4e6;
+  border: 2px solid #ff9800;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 30px 0;
+  font-size: 18px;
+}
+
+.section {
+  margin: 50px 0;
+}
+
+.section h2 {
+  color: #667eea;
+  font-size: 28px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #667eea;
+}
+
+.section h3 {
+  color: #764ba2;
+  font-size: 22px;
+  margin: 25px 0 15px 0;
+}
+
+.section p {
+  margin-bottom: 15px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.section ul {
+  margin: 20px 0 20px 30px;
+  font-size: 18px;
+}
+
+.section li {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.contact-box {
+  background: #f0f4ff;
+  border-left: 5px solid #667eea;
+  padding: 30px;
+  margin: 40px 0;
+  border-radius: 10px;
+}
+
+.contact-box h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.contact-box p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.copyright {
+  text-align: center;
+  padding: 30px;
+  border-top: 2px solid #eee;
+  color: #666;
+  margin-top: 50px;
+  font-size: 14px;
+}
+
+.copyright strong {
+  color: #667eea;
+}
+
+@media (max-width: 768px) {
+  .privacy-container {
+    padding: 20px 10px;
+  }
+  .privacy-header h1 {
+    font-size: 36px;
+  }
+  .logo {
+    font-size: 80px;
+  }
+  .section h2 {
+    font-size: 24px;
+  }
+  .section h3 {
+    font-size: 20px;
+  }
+}

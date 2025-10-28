@@ -1,32 +1,91 @@
-interface AboutProps {
-  onBack: () => void;
-}
+import React from 'react';
+import './About.css';
 
-export default function About({ onBack }: AboutProps) {
+const About = () => {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px',
-      color: 'white'
-    }}>
-      <button onClick={onBack} style={{
-        padding: '10px 20px',
-        background: 'rgba(255,255,255,0.2)',
-        border: '2px solid rgba(255,255,255,0.3)',
-        borderRadius: '10px',
-        color: 'white',
-        cursor: 'pointer',
-        marginBottom: '20px'
-      }}>
-        ← Back
-      </button>
-      
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+    <div className="about-container">
+      <div className="about-header">
+        <div className="logo">🧪</div>
         <h1>About Potion Sort</h1>
-        <p>A magical puzzle game where you sort colorful potions!</p>
-        <p>Created with React and TypeScript.</p>
+        <p className="tagline">A puzzle game built with passion and code</p>
+      </div>
+
+      <section className="section">
+        <h2>What is Potion Sort?</h2>
+        <p>
+          Potion Sort is a free, addictive puzzle game where you sort colorful liquids into bottles. 
+          Its simple to learn but challenging to master, with over 100 levels!
+        </p>
+      </section>
+
+      <section className="section">
+        <h2>Features</h2>
+        <div className="feature-grid">
+          <div className="feature-card">
+            <div className="feature-icon">🎯</div>
+            <div className="feature-title">100+ Levels</div>
+            <p>Progressive difficulty from easy to challenging</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">✨</div>
+            <div className="feature-title">Particle Effects</div>
+            <p>Beautiful visual effects</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🎵</div>
+            <div className="feature-title">Sound Effects</div>
+            <p>Satisfying audio feedback</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🆓</div>
+            <div className="feature-title">100% Free</div>
+            <p>No ads, completely free!</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <h2>The Story Behind the Game</h2>
+        <div className="story-box">
+          <p>
+            Hey! Im Sami Orouk, a DevSecOps engineer who loves building things. 
+            After learning AWS, Docker, Kubernetes, Terraform, Python, and JavaScript, 
+            I wanted to create something fun and interactive.
+          </p>
+          <p>
+            This project started as a learning exercise but became a passion project. 
+            I hope you enjoy playing Potion Sort!
+          </p>
+        </div>
+      </section>
+
+      <section className="section">
+        <h2>Tech Stack</h2>
+        <div className="tech-stack">
+          <div className="tech-badge">React</div>
+          <div className="tech-badge">TypeScript</div>
+          <div className="tech-badge">Vite</div>
+          <div className="tech-badge">HTML5</div>
+          <div className="tech-badge">CSS3</div>
+        </div>
+      </section>
+
+      <div className="developer-card">
+        <h3>Meet the Developer</h3>
+        <p><strong>Sami Orouk</strong></p>
+        <p>DevSecOps Engineer | Game Developer</p>
+        <div className="social-links">
+          <a href="https://instagram.com/orouk.sami" target="_blank" rel="noopener noreferrer" className="social-link">
+            Instagram @orouk.sami
+          </a>
+        </div>
+      </div>
+
+      <div className="copyright">
+        <p><strong>2025 Potion Sort by Sami Orouk. All Rights Reserved.</strong></p>
       </div>
     </div>
   );
-}
+};
+
+export default About;

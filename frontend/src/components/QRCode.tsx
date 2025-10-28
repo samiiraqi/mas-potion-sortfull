@@ -1,101 +1,93 @@
-export default function QRCodePage() {
-  const gameURL = "https://water-sort-frontend.onrender.com";
-  const qrCodeURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(gameURL)}`;
+import React, { useEffect, useRef, useState } from 'react';
+import QRCodeLib from 'qrcode';
+import './QRCode.css';
+
+const QRCode = () => {
+  const canvasRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+  const gameURL = 'https://water-sort-frontend.onrender.com';
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      QRCodeLib.toCanvas(canvasRef.current, gameURL, {
+        width: 300,
+        margin: 2,
+        color: { dark: '#667eea', light: '#ffffff' }
+      });
+    }
+  }, []);
+
+  const copyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(gameURL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      const input = document.createElement('input');
+      input.value = gameURL;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
+  const downloadQR = () => {
+    if (canvasRef.current) {
+      const link = document.createElement('a');
+      link.download = 'potion-sort-qr.png';
+      link.href = canvasRef.current.toDataURL();
+      link.click();
+    }
+  };
+
+  const shareWhatsApp = () => {
+    const text = encodeURIComponent('Check out Potion Sort! ' + gameURL);
+    window.open('https://wa.me/?text=' + text, '_blank');
+  };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '40px 20px',
-      color: 'white',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{
-        background: 'rgba(255,255,255,0.1)',
-        padding: '40px',
-        borderRadius: '20px',
-        textAlign: 'center',
-        maxWidth: '500px'
-      }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>📱 Scan to Play!</h1>
-        
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '15px',
-          marginBottom: '30px'
-        }}>
-          <img src={qrCodeURL} alt="QR Code" style={{ width: '100%', maxWidth: '300px' }} />
+    <div className="qr-container">
+      <div className="qr-content">
+        <div className="logo">🧪</div>
+        <h1>Share Potion Sort</h1>
+        <p className="subtitle">Scan the QR code or share the link!</p>
+
+        <div className="qr-section">
+          <div className="qr-placeholder">
+            <canvas ref={canvasRef} />
+          </div>
+          <p className="qr-info">
+            <strong>Scan with your phone camera</strong>
+          </p>
         </div>
 
-        {/* Alchemist flask icon */}
-        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
-          ⚗️
+        <div className="url-box" onClick={copyURL}>
+          <span>{gameURL}</span>
         </div>
 
-        <p style={{ fontSize: '1.5rem', marginBottom: '15px', fontWeight: 'bold' }}>
-          Potion Sort
-        </p>
-        <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '20px', wordBreak: 'break-all' }}>
-          {gameURL}
-        </p>
+        <div className="button-group">
+          <button className="btn btn-primary" onClick={copyURL}>
+            {copied ? 'Copied!' : 'Copy Link'}
+          </button>
+          <button className="btn btn-primary" onClick={downloadQR}>
+            Download QR
+          </button>
+          <button className="btn btn-secondary" onClick={shareWhatsApp}>
+            Share WhatsApp
+          </button>
+        </div>
 
-        <p style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '30px' }}>
-          Follow on Instagram: <a 
-            href="https://instagram.com/_sami_mas" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ 
-              color: '#E1306C', 
-              textDecoration: 'none',
-              fontWeight: 'bold'
-            }}
-          >
-            @_sami_mas
-          </a>
-        </p>
-
-        <button
-          onClick={() => {
-            const link = document.createElement('a');
-            link.href = qrCodeURL;
-            link.download = 'potion-sort-qr-code.png';
-            link.click();
-          }}
-          style={{
-            padding: '15px 30px',
-            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
-            border: 'none',
-            borderRadius: '12px',
-            color: 'white',
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginBottom: '15px'
-          }}
-        >
-          📥 Download QR Code
-        </button>
-
-        <br/>
-
-        <button
-          onClick={() => window.history.back()}
-          style={{
-            padding: '12px 25px',
-            background: 'rgba(255,255,255,0.2)',
-            border: '2px solid rgba(255,255,255,0.3)',
-            borderRadius: '12px',
-            color: 'white',
-            fontSize: '1rem',
-            cursor: 'pointer'
-          }}
-        >
-          ← Back
-        </button>
+        <div className="copyright">
+          <p><strong>2025 Potion Sort by Sami Orouk. All Rights Reserved.</strong></p>
+        </div>
       </div>
+
+      {copied && <div className="notification">Copied!</div>}
     </div>
   );
-}
+};
+
+export default QRCode;
