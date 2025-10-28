@@ -19,7 +19,8 @@
         statsEnabled: true,
         comboEnabled: true,
         achievementsEnabled: true,
-        confettiEnabled: true
+        confettiEnabled: true,
+        soundEnabled: true
     };
 
     // State
@@ -34,9 +35,15 @@
         lastLevel: null
     };
 
+    // Audio Context
+    let audioContext = null;
+
     // Initialize
     function init() {
         try {
+            // Initialize audio
+            initAudio();
+            
             createUI();
             setupEventListeners();
             state.timeStarted = Date.now();
@@ -46,12 +53,85 @@
             
             setTimeout(() => {
                 showAchievement('Enhanced Mode!', 'Visual effects are now active! 🎉', '✨');
+                sounds.achievement();
             }, 1000);
             
         } catch (e) {
             console.error('Failed to initialize enhancements:', e);
         }
     }
+
+    // Initialize Audio
+    function initAudio() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('🔊 Audio system initialized!');
+        } catch (e) {
+            console.warn('Web Audio API not supported');
+            CONFIG.soundEnabled = false;
+        }
+    }
+
+    // Sound System - Web Audio API
+    function playTone(frequency, duration, type = 'sine', volume = 0.3) {
+        if (!CONFIG.soundEnabled || !audioContext) return;
+        
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+            // Silently fail if audio doesn't work
+        }
+    }
+
+    const sounds = {
+        click: () => {
+            playTone(800, 0.05, 'square', 0.2);
+        },
+        
+        pour: () => {
+            playTone(400, 0.3, 'sine');
+            setTimeout(() => playTone(350, 0.3, 'sine'), 100);
+        },
+        
+        bottleComplete: () => {
+            playTone(523.25, 0.15); // C
+            setTimeout(() => playTone(659.25, 0.15), 150); // E
+            setTimeout(() => playTone(783.99, 0.3), 300); // G
+        },
+        
+        levelComplete: () => {
+            const notes = [523.25, 587.33, 659.25, 783.99, 880.00];
+            notes.forEach((note, i) => {
+                setTimeout(() => playTone(note, 0.2), i * 100);
+            });
+        },
+        
+        combo: (comboLevel) => {
+            for (let i = 0; i < Math.min(comboLevel, 5); i++) {
+                setTimeout(() => playTone(400 + i * 100, 0.1), i * 50);
+            }
+        },
+        
+        achievement: () => {
+            playTone(523.25, 0.1);
+            setTimeout(() => playTone(659.25, 0.1), 100);
+            setTimeout(() => playTone(783.99, 0.2), 200);
+            setTimeout(() => playTone(1046.50, 0.3), 350);
+        }
+    };
 
     // Event Listeners
     function setupEventListeners() {
@@ -78,6 +158,9 @@
             target.tagName === 'g' || target.tagName === 'ellipse' ||
             target.closest('svg')) {
             
+            // Play click sound
+            sounds.click();
+            
             // Get position for particles
             const element = target.getBoundingClientRect ? target : target.closest('svg');
             if (!element) return;
@@ -90,6 +173,9 @@
             const now = Date.now();
             if (now - state.lastClickTime < 2000) {
                 state.combo++;
+                if (state.combo >= 3) {
+                    sounds.combo(state.combo);
+                }
             } else {
                 state.combo = 1;
             }
@@ -107,7 +193,11 @@
                 showCombo(state.combo);
             }
             
-            // Create particles!
+            // Create particles with pour sound occasionally
+            if (state.moves % 2 === 0) {
+                sounds.pour();
+            }
+            
             createParticles(x, y, {
                 count: 20,
                 colors: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94']
@@ -143,6 +233,9 @@
             // Level increased = previous level completed!
             if (currentLevel > state.lastLevel) {
                 console.log(`🎊 Level ${state.lastLevel} Complete! Moving to Level ${currentLevel}!`);
+                
+                // SOUNDS!
+                sounds.levelComplete();
                 
                 // CONFETTI TIME! 🎊
                 createConfetti({ count: 200 });
@@ -451,11 +544,12 @@
         style.textContent = `
             #potion-stats-panel {
                 position: fixed;
-                top: 20px;
-                left: 20px;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
                 background: rgba(255, 255, 255, 0.95);
                 border-radius: 15px;
-                padding: 20px;
+                padding: 15px 25px;
                 box-shadow: 0 5px 20px rgba(0,0,0,0.2);
                 display: flex;
                 gap: 30px;
@@ -560,29 +654,44 @@
 
             @media (max-width: 768px) {
                 #potion-stats-panel {
-                    flex-direction: column;
-                    gap: 15px;
                     top: 10px;
-                    left: 10px;
-                    padding: 15px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    flex-direction: row;
+                    gap: 15px;
+                    padding: 10px 15px;
+                    max-width: 90%;
+                }
+
+                .potion-stat {
+                    min-width: 60px;
                 }
 
                 .potion-stat-value {
-                    font-size: 1.5em;
+                    font-size: 1.3em;
+                }
+
+                .potion-stat-label {
+                    font-size: 0.7em;
                 }
 
                 #potion-combo-display {
-                    top: 10px;
+                    top: 70px;
                     right: 10px;
-                    padding: 15px 20px;
+                    padding: 10px 15px;
                 }
 
                 .potion-combo-number {
-                    font-size: 2em;
+                    font-size: 1.8em;
+                }
+
+                .potion-combo-label {
+                    font-size: 0.8em;
                 }
 
                 #potion-achievement-popup {
                     padding: 30px 40px;
+                    max-width: 85%;
                 }
 
                 .potion-achievement-title {
@@ -598,6 +707,15 @@
         triggerConfetti: () => createConfetti({ count: 200 }),
         triggerParticles: (x, y) => createParticles(x, y, { count: 50 }),
         showAchievement: showAchievement,
+        toggleSound: () => { 
+            CONFIG.soundEnabled = !CONFIG.soundEnabled;
+            console.log(`🔊 Sound ${CONFIG.soundEnabled ? 'enabled' : 'disabled'}`);
+        },
+        enableSound: () => { CONFIG.soundEnabled = true; },
+        disableSound: () => { CONFIG.soundEnabled = false; },
+        playSound: (soundName) => {
+            if (sounds[soundName]) sounds[soundName]();
+        },
         getStats: () => ({
             moves: state.moves,
             score: state.score,
