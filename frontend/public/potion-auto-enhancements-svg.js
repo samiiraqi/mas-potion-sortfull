@@ -654,7 +654,7 @@
 
             @media (max-width: 768px) {
                 #potion-stats-panel {
-                    top: 60px;
+                    top: 80px;
                     left: 50%;
                     transform: translateX(-50%);
                     flex-direction: row;
@@ -676,7 +676,7 @@
                 }
 
                 #potion-combo-display {
-                    top: 120px;
+                    top: 140px;
                     right: 10px;
                     padding: 10px 15px;
                 }
