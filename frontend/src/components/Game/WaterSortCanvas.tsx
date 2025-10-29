@@ -3,6 +3,7 @@ import axios from "axios";
 import ThemedBottle from "./ThemedBottle";
 import AnimatedBackground from "./AnimatedBackground";
 import Fireworks from "./Fireworks";
+import confetti from 'canvas-confetti';
 import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
 
@@ -80,6 +81,48 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     } catch (err) {
       console.error("Failed to load level:", err);
     }
+  };
+
+  const triggerConfetti = () => {
+    // Center explosion
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#FFD700']
+    });
+
+    // Left burst
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1']
+      });
+    }, 200);
+
+    // Right burst
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+        colors: ['#FFA07A', '#FFD700', '#FF6B6B']
+      });
+    }, 400);
+
+    // Rain from top
+    setTimeout(() => {
+      confetti({
+        particleCount: 200,
+        spread: 180,
+        origin: { y: 0.2 },
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#FFD700', '#98D8C8']
+      });
+    }, 600);
   };
 
   const loadNextLevel = () => {
@@ -299,6 +342,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
       if (checkIfComplete(newBottles)) {
         setTimeout(() => {
+          triggerConfetti();
           setShowVictory(true);
           soundManager.play("success");
         }, 500);
@@ -384,21 +428,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                 border: "2px solid rgba(255,255,255,0.3)", borderRadius: "15px", color: "white",
                 fontSize: isMobile ? "1rem" : "1.3rem", fontWeight: "bold", cursor: "pointer"
               }}>🏠 EXIT</button>
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
             </div>
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
           </div>
         )}
 
@@ -432,13 +462,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontWeight: "bold"
           }}>
             Lv {currentLevel} • {moves} moves
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
           </div>
 
           <button onClick={undoMove} disabled={moveHistory.length === 0 || undosRemaining === 0} style={{
@@ -481,13 +504,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontWeight: "bold", 
             cursor: "pointer"
           }}>🔄</button>
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
         </div>
 
         <div style={{ 
@@ -536,31 +552,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                     theme={bottleTheme}
                     isPouring={false}
                   />
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
                 </div>
               );
             })}
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
           </div>
-        {showPasswordDialog && (
-          <PasswordDialog
-            onClose={() => setShowPasswordDialog(false)}
-            onSuccess={solveWithRobot}
-            levelNumber={currentLevel}
-          />
-        )}
         </div>
 
         <style>{`
