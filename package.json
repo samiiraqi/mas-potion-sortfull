@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "canvas-confetti": "^1.9.4",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/qrcode": "^1.5.6"
   }
 }
