@@ -54,6 +54,35 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }
   }, []);
 
+  // NEW: Auto-reload settings when they change
+  useEffect(() => {
+    const checkSettings = () => {
+      const saved = localStorage.getItem('gameSettings');
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          setBackground(settings.background || 'galaxy');
+          setBottleTheme(settings.theme || 'classic');
+        } catch (e) {
+          console.error('Error loading settings:', e);
+        }
+      }
+    };
+    
+    // Check immediately on mount
+    checkSettings();
+    
+    // Check when user returns to game (from settings)
+    window.addEventListener('focus', checkSettings);
+    window.addEventListener('storage', checkSettings);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('focus', checkSettings);
+      window.removeEventListener('storage', checkSettings);
+    };
+  }, []);
+
   useEffect(() => {
     // Initialize sound system
     soundManager.init();
