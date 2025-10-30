@@ -27,6 +27,44 @@ const ThemedBottle = memo(function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
+  // 🔥 DIFFERENT BOTTLE STYLES BASED ON THEME
+  const getBottleStyle = () => {
+    switch (theme) {
+      case 'lab':
+        return {
+          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#00FFFF',
+          strokeWidth: isSelected ? 3 : 2,
+          capColor: '#2196F3' // Blue lab cap
+        };
+      case 'coffee':
+        return {
+          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#8B4513',
+          strokeWidth: isSelected ? 3 : 2.5,
+          capColor: '#6F4E37' // Coffee brown cap
+        };
+      case 'juice':
+        return {
+          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#FFA500',
+          strokeWidth: isSelected ? 3 : 2,
+          capColor: '#FF6347' // Tomato red cap
+        };
+      case 'potion':
+        return {
+          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#9370DB',
+          strokeWidth: isSelected ? 3.5 : 2.5,
+          capColor: '#8B008B' // Dark magenta cap
+        };
+      default: // classic
+        return {
+          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : 'rgba(255,255,255,0.5)',
+          strokeWidth: isSelected ? 2.5 : 2,
+          capColor: '#8B4513' // Brown cork
+        };
+    }
+  };
+
+  const style = getBottleStyle();
+
   return (
     <div
       onClick={onSelect}
@@ -39,7 +77,6 @@ const ThemedBottle = memo(function ThemedBottle({
         willChange: 'transform'
       }}
     >
-      {/* Add beautiful face and bubbles */}
       <FlaskFace
         x={0}
         y={0}
@@ -106,6 +143,7 @@ const ThemedBottle = memo(function ThemedBottle({
           })}
         </g>
 
+        {/* 🔥 BOTTLE OUTLINE WITH THEME COLOR */}
         <path
           d={`
             M ${BOTTLE_WIDTH * 0.35} 8
@@ -124,8 +162,8 @@ const ThemedBottle = memo(function ThemedBottle({
             Q ${BOTTLE_WIDTH * 0.35} 4 ${BOTTLE_WIDTH * 0.35} 8 Z
           `}
           fill="none"
-          stroke={isSelected ? '#FFD700' : isFull ? '#00FF00' : 'rgba(255,255,255,0.5)'}
-          strokeWidth={isSelected ? 2.5 : 2}
+          stroke={style.strokeColor}
+          strokeWidth={style.strokeWidth}
         />
 
         <ellipse
@@ -136,12 +174,13 @@ const ThemedBottle = memo(function ThemedBottle({
           fill={`url(#shine-${position.x}-${position.y})`}
         />
 
+        {/* 🔥 BOTTLE CAP WITH THEME COLOR */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={6}
           rx={BOTTLE_WIDTH * 0.16}
           ry={4}
-          fill="#8B4513"
+          fill={style.capColor}
         />
       </svg>
     </div>
