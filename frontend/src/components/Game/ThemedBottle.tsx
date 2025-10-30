@@ -27,43 +27,31 @@ const ThemedBottle = memo(function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
-  // 🔥 DIFFERENT BOTTLE STYLES BASED ON THEME
-  const getBottleStyle = () => {
+  // 🔥 GET BOTTLE COLORS BASED ON THEME
+  const getStrokeColor = () => {
+    if (isSelected) return '#FFD700';
+    if (isFull) return '#00FF00';
+    
     switch (theme) {
-      case 'lab':
-        return {
-          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#00FFFF',
-          strokeWidth: isSelected ? 3 : 2,
-          capColor: '#2196F3' // Blue lab cap
-        };
-      case 'coffee':
-        return {
-          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#8B4513',
-          strokeWidth: isSelected ? 3 : 2.5,
-          capColor: '#6F4E37' // Coffee brown cap
-        };
-      case 'juice':
-        return {
-          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#FFA500',
-          strokeWidth: isSelected ? 3 : 2,
-          capColor: '#FF6347' // Tomato red cap
-        };
-      case 'potion':
-        return {
-          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : '#9370DB',
-          strokeWidth: isSelected ? 3.5 : 2.5,
-          capColor: '#8B008B' // Dark magenta cap
-        };
-      default: // classic
-        return {
-          strokeColor: isSelected ? '#FFD700' : isFull ? '#00FF00' : 'rgba(255,255,255,0.5)',
-          strokeWidth: isSelected ? 2.5 : 2,
-          capColor: '#8B4513' // Brown cork
-        };
+      case 'lab': return '#00FFFF';
+      case 'coffee': return '#8B4513';
+      case 'juice': return '#FFA500';
+      case 'potion': return '#9370DB';
+      default: return 'rgba(255,255,255,0.5)';
     }
   };
 
-  const style = getBottleStyle();
+  const getCapColor = () => {
+    switch (theme) {
+      case 'lab': return '#2196F3';
+      case 'coffee': return '#6F4E37';
+      case 'juice': return '#FF6347';
+      case 'potion': return '#8B008B';
+      default: return '#8B4513';
+    }
+  };
+
+  const strokeWidth = isSelected ? 3 : 2;
 
   return (
     <div
@@ -143,7 +131,6 @@ const ThemedBottle = memo(function ThemedBottle({
           })}
         </g>
 
-        {/* 🔥 BOTTLE OUTLINE WITH THEME COLOR */}
         <path
           d={`
             M ${BOTTLE_WIDTH * 0.35} 8
@@ -162,8 +149,8 @@ const ThemedBottle = memo(function ThemedBottle({
             Q ${BOTTLE_WIDTH * 0.35} 4 ${BOTTLE_WIDTH * 0.35} 8 Z
           `}
           fill="none"
-          stroke={style.strokeColor}
-          strokeWidth={style.strokeWidth}
+          stroke={getStrokeColor()}
+          strokeWidth={strokeWidth}
         />
 
         <ellipse
@@ -174,13 +161,12 @@ const ThemedBottle = memo(function ThemedBottle({
           fill={`url(#shine-${position.x}-${position.y})`}
         />
 
-        {/* 🔥 BOTTLE CAP WITH THEME COLOR */}
         <ellipse
           cx={BOTTLE_WIDTH * 0.5}
           cy={6}
           rx={BOTTLE_WIDTH * 0.16}
           ry={4}
-          fill={style.capColor}
+          fill={getCapColor()}
         />
       </svg>
     </div>

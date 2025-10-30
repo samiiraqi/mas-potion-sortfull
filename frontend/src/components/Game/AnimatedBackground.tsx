@@ -25,9 +25,9 @@ export default function AnimatedBackground({ theme }: AnimatedBackgroundProps) {
       width: '100vw',
       height: '100vh',
       zIndex: -1,
-      background: currentBg, // 🔥 USE THE THEME
+      background: currentBg,
       overflow: 'hidden',
-      transition: 'background 0.8s ease' // 🔥 SMOOTH TRANSITION
+      transition: 'background 0.8s ease'
     }}>
       {[...Array(particleCount)].map((_, i) => (
         <div
