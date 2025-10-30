@@ -41,6 +41,9 @@
     // Initialize
     function init() {
         try {
+            // 🔥 LOAD SAVED PROGRESS FROM LOCALSTORAGE
+            loadSavedProgress();
+            
             // Initialize audio
             initAudio();
             
@@ -58,6 +61,31 @@
             
         } catch (e) {
             console.error('Failed to initialize enhancements:', e);
+        }
+    }
+
+    // 🔥 NEW FUNCTION - Load saved progress
+    function loadSavedProgress() {
+        try {
+            const savedLevel = localStorage.getItem('currentLevel');
+            if (savedLevel) {
+                state.currentLevel = parseInt(savedLevel);
+                state.lastLevel = parseInt(savedLevel);
+                console.log('📂 Loaded saved level:', savedLevel);
+                
+                // Check if settings should be unlocked
+                if (state.currentLevel >= 20) {
+                    const settingsUnlocked = localStorage.getItem('settingsUnlocked');
+                    if (!settingsUnlocked) {
+                        localStorage.setItem('settingsUnlocked', 'true');
+                    }
+                    console.log('🎉 Settings unlocked! (Level 20+)');
+                }
+            } else {
+                console.log('📝 New player - starting from level 1');
+            }
+        } catch (e) {
+            console.error('Error loading saved progress:', e);
         }
     }
 
@@ -227,12 +255,34 @@
             if (state.lastLevel === null) {
                 state.lastLevel = currentLevel;
                 state.currentLevel = currentLevel;
+                
+                // 🔥 SAVE INITIAL LEVEL
+                localStorage.setItem('currentLevel', currentLevel);
                 return;
             }
             
             // Level increased = previous level completed!
             if (currentLevel > state.lastLevel) {
                 console.log(`🎊 Level ${state.lastLevel} Complete! Moving to Level ${currentLevel}!`);
+                
+                // 🔥 SAVE NEW LEVEL TO LOCALSTORAGE
+                localStorage.setItem('currentLevel', currentLevel);
+                console.log(`💾 Progress saved: Level ${currentLevel}`);
+                
+                // 🔥 UNLOCK SETTINGS AT LEVEL 20
+                if (currentLevel >= 20) {
+                    localStorage.setItem('settingsUnlocked', 'true');
+                    console.log('🎉 Settings unlocked!');
+                    
+                    // Show special achievement for unlocking settings
+                    setTimeout(() => {
+                        showAchievement(
+                            '🎨 Settings Unlocked!',
+                            'You can now customize backgrounds and bottle themes!',
+                            '⚙️'
+                        );
+                    }, 2000);
+                }
                 
                 // SOUNDS!
                 sounds.levelComplete();
