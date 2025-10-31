@@ -1,4 +1,8 @@
-import FlaskFace from './FlaskFace';
+import ClassicBottle from './bottles/ClassicBottle';
+import LabBottle from './bottles/LabBottle';
+import CoffeeBottle from './bottles/CoffeeBottle';
+import JuiceBottle from './bottles/JuiceBottle';
+import PotionBottle from './bottles/PotionBottle';
 
 interface ThemedBottleProps {
   colors: string[];
@@ -11,7 +15,7 @@ interface ThemedBottleProps {
   isPouring?: boolean;
 }
 
-function ThemedBottle({
+export default function ThemedBottle({
   colors,
   position,
   onSelect,
@@ -21,164 +25,33 @@ function ThemedBottle({
   theme = 'classic',
   isPouring = false
 }: ThemedBottleProps) {
-  const BOTTLE_HEIGHT = 160;
-  const BOTTLE_WIDTH = 60;
-  const LAYER_HEIGHT = 28;
-  const BOTTLE_BOTTOM = 152;
-
-  // Theme colors
-  let strokeColor = 'white';
-  let strokeWidth = 2;
-  let capColor = '#8B4513';
-
-  if (isSelected) {
-    strokeColor = '#FFD700';
-    strokeWidth = 4;
-  } else if (isFull) {
-    strokeColor = '#00FF00';
-    strokeWidth = 3;
-  } else {
-    if (theme === 'lab') {
-      strokeColor = '#00FFFF';
-      strokeWidth = 5;
-      capColor = '#0000FF';
-    } else if (theme === 'coffee') {
-      strokeColor = '#FF6600';
-      strokeWidth = 5;
-      capColor = '#8B4513';
-    } else if (theme === 'juice') {
-      strokeColor = '#FF0000';
-      strokeWidth = 5;
-      capColor = '#FF69B4';
-    } else if (theme === 'potion') {
-      strokeColor = '#FF00FF';
-      strokeWidth = 5;
-      capColor = '#9370DB';
-    } else {
-      strokeColor = 'rgba(255,255,255,0.8)';
-      strokeWidth = 2;
-      capColor = '#8B4513';
+  
+  // Switch between different bottle components based on theme
+  const BottleComponent = (() => {
+    switch (theme) {
+      case 'lab':
+        return LabBottle;
+      case 'coffee':
+        return CoffeeBottle;
+      case 'juice':
+        return JuiceBottle;
+      case 'potion':
+        return PotionBottle;
+      case 'classic':
+      default:
+        return ClassicBottle;
     }
-  }
+  })();
 
   return (
-    <div
-      onClick={onSelect}
-      style={{
-        position: 'absolute',
-        left: position.x,
-        top: position.y,
-        cursor: 'pointer',
-        userSelect: 'none',
-        willChange: 'transform'
-      }}
-    >
-      <FlaskFace
-        x={0}
-        y={0}
-        isSelected={isSelected}
-        isEmpty={isEmpty}
-        isFull={isFull}
-        isPouring={isPouring}
-      />
-
-      <svg width={BOTTLE_WIDTH} height={BOTTLE_HEIGHT} style={{ overflow: 'visible' }}>
-        <defs>
-          <linearGradient id={`shine-${position.x}-${position.y}-${theme}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopOpacity={0.3} stopColor="white" />
-            <stop offset="50%" stopOpacity={0.6} stopColor="white" />
-            <stop offset="100%" stopOpacity={0.2} stopColor="white" />
-          </linearGradient>
-
-          <clipPath id={`clip-${position.x}-${position.y}-${theme}`}>
-            <path d={`
-              M ${BOTTLE_WIDTH * 0.35} 8
-              L ${BOTTLE_WIDTH * 0.35} ${BOTTLE_HEIGHT * 0.22}
-              Q ${BOTTLE_WIDTH * 0.3} ${BOTTLE_HEIGHT * 0.3} ${BOTTLE_WIDTH * 0.2} ${BOTTLE_HEIGHT * 0.4}
-              Q ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.55} ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.7}
-              L ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.88}
-              Q ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.94} ${BOTTLE_WIDTH * 0.2} ${BOTTLE_HEIGHT * 0.94}
-              L ${BOTTLE_WIDTH * 0.8} ${BOTTLE_HEIGHT * 0.94}
-              Q ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.94} ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.88}
-              L ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.7}
-              Q ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.55} ${BOTTLE_WIDTH * 0.8} ${BOTTLE_HEIGHT * 0.4}
-              Q ${BOTTLE_WIDTH * 0.7} ${BOTTLE_HEIGHT * 0.3} ${BOTTLE_WIDTH * 0.65} ${BOTTLE_HEIGHT * 0.22}
-              L ${BOTTLE_WIDTH * 0.65} 8
-              Q ${BOTTLE_WIDTH * 0.65} 4 ${BOTTLE_WIDTH * 0.5} 4
-              Q ${BOTTLE_WIDTH * 0.35} 4 ${BOTTLE_WIDTH * 0.35} 8 Z
-            `} />
-          </clipPath>
-        </defs>
-
-        <g clipPath={`url(#clip-${position.x}-${position.y}-${theme})`}>
-          {colors.map((color, idx) => {
-            const yStart = BOTTLE_BOTTOM - ((idx + 1) * LAYER_HEIGHT);
-            
-            return (
-              <g key={idx}>
-                <rect
-                  x={BOTTLE_WIDTH * 0.12}
-                  y={yStart}
-                  width={BOTTLE_WIDTH * 0.76}
-                  height={LAYER_HEIGHT}
-                  fill={color}
-                />
-                
-                {idx < colors.length - 1 && (
-                  <rect
-                    x={BOTTLE_WIDTH * 0.12}
-                    y={yStart - 2}
-                    width={BOTTLE_WIDTH * 0.76}
-                    height={4}
-                    fill="#000000"
-                    opacity={0.25}
-                  />
-                )}
-              </g>
-            );
-          })}
-        </g>
-
-        <path
-          d={`
-            M ${BOTTLE_WIDTH * 0.35} 8
-            L ${BOTTLE_WIDTH * 0.35} ${BOTTLE_HEIGHT * 0.22}
-            Q ${BOTTLE_WIDTH * 0.3} ${BOTTLE_HEIGHT * 0.3} ${BOTTLE_WIDTH * 0.2} ${BOTTLE_HEIGHT * 0.4}
-            Q ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.55} ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.7}
-            L ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.88}
-            Q ${BOTTLE_WIDTH * 0.12} ${BOTTLE_HEIGHT * 0.94} ${BOTTLE_WIDTH * 0.2} ${BOTTLE_HEIGHT * 0.94}
-            L ${BOTTLE_WIDTH * 0.8} ${BOTTLE_HEIGHT * 0.94}
-            Q ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.94} ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.88}
-            L ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.7}
-            Q ${BOTTLE_WIDTH * 0.88} ${BOTTLE_HEIGHT * 0.55} ${BOTTLE_WIDTH * 0.8} ${BOTTLE_HEIGHT * 0.4}
-            Q ${BOTTLE_WIDTH * 0.7} ${BOTTLE_HEIGHT * 0.3} ${BOTTLE_WIDTH * 0.65} ${BOTTLE_HEIGHT * 0.22}
-            L ${BOTTLE_WIDTH * 0.65} 8
-            Q ${BOTTLE_WIDTH * 0.65} 4 ${BOTTLE_WIDTH * 0.5} 4
-            Q ${BOTTLE_WIDTH * 0.35} 4 ${BOTTLE_WIDTH * 0.35} 8 Z
-          `}
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth={strokeWidth}
-        />
-
-        <ellipse
-          cx={BOTTLE_WIDTH * 0.28}
-          cy={BOTTLE_HEIGHT * 0.45}
-          rx={BOTTLE_WIDTH * 0.1}
-          ry={BOTTLE_HEIGHT * 0.15}
-          fill={`url(#shine-${position.x}-${position.y}-${theme})`}
-        />
-
-        <ellipse
-          cx={BOTTLE_WIDTH * 0.5}
-          cy={6}
-          rx={BOTTLE_WIDTH * 0.16}
-          ry={4}
-          fill={capColor}
-        />
-      </svg>
-    </div>
+    <BottleComponent
+      colors={colors}
+      position={position}
+      onSelect={onSelect}
+      isSelected={isSelected}
+      isEmpty={isEmpty}
+      isFull={isFull}
+      isPouring={isPouring}
+    />
   );
 }
-
-export default ThemedBottle;
