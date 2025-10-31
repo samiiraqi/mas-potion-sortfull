@@ -26,7 +26,7 @@ function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
-  // EXTREME COLOR CHANGES - SUPER VISIBLE
+  // Theme colors
   let strokeColor = 'white';
   let strokeWidth = 2;
   let capColor = '#8B4513';
@@ -38,23 +38,22 @@ function ThemedBottle({
     strokeColor = '#00FF00';
     strokeWidth = 3;
   } else {
-    // MAKE THEME COLORS SUPER OBVIOUS
     if (theme === 'lab') {
-      strokeColor = '#00FFFF';  // BRIGHT CYAN
+      strokeColor = '#00FFFF';
       strokeWidth = 5;
-      capColor = '#0000FF';     // BRIGHT BLUE
+      capColor = '#0000FF';
     } else if (theme === 'coffee') {
-      strokeColor = '#FF6600';  // BRIGHT ORANGE
+      strokeColor = '#FF6600';
       strokeWidth = 5;
-      capColor = '#8B4513';     // BROWN
+      capColor = '#8B4513';
     } else if (theme === 'juice') {
-      strokeColor = '#FF0000';  // BRIGHT RED
+      strokeColor = '#FF0000';
       strokeWidth = 5;
-      capColor = '#FF69B4';     // PINK
+      capColor = '#FF69B4';
     } else if (theme === 'potion') {
-      strokeColor = '#FF00FF';  // BRIGHT MAGENTA
+      strokeColor = '#FF00FF';
       strokeWidth = 5;
-      capColor = '#9370DB';     // PURPLE
+      capColor = '#9370DB';
     } else {
       strokeColor = 'rgba(255,255,255,0.8)';
       strokeWidth = 2;
@@ -74,26 +73,6 @@ function ThemedBottle({
         willChange: 'transform'
       }}
     >
-      {/* EXTREME DEBUG - SHOW THEME ON EVERY BOTTLE */}
-      <div style={{
-        position: 'absolute',
-        top: -25,
-        left: -10,
-        background: theme === 'lab' ? 'cyan' : 
-                    theme === 'coffee' ? 'orange' :
-                    theme === 'juice' ? 'red' :
-                    theme === 'potion' ? 'magenta' : 'gray',
-        color: 'black',
-        padding: '3px 6px',
-        fontSize: '11px',
-        fontWeight: 'bold',
-        borderRadius: '4px',
-        zIndex: 10000,
-        border: '2px solid black'
-      }}>
-        {theme}
-      </div>
-
       <FlaskFace
         x={0}
         y={0}
