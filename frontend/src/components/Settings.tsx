@@ -13,29 +13,20 @@ export default function Settings({ onClose }: SettingsProps) {
   const [colorMode, setColorMode] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
-    // Load settings
     const saved = localStorage.getItem('gameSettings');
-    console.log('📂 Settings - Raw localStorage:', saved);
-    
     if (saved) {
       try {
         const settings = JSON.parse(saved);
-        console.log('📂 Settings - Parsed:', settings);
         setSelectedBackground(settings.background || 'galaxy');
         setSelectedTheme(settings.theme || 'classic');
         setSoundEnabled(settings.sound !== false);
         setColorMode(settings.colorMode || 'dark');
-        console.log('✅ Settings loaded - Theme is:', settings.theme || 'classic');
       } catch (e) {
         console.error('Error loading settings:', e);
       }
-    } else {
-      console.log('⚠️ No saved settings found in localStorage');
     }
 
-    // Get REAL current level from progressManager
     const currentLevel = progressManager.getLastLevel();
-    console.log('📊 Current Level from progressManager:', currentLevel);
     setUnlockedLevels(currentLevel);
   }, []);
 
@@ -47,23 +38,16 @@ export default function Settings({ onClose }: SettingsProps) {
       colorMode: colorMode
     };
     
-    console.log('💾 SAVING SETTINGS:', settings);
-    console.log('   - Background:', selectedBackground);
-    console.log('   - Theme:', selectedTheme);
-    console.log('   - Sound:', soundEnabled);
-    
+    console.log('💾 SAVING:', settings);
     localStorage.setItem('gameSettings', JSON.stringify(settings));
     
-    // Verify save
     const verify = localStorage.getItem('gameSettings');
-    console.log('✅ VERIFIED in localStorage:', verify);
+    console.log('✅ VERIFIED:', verify);
     
-    // Show confirmation
-    alert(`✅ Settings Saved!\n\nTheme: ${selectedTheme}\nBackground: ${selectedBackground}\n\nPage will reload...`);
+    alert(`✅ Settings Saved!\n\nBottle Theme: ${selectedTheme}\nBackground: ${selectedBackground}\n\nPage will reload...`);
     
-    // Hard reload
     setTimeout(() => {
-      window.location.href = window.location.href.split('?')[0] + '?reload=' + Date.now();
+      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
     }, 1000);
   };
 
@@ -125,19 +109,22 @@ export default function Settings({ onClose }: SettingsProps) {
           marginBottom: '20px',
           borderRadius: '8px',
           fontWeight: 'bold',
-          fontSize: '0.9rem'
+          fontSize: '0.85rem'
         }}>
           📊 CURRENT SELECTION:<br/>
-          Theme: <strong>{selectedTheme}</strong><br/>
-          Background: <strong>{selectedBackground}</strong>
+          🍾 Bottle Theme: <strong>{selectedTheme}</strong><br/>
+          🎨 Background: <strong>{selectedBackground}</strong>
         </div>
 
         {/* COLOR MODE */}
         <div style={{ marginBottom: '25px' }}>
-          <h3 style={{ fontSize: '1.3rem', marginBottom: '12px' }}>🎨 Color Mode</h3>
+          <h3 style={{ fontSize: '1.3rem', marginBottom: '12px' }}>🌓 Color Mode</h3>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
-              onClick={() => setColorMode('dark')}
+              onClick={() => {
+                console.log('🌙 Dark mode clicked');
+                setColorMode('dark');
+              }}
               style={{
                 flex: 1,
                 padding: '15px',
@@ -152,12 +139,14 @@ export default function Settings({ onClose }: SettingsProps) {
                 fontWeight: colorMode === 'dark' ? 'bold' : 'normal'
               }}
             >
-              🌙 Dark
-              {colorMode === 'dark' && ' ✓'}
+              🌙 Dark {colorMode === 'dark' && '✓'}
             </button>
 
             <button
-              onClick={() => setColorMode('light')}
+              onClick={() => {
+                console.log('☀️ Light mode clicked');
+                setColorMode('light');
+              }}
               style={{
                 flex: 1,
                 padding: '15px',
@@ -172,8 +161,7 @@ export default function Settings({ onClose }: SettingsProps) {
                 fontWeight: colorMode === 'light' ? 'bold' : 'normal'
               }}
             >
-              ☀️ Light
-              {colorMode === 'light' && ' ✓'}
+              ☀️ Light {colorMode === 'light' && '✓'}
             </button>
           </div>
         </div>
@@ -189,9 +177,10 @@ export default function Settings({ onClose }: SettingsProps) {
                 <button
                   key={bg.id}
                   disabled={isLocked}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     if (!isLocked) {
-                      console.log('🖱️ Background selected:', bg.id);
+                      console.log('🎨 BACKGROUND clicked:', bg.id);
                       setSelectedBackground(bg.id);
                     }
                   }}
@@ -231,20 +220,20 @@ export default function Settings({ onClose }: SettingsProps) {
                 <button
                   key={th.id}
                   disabled={isLocked}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     if (!isLocked) {
-                      console.log('🖱️ Theme CLICKED:', th.id);
+                      console.log('🍾 BOTTLE THEME clicked:', th.id);
                       setSelectedTheme(th.id);
-                      console.log('✅ Theme state updated to:', th.id);
                     }
                   }}
                   style={{
                     padding: '12px',
                     background: isSelected 
-                      ? 'rgba(255,215,0,0.5)'
+                      ? 'rgba(0,255,255,0.4)'
                       : 'rgba(255,255,255,0.2)',
                     border: isSelected 
-                      ? '3px solid #FFD700'
+                      ? '3px solid #00FFFF'
                       : '2px solid rgba(255,255,255,0.3)',
                     borderRadius: '10px',
                     color: isLocked ? 'rgba(255,255,255,0.4)' : 'white',
