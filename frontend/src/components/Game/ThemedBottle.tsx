@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import FlaskFace from './FlaskFace';
 
 interface ThemedBottleProps {
@@ -12,7 +11,7 @@ interface ThemedBottleProps {
   isPouring?: boolean;
 }
 
-const ThemedBottle = memo(function ThemedBottle({
+function ThemedBottle({
   colors,
   position,
   onSelect,
@@ -27,7 +26,6 @@ const ThemedBottle = memo(function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
-  // 🔥 GET BOTTLE COLORS BASED ON THEME
   const getStrokeColor = () => {
     if (isSelected) return '#FFD700';
     if (isFull) return '#00FF00';
@@ -171,6 +169,6 @@ const ThemedBottle = memo(function ThemedBottle({
       </svg>
     </div>
   );
-});
+}
 
 export default ThemedBottle;
