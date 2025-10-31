@@ -26,30 +26,34 @@ function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
-  const getStrokeColor = () => {
-    if (isSelected) return '#FFD700';
-    if (isFull) return '#00FF00';
-    
-    switch (theme) {
-      case 'lab': return '#00FFFF';
-      case 'coffee': return '#8B4513';
-      case 'juice': return '#FFA500';
-      case 'potion': return '#9370DB';
-      default: return 'rgba(255,255,255,0.5)';
-    }
-  };
+  // DIRECT THEME COLOR ASSIGNMENT - NO FUNCTIONS
+  let strokeColor = 'rgba(255,255,255,0.5)';
+  let strokeWidth = 2;
+  let capColor = '#8B4513';
 
-  const getCapColor = () => {
-    switch (theme) {
-      case 'lab': return '#2196F3';
-      case 'coffee': return '#6F4E37';
-      case 'juice': return '#FF6347';
-      case 'potion': return '#8B008B';
-      default: return '#8B4513';
-    }
-  };
-
-  const strokeWidth = isSelected ? 3 : 2;
+  if (isSelected) {
+    strokeColor = '#FFD700';
+    strokeWidth = 3;
+  } else if (isFull) {
+    strokeColor = '#00FF00';
+    strokeWidth = 2.5;
+  } else if (theme === 'lab') {
+    strokeColor = '#00FFFF';
+    strokeWidth = 3;
+    capColor = '#2196F3';
+  } else if (theme === 'coffee') {
+    strokeColor = '#D2691E';
+    strokeWidth = 3;
+    capColor = '#6F4E37';
+  } else if (theme === 'juice') {
+    strokeColor = '#FF8C00';
+    strokeWidth = 3;
+    capColor = '#FF6347';
+  } else if (theme === 'potion') {
+    strokeColor = '#9370DB';
+    strokeWidth = 3;
+    capColor = '#8B008B';
+  }
 
   return (
     <div
@@ -74,13 +78,13 @@ function ThemedBottle({
 
       <svg width={BOTTLE_WIDTH} height={BOTTLE_HEIGHT} style={{ overflow: 'visible' }}>
         <defs>
-          <linearGradient id={`shine-${position.x}-${position.y}`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`shine-${position.x}-${position.y}-${theme}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopOpacity={0.3} stopColor="white" />
             <stop offset="50%" stopOpacity={0.6} stopColor="white" />
             <stop offset="100%" stopOpacity={0.2} stopColor="white" />
           </linearGradient>
 
-          <clipPath id={`clip-${position.x}-${position.y}`}>
+          <clipPath id={`clip-${position.x}-${position.y}-${theme}`}>
             <path d={`
               M ${BOTTLE_WIDTH * 0.35} 8
               L ${BOTTLE_WIDTH * 0.35} ${BOTTLE_HEIGHT * 0.22}
@@ -100,7 +104,7 @@ function ThemedBottle({
           </clipPath>
         </defs>
 
-        <g clipPath={`url(#clip-${position.x}-${position.y})`}>
+        <g clipPath={`url(#clip-${position.x}-${position.y}-${theme})`}>
           {colors.map((color, idx) => {
             const yStart = BOTTLE_BOTTOM - ((idx + 1) * LAYER_HEIGHT);
             
@@ -147,7 +151,7 @@ function ThemedBottle({
             Q ${BOTTLE_WIDTH * 0.35} 4 ${BOTTLE_WIDTH * 0.35} 8 Z
           `}
           fill="none"
-          stroke={getStrokeColor()}
+          stroke={strokeColor}
           strokeWidth={strokeWidth}
         />
 
@@ -156,7 +160,7 @@ function ThemedBottle({
           cy={BOTTLE_HEIGHT * 0.45}
           rx={BOTTLE_WIDTH * 0.1}
           ry={BOTTLE_HEIGHT * 0.15}
-          fill={`url(#shine-${position.x}-${position.y})`}
+          fill={`url(#shine-${position.x}-${position.y}-${theme})`}
         />
 
         <ellipse
@@ -164,7 +168,7 @@ function ThemedBottle({
           cy={6}
           rx={BOTTLE_WIDTH * 0.16}
           ry={4}
-          fill={getCapColor()}
+          fill={capColor}
         />
       </svg>
     </div>

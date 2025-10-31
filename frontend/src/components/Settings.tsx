@@ -45,7 +45,9 @@ export default function Settings({ onClose }: SettingsProps) {
       colorMode: colorMode
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
-    window.location.reload();
+    
+    // FORCE HARD RELOAD WITH CACHE BUST
+    window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
   };
 
   const backgrounds = [
