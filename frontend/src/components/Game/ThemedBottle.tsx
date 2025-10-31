@@ -26,33 +26,40 @@ function ThemedBottle({
   const LAYER_HEIGHT = 28;
   const BOTTLE_BOTTOM = 152;
 
-  // DIRECT THEME COLOR ASSIGNMENT - NO FUNCTIONS
-  let strokeColor = 'rgba(255,255,255,0.5)';
+  // EXTREME COLOR CHANGES - SUPER VISIBLE
+  let strokeColor = 'white';
   let strokeWidth = 2;
   let capColor = '#8B4513';
 
   if (isSelected) {
     strokeColor = '#FFD700';
-    strokeWidth = 3;
+    strokeWidth = 4;
   } else if (isFull) {
     strokeColor = '#00FF00';
-    strokeWidth = 2.5;
-  } else if (theme === 'lab') {
-    strokeColor = '#00FFFF';
     strokeWidth = 3;
-    capColor = '#2196F3';
-  } else if (theme === 'coffee') {
-    strokeColor = '#D2691E';
-    strokeWidth = 3;
-    capColor = '#6F4E37';
-  } else if (theme === 'juice') {
-    strokeColor = '#FF8C00';
-    strokeWidth = 3;
-    capColor = '#FF6347';
-  } else if (theme === 'potion') {
-    strokeColor = '#9370DB';
-    strokeWidth = 3;
-    capColor = '#8B008B';
+  } else {
+    // MAKE THEME COLORS SUPER OBVIOUS
+    if (theme === 'lab') {
+      strokeColor = '#00FFFF';  // BRIGHT CYAN
+      strokeWidth = 5;
+      capColor = '#0000FF';     // BRIGHT BLUE
+    } else if (theme === 'coffee') {
+      strokeColor = '#FF6600';  // BRIGHT ORANGE
+      strokeWidth = 5;
+      capColor = '#8B4513';     // BROWN
+    } else if (theme === 'juice') {
+      strokeColor = '#FF0000';  // BRIGHT RED
+      strokeWidth = 5;
+      capColor = '#FF69B4';     // PINK
+    } else if (theme === 'potion') {
+      strokeColor = '#FF00FF';  // BRIGHT MAGENTA
+      strokeWidth = 5;
+      capColor = '#9370DB';     // PURPLE
+    } else {
+      strokeColor = 'rgba(255,255,255,0.8)';
+      strokeWidth = 2;
+      capColor = '#8B4513';
+    }
   }
 
   return (
@@ -67,6 +74,26 @@ function ThemedBottle({
         willChange: 'transform'
       }}
     >
+      {/* EXTREME DEBUG - SHOW THEME ON EVERY BOTTLE */}
+      <div style={{
+        position: 'absolute',
+        top: -25,
+        left: -10,
+        background: theme === 'lab' ? 'cyan' : 
+                    theme === 'coffee' ? 'orange' :
+                    theme === 'juice' ? 'red' :
+                    theme === 'potion' ? 'magenta' : 'gray',
+        color: 'black',
+        padding: '3px 6px',
+        fontSize: '11px',
+        fontWeight: 'bold',
+        borderRadius: '4px',
+        zIndex: 10000,
+        border: '2px solid black'
+      }}>
+        {theme}
+      </div>
+
       <FlaskFace
         x={0}
         y={0}
