@@ -42,21 +42,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [hintsRemaining, setHintsRemaining] = useState(3);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
+  // 🔥 LOAD SETTINGS ON MOUNT
   useEffect(() => {
-    // Initialize sound system
     soundManager.init();
     setIsMobile(window.innerWidth < 768);
-    const saved = localStorage.getItem('gameSettings');
-    if (saved) {
-      const settings = JSON.parse(saved);
-      setBackground(settings.background || 'galaxy');
-      setBottleTheme(settings.theme || 'classic');
-    }
-  }, []);
-
-  // NEW: Auto-reload settings when they change
-  useEffect(() => {
-    const checkSettings = () => {
+    
+    const loadSettings = () => {
       const saved = localStorage.getItem('gameSettings');
       if (saved) {
         try {
@@ -69,23 +60,21 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       }
     };
     
-    // Check immediately on mount
-    checkSettings();
+    loadSettings();
     
-    // Check when user returns to game (from settings)
-    window.addEventListener('focus', checkSettings);
-    window.addEventListener('storage', checkSettings);
+    // Reload settings when window regains focus
+    const handleFocus = () => {
+      loadSettings();
+    };
     
-    // Cleanup
+    window.addEventListener('focus', handleFocus);
+    
     return () => {
-      window.removeEventListener('focus', checkSettings);
-      window.removeEventListener('storage', checkSettings);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
   useEffect(() => {
-    // Initialize sound system
-    soundManager.init();
     if (currentLevel >= 1 && currentLevel <= 120) {
       loadLevel(currentLevel);
       progressManager.setCurrentLevel(currentLevel);
@@ -113,7 +102,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const triggerConfetti = () => {
-    // Center explosion
     confetti({
       particleCount: 150,
       spread: 70,
@@ -121,7 +109,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#FFD700']
     });
 
-    // Left burst
     setTimeout(() => {
       confetti({
         particleCount: 80,
@@ -132,7 +119,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       });
     }, 200);
 
-    // Right burst
     setTimeout(() => {
       confetti({
         particleCount: 80,
@@ -143,7 +129,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       });
     }, 400);
 
-    // Rain from top
     setTimeout(() => {
       confetti({
         particleCount: 200,
@@ -259,7 +244,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     const move = solution[0];
     alert(`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
     
-    // Highlight the suggested bottles
     setSelectedBottle(move.from);
     setTimeout(() => setSelectedBottle(null), 2000);
   };
@@ -284,15 +268,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
-    // Enable audio on mobile
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       soundManager.init();
     }
-    console.log("🔊 Attempting to play sound...");    soundManager.play("select");
-    // Enable audio context on first interaction
+    
     if (!soundManager.isInitialized()) {
       soundManager.init();
     }
+    
     if (showVictory || isAnimating) return;
 
     if (selectedBottle === null) {
@@ -490,7 +473,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontSize: isMobile ? "0.65rem" : "0.8rem", 
             fontWeight: "bold"
           }}>
-            Lv {currentLevel} • {moves} moves
+            Lv {currentLevel} • {moves} moves • 🎨 {bottleTheme}
           </div>
 
           <button onClick={undoMove} disabled={moveHistory.length === 0 || undosRemaining === 0} style={{
@@ -551,9 +534,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
               const basePos = getBottlePosition(idx);
               const isHintSource = hintFrom === idx;
               const isHintTarget = hintTo === idx;
+              const bottleKey = `bottle-${idx}-${bottleTheme}`;
 
               return (
-                <div key={idx} onClick={() => handleBottleClick(idx)} style={{
+                <div key={bottleKey} onClick={() => handleBottleClick(idx)} style={{
                   position: "absolute", 
                   left: basePos.x, 
                   top: basePos.y,
