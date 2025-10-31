@@ -33,8 +33,34 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [showVictory, setShowVictory] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [background, setBackground] = useState('galaxy');
-  const [bottleTheme, setBottleTheme] = useState('classic');
+  
+  // 🔥 LOAD SETTINGS IMMEDIATELY FROM LOCALSTORAGE ON INITIALIZATION
+  const [background, setBackground] = useState(() => {
+    const saved = localStorage.getItem('gameSettings');
+    if (saved) {
+      try {
+        return JSON.parse(saved).background || 'galaxy';
+      } catch (e) {
+        return 'galaxy';
+      }
+    }
+    return 'galaxy';
+  });
+  
+  const [bottleTheme, setBottleTheme] = useState(() => {
+    const saved = localStorage.getItem('gameSettings');
+    if (saved) {
+      try {
+        const theme = JSON.parse(saved).theme || 'classic';
+        console.log('🍾 Initial theme loaded:', theme);
+        return theme;
+      } catch (e) {
+        return 'classic';
+      }
+    }
+    return 'classic';
+  });
+  
   const [hintFrom, setHintFrom] = useState<number | null>(null);
   const [hintTo, setHintTo] = useState<number | null>(null);
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
@@ -42,7 +68,6 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [hintsRemaining, setHintsRemaining] = useState(3);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
-  // 🔥 LOAD SETTINGS ON MOUNT
   useEffect(() => {
     soundManager.init();
     setIsMobile(window.innerWidth < 768);
@@ -52,8 +77,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       if (saved) {
         try {
           const settings = JSON.parse(saved);
+          console.log('🎨 Loading settings:', settings);
           setBackground(settings.background || 'galaxy');
           setBottleTheme(settings.theme || 'classic');
+          console.log('🍾 Theme updated to:', settings.theme || 'classic');
         } catch (e) {
           console.error('Error loading settings:', e);
         }
@@ -62,8 +89,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     
     loadSettings();
     
-    // Reload settings when window regains focus
     const handleFocus = () => {
+      console.log('🔄 Window focused, reloading settings...');
       loadSettings();
     };
     
