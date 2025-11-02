@@ -407,20 +407,34 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     );
   }
 
-  const COLS = 4;
+  // Dynamic layout based on bottle count
+  const bottleCount = bottles.length;
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
   
-  let scale, bottleSpacing, rowSpacing;
+  let scale, bottleSpacing, rowSpacing, COLS;
   
-  if (isMobile) {
-    scale = 0.55;
-    bottleSpacing = windowWidth / 4.5;
-    rowSpacing = (windowHeight - 220) / 5.5;
+  // Determine columns and sizing based on bottle count
+  if (bottleCount <= 12) {
+    COLS = 4;  // 3 rows of 4 for 12 bottles
+    scale = isMobile ? 0.65 : 1.1;
+    bottleSpacing = isMobile ? windowWidth / 4.2 : 150;
+    rowSpacing = isMobile ? (windowHeight - 220) / 4.5 : 200;
+  } else if (bottleCount <= 15) {
+    COLS = 5;  // 3 rows of 5 for 15 bottles
+    scale = isMobile ? 0.55 : 0.95;
+    bottleSpacing = isMobile ? windowWidth / 5.2 : 130;
+    rowSpacing = isMobile ? (windowHeight - 220) / 4.5 : 185;
+  } else if (bottleCount <= 18) {
+    COLS = 6;  // 3 rows of 6 for 18 bottles
+    scale = isMobile ? 0.48 : 0.85;
+    bottleSpacing = isMobile ? windowWidth / 6.2 : 115;
+    rowSpacing = isMobile ? (windowHeight - 220) / 4.5 : 170;
   } else {
-    scale = 0.95;
-    bottleSpacing = 140;
-    rowSpacing = 185;
+    COLS = 5;  // 4 rows of 5 for 20 bottles
+    scale = isMobile ? 0.48 : 0.8;
+    bottleSpacing = isMobile ? windowWidth / 5.2 : 120;
+    rowSpacing = isMobile ? (windowHeight - 220) / 5.5 : 160;
   }
   
   const totalWidth = COLS * bottleSpacing;
