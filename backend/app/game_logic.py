@@ -1,83 +1,62 @@
 from typing import List, Dict, Any
 import json
 import os
-import random
 
 # Load levels from JSON file
-def load_levels_from_json():
+LEVELS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'levels.json')
+
+# Color mapping
+HEX_TO_NAME = {
+    "#FF0000": "red",
+    "#00FF00": "green", 
+    "#0000FF": "blue",
+    "#FFFF00": "yellow",
+    "#FFA500": "orange",
+    "#800080": "purple",
+    "#FFC0CB": "pink",
+    "#00FFFF": "cyan",
+    "#A52A2A": "brown",
+    "#FFD700": "gold",
+    "#C0C0C0": "silver",
+    "#000000": "black",
+    "#FFFFFF": "white",
+}
+
+def load_levels():
     """Load all levels from levels.json"""
-    json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'levels.json')
-    
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, 'r') as f:
-                data = json.load(f)
-                # Convert list to dict keyed by level
-                levels_dict = {}
-                for level in data:
-                    levels_dict[level['level']] = level
-                return levels_dict
-        except Exception as e:
-            print(f"Error loading levels.json: {e}")
-            return {}
-    return {}
+    try:
+        with open(LEVELS_FILE, 'r') as f:
+            data = json.load(f)
+            print(f"✅ Loaded levels.json with {len(data)} levels")
+            
+            # Convert string keys to integers and hex to color names
+            levels_dict = {}
+            for key, value in data.items():
+                level_id = int(key)
+                # Convert hex colors to names
+                bottles = []
+                for bottle in value.get('bottles', []):
+                    converted_bottle = []
+                    for color in bottle:
+                        color_name = HEX_TO_NAME.get(color, color)
+                        converted_bottle.append(color_name)
+                    bottles.append(converted_bottle)
+                
+                levels_dict[level_id] = {
+                    'level_id': level_id,
+                    'bottles': bottles
+                }
+            
+            return levels_dict
+    except Exception as e:
+        print(f"❌ Error loading levels.json: {e}")
+        import traceback
+        traceback.print_exc()
+        return {}
 
-# Load levels at module initialization
-LEVELS = load_levels_from_json()
-
-def generate_procedural_level(level_id: int) -> Dict[str, Any]:
-    """Generate a procedural level for levels not in JSON"""
-    # Calculate difficulty
-    num_colors = min(3 + (level_id // 10), 12)  # 3-12 colors
-    num_bottles = num_colors + 2  # Always 2 empty bottles
-    
-    # Color palette
-    all_colors = [
-        "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#FFD700",
-        "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2", "#F8B500",
-        "#FF6F91", "#00D2FF", "#3AA17E", "#FD79A8", "#A29BFE"
-    ]
-    
-    # Select colors for this level
-    random.seed(level_id)  # Consistent generation
-    colors = all_colors[:num_colors]
-    
-    # Create bottles - 4 of each color distributed
-    bottles = []
-    for color in colors:
-        bottles.append([color] * 4)
-    
-    # Shuffle each bottle randomly
-    for _ in range(level_id * 3):  # More shuffles for harder levels
-        if len(bottles) >= 2:
-            i, j = random.sample(range(len(bottles)), 2)
-            if bottles[i] and len(bottles[j]) < 4:
-                color = bottles[i].pop()
-                bottles[j].append(color)
-    
-    # Add empty bottles
-    bottles.extend([[], []])
-    
-    return {
-        "level_id": level_id,
-        "bottles": bottles,
-        "max_capacity": 4
-    }
-
-def generate_level(level_id: int) -> Dict[str, Any]:
-    """Generate or load level data"""
-    
-    # Try to load from JSON first
-    if level_id in LEVELS:
-        level = LEVELS[level_id]
-        return {
-            "level_id": level_id,
-            "bottles": level.get('bottles', []),
-            "max_capacity": 4
-        }
-    
-    # Fall back to procedural generation
-    return generate_procedural_level(level_id)
+# Load levels on startup
+LEVELS_DATA = load_levels()
+print(f"✅ Successfully loaded {len(LEVELS_DATA)} levels")
 
 def can_pour(from_bottle: List[str], to_bottle: List[str], max_capacity: int = 4) -> bool:
     """Check if we can pour from one bottle to another"""
@@ -97,12 +76,7 @@ def pour_liquid(bottles: List[List[str]], from_idx: int, to_idx: int) -> Dict[st
     from_bottle = bottles[from_idx]
     to_bottle = bottles[to_idx]
     
-    print(f"\n🔵 POURING from bottle {from_idx} to bottle {to_idx}")
-    print(f"   FROM: {from_bottle}")
-    print(f"   TO: {to_bottle}")
-    
     if not can_pour(from_bottle, to_bottle):
-        print("   ❌ Cannot pour - invalid move")
         return {
             "success": False,
             "bottles": bottles,
@@ -110,8 +84,8 @@ def pour_liquid(bottles: List[List[str]], from_idx: int, to_idx: int) -> Dict[st
         }
     
     color_to_pour = from_bottle[-1]
-    print(f"   🎨 Top color: {color_to_pour}")
     
+    # Count matching colors on top
     colors_poured = 0
     for i in range(len(from_bottle) - 1, -1, -1):
         if from_bottle[i] == color_to_pour:
@@ -119,22 +93,18 @@ def pour_liquid(bottles: List[List[str]], from_idx: int, to_idx: int) -> Dict[st
         else:
             break
     
-    print(f"   📊 Found {colors_poured} matching colors stacked on top")
-    
+    # Limit by space
     available_space = 4 - len(to_bottle)
     colors_to_pour = min(colors_poured, available_space)
     
-    print(f"   ✅ Pouring {colors_to_pour} colors")
-    
+    # Create new bottles state
     new_bottles = [bottle[:] for bottle in bottles]
     
+    # Pour the colors
     for _ in range(colors_to_pour):
-        color = new_bottles[from_idx].pop()
-        new_bottles[to_idx].append(color)
+        new_bottles[to_idx].append(new_bottles[from_idx].pop())
     
-    print(f"   RESULT FROM: {new_bottles[from_idx]}")
-    print(f"   RESULT TO: {new_bottles[to_idx]}")
-    
+    # Check if completed
     is_completed = check_completion(new_bottles)
     
     return {
@@ -143,7 +113,21 @@ def pour_liquid(bottles: List[List[str]], from_idx: int, to_idx: int) -> Dict[st
         "is_completed": is_completed
     }
 
-def validate_move(bottles: List[List[str]], from_idx: int, to_idx: int) -> tuple:
+def check_completion(bottles: List[List[str]]) -> bool:
+    """Check if puzzle is completed"""
+    for bottle in bottles:
+        if len(bottle) == 0:
+            continue
+        
+        if len(bottle) != 4:
+            return False
+        
+        if not all(color == bottle[0] for color in bottle):
+            return False
+    
+    return True
+
+def validate_move(bottles: List[List[str]], from_idx: int, to_idx: int) -> tuple[bool, List[List[str]]]:
     """Validate and execute a move"""
     if from_idx < 0 or from_idx >= len(bottles):
         return False, bottles
@@ -156,21 +140,58 @@ def validate_move(bottles: List[List[str]], from_idx: int, to_idx: int) -> tuple
     
     result = pour_liquid(bottles, from_idx, to_idx)
     
-    if result["success"]:
-        return True, result["bottles"]
-    
-    return False, bottles
+    return result["success"], result["bottles"]
 
-def check_completion(bottles: List[List[str]]) -> bool:
-    """Check if puzzle is solved"""
-    for bottle in bottles:
-        if len(bottle) == 0:
-            continue
-        
-        if len(bottle) != 4:
-            return False
-        
-        if not all(color == bottle[0] for color in bottle):
-            return False
+def generate_level(level_id: int) -> Dict[str, Any]:
+    """Get level from levels.json"""
     
-    return True
+    if level_id in LEVELS_DATA:
+        level = LEVELS_DATA[level_id]
+        return {
+            "level_id": level_id,
+            "bottles": level["bottles"],
+            "max_capacity": 4
+        }
+    
+    # Fallback: generate procedurally
+    print(f"⚠️ Level {level_id} not in levels.json, generating...")
+    
+    if level_id <= 10:
+        num_colors = 3
+        num_bottles = 5
+    elif level_id <= 30:
+        num_colors = 4
+        num_bottles = 6
+    elif level_id <= 60:
+        num_colors = 5
+        num_bottles = 7
+    elif level_id <= 90:
+        num_colors = 6
+        num_bottles = 8
+    else:
+        num_colors = 7
+        num_bottles = 9
+    
+    colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan", "brown"][:num_colors]
+    bottles = []
+    
+    all_pieces = []
+    for color in colors:
+        all_pieces.extend([color] * 4)
+    
+    import random
+    random.seed(level_id)
+    random.shuffle(all_pieces)
+    
+    for i in range(num_colors):
+        bottle = all_pieces[i*4:(i+1)*4]
+        bottles.append(bottle)
+    
+    for _ in range(num_bottles - num_colors):
+        bottles.append([])
+    
+    return {
+        "level_id": level_id,
+        "bottles": bottles,
+        "max_capacity": 4
+    }
