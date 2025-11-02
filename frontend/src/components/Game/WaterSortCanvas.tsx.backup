@@ -3,9 +3,12 @@ import axios from "axios";
 import ThemedBottle from "./ThemedBottle";
 import AnimatedBackground from "./AnimatedBackground";
 import Fireworks from "./Fireworks";
+import confetti from 'canvas-confetti';
 import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
 
+import { solvePuzzle } from "./solver";
+import PasswordDialog from "./PasswordDialog";
 const API_URL = "https://water-sort-backend.onrender.com";
 
 interface MoveHistory {
@@ -30,27 +33,77 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [showVictory, setShowVictory] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [background, setBackground] = useState('galaxy');
-  const [bottleTheme, setBottleTheme] = useState('classic');
+  
+  // 🔥 LOAD SETTINGS IMMEDIATELY FROM LOCALSTORAGE ON INITIALIZATION
+  const [background, setBackground] = useState(() => {
+    const saved = localStorage.getItem('gameSettings');
+    if (saved) {
+      try {
+        return JSON.parse(saved).background || 'galaxy';
+      } catch (e) {
+        return 'galaxy';
+      }
+    }
+    return 'galaxy';
+  });
+  
+  const [bottleTheme, setBottleTheme] = useState(() => {
+    const saved = localStorage.getItem('gameSettings');
+    if (saved) {
+      try {
+        const theme = JSON.parse(saved).theme || 'classic';
+        console.log('🍾 Initial theme loaded:', theme);
+        return theme;
+      } catch (e) {
+        return 'classic';
+      }
+    }
+    return 'classic';
+  });
+  
   const [hintFrom, setHintFrom] = useState<number | null>(null);
   const [hintTo, setHintTo] = useState<number | null>(null);
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
   const [undosRemaining, setUndosRemaining] = useState(3);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
+    soundManager.init();
     setIsMobile(window.innerWidth < 768);
-    const saved = localStorage.getItem('gameSettings');
-    if (saved) {
-      const settings = JSON.parse(saved);
-      setBackground(settings.background || 'galaxy');
-      setBottleTheme(settings.theme || 'classic');
-    }
+    
+    const loadSettings = () => {
+      const saved = localStorage.getItem('gameSettings');
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          console.log('🎨 Loading settings:', settings);
+          setBackground(settings.background || 'galaxy');
+          setBottleTheme(settings.theme || 'classic');
+          console.log('🍾 Theme updated to:', settings.theme || 'classic');
+        } catch (e) {
+          console.error('Error loading settings:', e);
+        }
+      }
+    };
+    
+    loadSettings();
+    
+    const handleFocus = () => {
+      console.log('🔄 Window focused, reloading settings...');
+      loadSettings();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   useEffect(() => {
     if (currentLevel >= 1 && currentLevel <= 120) {
       loadLevel(currentLevel);
-      // Save current level whenever it changes
       progressManager.setCurrentLevel(currentLevel);
     }
   }, [currentLevel]);
@@ -68,32 +121,83 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       setHintTo(null);
       setMoveHistory([]);
       setUndosRemaining(3);
+      setHintsRemaining(3);
       soundManager.play("click");
     } catch (err) {
       console.error("Failed to load level:", err);
     }
   };
 
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#FFD700']
+    });
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1']
+      });
+    }, 200);
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+        colors: ['#FFA07A', '#FFD700', '#FF6B6B']
+      });
+    }, 400);
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 200,
+        spread: 180,
+        origin: { y: 0.2 },
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#FFD700', '#98D8C8']
+      });
+    }, 600);
+  };
+
   const loadNextLevel = () => {
+    console.log("🔵 NEXT button clicked!");
+    console.log("   Current level:", currentLevel);
+    console.log("   Moves:", moves);
+    
     const nextLevel = currentLevel + 1;
-  const loadNextLevel = () => {
-    const nextLevel = currentLevel + 1;
+    console.log("   Next level will be:", nextLevel);
+    
     if (nextLevel > 120) {
       alert("🎉 Congratulations! You completed all 120 levels!");
       handleExit();
       return;
     }
-    // Save completion of current level
+    
+    console.log("   Saving progress...");
     progressManager.completeLevelAndAdvance(currentLevel, moves);
-    // Move to next level
+    
+    console.log("   Setting current level to:", nextLevel);
     setCurrentLevel(nextLevel);
+    
+    console.log("   Closing victory screen...");
     setShowVictory(false);
+    
+    console.log("🟢 loadNextLevel complete!");
   };
+
+  const restartLevel = () => {
+    loadLevel(currentLevel);
     soundManager.play("click");
   };
 
   const handleExit = () => {
-    // Save current level before exiting
     progressManager.setCurrentLevel(currentLevel);
     console.log('💾 Saving level', currentLevel, 'before exit');
     onExit();
@@ -120,6 +224,11 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const showHint = () => {
+    if (hintsRemaining <= 0) {
+      alert("No hints remaining! Use the Robot button for more help (password required).");
+      return;
+    }
+    
     setHintFrom(null);
     setHintTo(null);
 
@@ -135,6 +244,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         if (bottles[to].length === 0 || bottles[to][bottles[to].length - 1] === topColor) {
           setHintFrom(from);
           setHintTo(to);
+          setHintsRemaining(hintsRemaining - 1);
           soundManager.play("select");
           
           setTimeout(() => {
@@ -147,7 +257,22 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
       }
     }
     
-    alert("🤔 No obvious moves found!");
+    alert("No obvious moves found!");
+  };
+
+  const solveWithRobot = async () => {
+    const solution = solvePuzzle(bottles);
+    
+    if (solution.length === 0) {
+      alert("Robot suggests: Try restarting this level!");
+      return;
+    }
+    
+    const move = solution[0];
+    alert(`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
+    
+    setSelectedBottle(move.from);
+    setTimeout(() => setSelectedBottle(null), 2000);
   };
 
   const undoMove = () => {
@@ -170,6 +295,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
   };
 
   const handleBottleClick = (bottleIdx: number) => {
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      soundManager.init();
+    }
+    
+    if (!soundManager.isInitialized()) {
+      soundManager.init();
+    }
+    
     if (showVictory || isAnimating) return;
 
     if (selectedBottle === null) {
@@ -248,9 +381,9 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
 
       if (checkIfComplete(newBottles)) {
         setTimeout(() => {
+          triggerConfetti();
           setShowVictory(true);
           soundManager.play("success");
-          progressManager.completeLevelAndAdvance(currentLevel, moves);
         }, 500);
       }
     }, 400);
@@ -263,6 +396,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white"
       }}>
         <h2>Loading level {currentLevel}...</h2>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
       </div>
     );
   }
@@ -360,7 +500,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontSize: isMobile ? "0.65rem" : "0.8rem", 
             fontWeight: "bold"
           }}>
-            Lv {currentLevel} • {moves} moves
+            Lv {currentLevel} • {moves} moves • 🎨 {bottleTheme}
           </div>
 
           <button onClick={undoMove} disabled={moveHistory.length === 0 || undosRemaining === 0} style={{
@@ -384,7 +524,14 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             fontSize: isMobile ? "0.7rem" : "0.9rem", 
             fontWeight: "bold", 
             cursor: "pointer"
-          }}>💡</button>
+          }}>💡 {hintsRemaining}</button>
+
+          <button onClick={() => setShowPasswordDialog(true)} style={{
+            padding: isMobile ? "6px 10px" : "8px 16px", 
+            background: "linear-gradient(135deg, #667eea, #764ba2)", 
+            border: "none", borderRadius: "8px", color: "white", 
+            fontSize: isMobile ? "0.7rem" : "0.9rem", fontWeight: "bold", cursor: "pointer"
+          }}>🤖 ROBOT</button>
 
           <button onClick={restartLevel} style={{
             padding: isMobile ? "6px 10px" : "8px 16px", 
@@ -414,9 +561,10 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
               const basePos = getBottlePosition(idx);
               const isHintSource = hintFrom === idx;
               const isHintTarget = hintTo === idx;
+              const bottleKey = `bottle-${idx}-${bottleTheme}`;
 
               return (
-                <div key={idx} onClick={() => handleBottleClick(idx)} style={{
+                <div key={bottleKey} onClick={() => handleBottleClick(idx)} style={{
                   position: "absolute", 
                   left: basePos.x, 
                   top: basePos.y,
@@ -456,6 +604,13 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             50% { opacity: 0.6; }
           }
         `}</style>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
+            onSuccess={solveWithRobot}
+            levelNumber={currentLevel}
+          />
+        )}
       </div>
     </>
   );
