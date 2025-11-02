@@ -3453,114 +3453,112 @@
     "level_id": 31,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#800080",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FFD700",
+        "#8B4513",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF0000",
+        "#FFD700",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#FFA500",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00FF00",
+        "#FF1493",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FF1493",
+        "#800080",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00FFFF",
+        "#00FFFF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#00FF00",
+        "#8B4513",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00FF00",
+        "#FF00FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#0000FF",
+        "#FF0000",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00CED1",
+        "#00FFFF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFA500",
+        "#8B4513",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#8B4513",
+        "#FFD700",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#00FF00",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#00CED1",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFA500",
+        "#8B4513",
+        "#00CED1"
+      ],
+      [
+        "#800080",
+        "#00CED1",
+        "#FF1493",
+        "#0000FF"
+      ],
+      [
+        "#00FFFF",
+        "#800080",
+        "#00CED1",
+        "#8B4513"
       ]
     ]
   },
@@ -3568,114 +3566,112 @@
     "level_id": 32,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#0000FF",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#0000FF",
+        "#00FFFF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#FF1493",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00CED1",
+        "#0000FF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FF00",
+        "#00FF00",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF1493",
+        "#8B4513",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#00FF00",
+        "#800080",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#00FFFF",
+        "#FFA500",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FFFF00",
+        "#00CED1",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF1493",
+        "#FFA500",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FFD700",
+        "#800080",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFFF00",
+        "#00CED1",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FF0000",
+        "#8B4513",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FFFF00",
+        "#FF0000",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF1493",
+        "#00FFFF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#8B4513",
+        "#FF0000",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00CED1",
+        "#0000FF",
+        "#00FF00"
+      ],
+      [
+        "#FF0000",
+        "#800080",
+        "#FF00FF",
+        "#FF00FF"
       ]
     ]
   },
@@ -3683,114 +3679,112 @@
     "level_id": 33,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFFF00",
+        "#00FFFF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#00CED1",
+        "#FF1493",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#00CED1",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF00FF",
+        "#8B4513",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#800080",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF00FF",
+        "#0000FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#00FF00",
+        "#FF1493",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#800080",
+        "#FFD700",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#00FF00",
+        "#FFA500",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFD700",
+        "#8B4513",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF1493",
+        "#0000FF",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#0000FF",
+        "#FF00FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00CED1",
+        "#0000FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#FF0000",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFD700",
+        "#00FFFF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#8B4513",
+        "#00FFFF",
+        "#FFA500"
+      ],
+      [
+        "#800080",
+        "#FF0000",
+        "#FF0000",
+        "#FFFF00"
+      ],
+      [
+        "#FFA500",
+        "#FF1493",
+        "#FFFF00",
+        "#00CED1"
       ]
     ]
   },
@@ -3798,114 +3792,112 @@
     "level_id": 34,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#FF00FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#8B4513",
+        "#FFA500",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFFF00",
+        "#FFA500",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#0000FF",
+        "#800080",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFFF00",
+        "#00CED1",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF1493",
+        "#FF0000",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#8B4513",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#800080",
+        "#FF00FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#800080",
+        "#00CED1",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00CED1",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#FF00FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFFF00",
+        "#0000FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#00FFFF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF1493",
+        "#FFD700",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF1493",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF1493",
+        "#FFD700",
+        "#00FF00"
+      ],
+      [
+        "#FF0000",
+        "#00CED1",
+        "#00FF00",
+        "#FFD700"
+      ],
+      [
+        "#FFD700",
+        "#800080",
+        "#FFD700",
+        "#FF00FF"
       ]
     ]
   },
@@ -3913,114 +3905,112 @@
     "level_id": 35,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF00FF",
+        "#00FFFF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF0000",
+        "#FFA500",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00FFFF",
+        "#800080",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00CED1",
+        "#00CED1",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FFFF00",
+        "#FF1493",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#0000FF",
+        "#800080",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FF00",
+        "#8B4513",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#0000FF",
+        "#00FF00",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFD700",
+        "#FF1493",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00FFFF",
+        "#0000FF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#FFD700",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#800080",
+        "#FFFF00",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#800080",
+        "#8B4513",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF1493",
+        "#FFD700",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#00FFFF",
+        "#00CED1",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFD700",
+        "#FF0000",
+        "#FFFF00"
+      ],
+      [
+        "#8B4513",
+        "#00FF00",
+        "#00FFFF",
+        "#FF00FF"
+      ],
+      [
+        "#FFD700",
+        "#00FF00",
+        "#FF00FF",
+        "#00FFFF"
       ]
     ]
   },
@@ -4028,114 +4018,112 @@
     "level_id": 36,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#800080",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#FF00FF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF00FF",
+        "#00FFFF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#00CED1",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00CED1",
+        "#FFA500",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFA500",
+        "#00CED1",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#800080",
+        "#FF1493",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#0000FF",
+        "#FFD700",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFFF00",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#8B4513",
+        "#8B4513",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF1493",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFFF00",
+        "#00FF00",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#8B4513",
+        "#8B4513",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FF00FF",
+        "#0000FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FFA500",
+        "#FF1493",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF1493",
+        "#FF0000",
+        "#8B4513"
+      ],
+      [
+        "#00FFFF",
+        "#FF00FF",
+        "#00CED1",
+        "#FF1493"
+      ],
+      [
+        "#00CED1",
+        "#800080",
+        "#00FFFF",
+        "#FF00FF"
       ]
     ]
   },
@@ -4143,114 +4131,112 @@
     "level_id": 37,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#0000FF",
+        "#00FFFF",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#FF1493",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF1493",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FF00FF",
+        "#800080",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00FFFF",
+        "#FF0000",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#800080",
+        "#FF00FF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00FF00",
+        "#00CED1",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00FFFF",
+        "#FFFF00",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FFD700",
+        "#FF00FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00FFFF",
+        "#0000FF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#800080",
+        "#FF0000",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#8B4513",
+        "#FF0000",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF00FF",
+        "#00FF00",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFD700",
+        "#800080",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00FFFF",
+        "#FF1493",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#800080",
+        "#00FF00",
+        "#FF0000"
+      ],
+      [
+        "#0000FF",
+        "#FFFF00",
+        "#FFFF00",
+        "#FFA500"
+      ],
+      [
+        "#00CED1",
+        "#0000FF",
+        "#FF0000",
+        "#00CED1"
       ]
     ]
   },
@@ -4258,114 +4244,112 @@
     "level_id": 38,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FF00FF",
+        "#00FFFF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF0000",
+        "#FFA500",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00CED1",
+        "#FF0000",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF0000",
+        "#800080",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFFF00",
+        "#FFFF00",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#FF0000",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00FF00",
+        "#FF1493",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#00FFFF",
+        "#FF00FF",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF00FF",
+        "#8B4513",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00CED1",
+        "#8B4513",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#8B4513",
+        "#FF1493",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#0000FF",
+        "#0000FF",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00FF00",
+        "#00FF00",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFD700",
+        "#800080",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00CED1",
+        "#FFFF00",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#00FFFF",
+        "#FFD700",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFFF00",
+        "#00CED1",
+        "#FFD700"
+      ],
+      [
+        "#FF0000",
+        "#00FF00",
+        "#00FF00",
+        "#800080"
       ]
     ]
   },
@@ -4373,114 +4357,112 @@
     "level_id": 39,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#0000FF",
+        "#00FFFF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF1493",
+        "#FFFF00",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF0000",
+        "#00CED1",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#FF0000",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#8B4513",
+        "#8B4513",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFFF00",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FFA500",
+        "#00FFFF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#8B4513",
+        "#0000FF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#800080",
+        "#FFD700",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FF00FF",
+        "#FF0000",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#0000FF",
+        "#00CED1",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#800080",
+        "#8B4513",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00FFFF",
+        "#FF1493",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFA500",
+        "#00FFFF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00FFFF",
+        "#8B4513",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#800080",
+        "#00FF00",
+        "#0000FF"
+      ],
+      [
+        "#FFD700",
+        "#00FF00",
+        "#800080",
+        "#FFFF00"
+      ],
+      [
+        "#00FF00",
+        "#800080",
+        "#00FF00",
+        "#00CED1"
       ]
     ]
   },
@@ -4488,229 +4470,225 @@
     "level_id": 40,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFA500",
+        "#00FF00",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#00FFFF",
+        "#FFA500",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF00FF",
+        "#00CED1",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#800080",
+        "#FF1493",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FF0000",
+        "#FFA500",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#0000FF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#8B4513",
+        "#00FFFF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#8B4513",
+        "#FFA500",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#800080",
+        "#FF0000",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#00FF00",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#00CED1",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00FF00",
+        "#800080",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#8B4513",
+        "#FF0000",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#00CED1",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFD700",
+        "#0000FF",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#FFD700",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFD700",
+        "#FFFF00",
+        "#8B4513"
       ],
-      []
+      [
+        "#FF1493",
+        "#00FF00",
+        "#800080",
+        "#00FFFF"
+      ]
     ]
   },
   "41": {
     "level_id": 41,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF0000",
+        "#0000FF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#0000FF",
+        "#FFD700",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF0000",
+        "#800080",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFFF00",
+        "#00FFFF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFFF00",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#800080",
+        "#FF0000",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00CED1",
+        "#FFA500",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFA500",
+        "#FF1493",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FFFF",
+        "#800080",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FFA500",
+        "#FFD700",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FF00FF",
+        "#FF1493",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#0000FF",
+        "#FF00FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FFD700",
+        "#800080",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FFA500",
+        "#8B4513",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#FFA500",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFD700",
+        "#FFA500",
+        "#FF00FF"
+      ],
+      [
+        "#0000FF",
+        "#00FFFF",
+        "#00CED1",
+        "#FF0000"
+      ],
+      [
+        "#00CED1",
+        "#00FFFF",
+        "#8B4513",
+        "#8B4513"
       ]
     ]
   },
@@ -4718,114 +4696,112 @@
     "level_id": 42,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FF0000",
+        "#FFD700",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF00FF",
+        "#0000FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FF0000",
+        "#FFD700",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#00FF00",
+        "#00CED1",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FFA500",
+        "#00FFFF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#00CED1",
+        "#FFA500",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF00FF",
+        "#FF1493",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#8B4513",
+        "#FFA500",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFA500",
+        "#00FF00",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#8B4513",
+        "#8B4513",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF0000",
+        "#00FF00",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFFF00",
+        "#FF0000",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#00CED1",
+        "#FF00FF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#FF00FF",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#0000FF",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFFF00",
+        "#FF00FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFFF00",
+        "#00FFFF",
+        "#800080"
+      ],
+      [
+        "#8B4513",
+        "#8B4513",
+        "#00FFFF",
+        "#FFD700"
       ]
     ]
   },
@@ -4833,114 +4809,112 @@
     "level_id": 43,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FFFF00",
+        "#00CED1",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF00FF",
+        "#FF1493",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#0000FF",
+        "#00FF00",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FF00FF",
+        "#FF0000",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF1493",
+        "#FFA500",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#800080",
+        "#00FF00",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FFA500",
+        "#FFD700",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FF0000",
+        "#00FFFF",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#800080",
+        "#800080",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#8B4513",
+        "#8B4513",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#800080",
+        "#00FFFF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF00FF",
+        "#FF0000",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FF00FF",
+        "#FFFF00",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#8B4513",
+        "#FFA500",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFD700",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#00FFFF",
+        "#FFD700",
+        "#FF0000"
       ],
-      [],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFD700",
+        "#0000FF",
+        "#0000FF"
+      ],
+      [
+        "#FFFF00",
+        "#FFFF00",
+        "#00CED1",
+        "#800080"
       ]
     ]
   },
@@ -4948,114 +4922,112 @@
     "level_id": 44,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#00FFFF",
+        "#FFD700",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFFF00",
+        "#00FFFF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#800080",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFD700",
+        "#FFD700",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FF0000",
+        "#0000FF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFA500",
+        "#00CED1",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FF00",
+        "#FF1493",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF0000",
+        "#800080",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF1493",
+        "#FFD700",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FFD700",
+        "#00CED1",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#00FF00",
+        "#FF00FF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FF0000",
+        "#00FFFF",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#8B4513",
+        "#FF00FF",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFA500",
+        "#800080",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#FFFF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#00FFFF",
+        "#FF00FF",
+        "#00FFFF"
+      ],
+      [
+        "#0000FF",
+        "#FFFF00",
+        "#FFA500",
+        "#8B4513"
+      ],
+      [
+        "#FF00FF",
+        "#00CED1",
+        "#800080",
+        "#0000FF"
       ]
     ]
   },
@@ -5063,114 +5035,112 @@
     "level_id": 45,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#800080",
+        "#00FFFF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFD700",
+        "#00FF00",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF1493",
+        "#FF1493",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#800080",
+        "#FFA500",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00FFFF",
+        "#00CED1",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFA500",
+        "#00CED1",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#800080",
+        "#FFFF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFD700",
+        "#FFA500",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#00CED1",
+        "#00CED1",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FF00FF",
+        "#FF00FF",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#0000FF",
+        "#FF1493",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF0000",
+        "#0000FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#8B4513",
+        "#00CED1",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#800080",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFFF00",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#8B4513",
+        "#FFA500"
+      ],
+      [
+        "#800080",
+        "#0000FF",
+        "#FF0000",
+        "#FF00FF"
+      ],
+      [
+        "#FFFF00",
+        "#0000FF",
+        "#FF0000",
+        "#FFD700"
       ]
     ]
   },
@@ -5178,229 +5148,225 @@
     "level_id": 46,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFD700",
+        "#00FF00",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#800080",
+        "#8B4513",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#800080",
+        "#FF00FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#800080",
+        "#0000FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FFA500",
+        "#8B4513",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF0000",
+        "#FF0000",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#00FF00",
+        "#FF1493",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#FF00FF",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#0000FF",
+        "#00FF00",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FF1493",
+        "#00CED1",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00FFFF",
+        "#FF00FF",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FF1493",
+        "#00FF00",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#800080",
+        "#FFA500",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFFF00",
+        "#FF00FF",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#0000FF",
+        "#FF1493",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFA500",
+        "#FFD700",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00FFFF",
+        "#FFD700",
+        "#00CED1"
       ],
-      []
+      [
+        "#8B4513",
+        "#800080",
+        "#FFD700",
+        "#FFFF00"
+      ]
     ]
   },
   "47": {
     "level_id": 47,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFD700",
+        "#FFFF00",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#800080",
+        "#800080",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF00FF",
+        "#00FFFF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#800080",
+        "#FFFF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#00FFFF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#0000FF",
+        "#8B4513",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00FFFF",
+        "#FFD700",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF0000",
+        "#00CED1",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00FF00",
+        "#FF1493",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF0000",
+        "#00CED1",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFA500",
+        "#0000FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FFA500",
+        "#00FFFF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#800080",
+        "#FF1493",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#0000FF",
+        "#FF1493",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FF00",
+        "#00FF00",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FFFF00",
+        "#FF1493",
+        "#FF00FF"
       ],
-      [],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#8B4513",
+        "#FFA500",
+        "#0000FF"
+      ],
+      [
+        "#FF00FF",
+        "#FF0000",
+        "#00FF00",
+        "#8B4513"
       ]
     ]
   },
@@ -5408,114 +5374,112 @@
     "level_id": 48,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#0000FF",
+        "#FF00FF",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFD700",
+        "#00FF00",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00CED1",
+        "#FFFF00",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#00FF00",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00FFFF",
+        "#00CED1",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFFF00",
+        "#00CED1",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#FFA500",
+        "#00FF00",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#8B4513",
+        "#00FFFF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FF0000",
+        "#FFD700",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FF1493",
+        "#8B4513",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#FF0000",
+        "#FFA500",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#FFD700",
+        "#00FF00",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#800080",
+        "#00CED1",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#8B4513",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFD700",
+        "#0000FF",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#800080",
+        "#FF0000",
+        "#800080"
+      ],
+      [
+        "#8B4513",
+        "#FF1493",
+        "#FF0000",
+        "#00FF00"
+      ],
+      [
+        "#8B4513",
+        "#FFFF00",
+        "#FF00FF",
+        "#0000FF"
       ]
     ]
   },
@@ -5523,114 +5487,112 @@
     "level_id": 49,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#0000FF",
+        "#0000FF",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#0000FF",
+        "#800080",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFA500",
+        "#00FFFF",
+        "#FFA500",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#00CED1",
+        "#FFFF00",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00FF00",
+        "#FF00FF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#800080",
+        "#FFD700",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FFA500",
+        "#0000FF",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#FF1493",
+        "#FF0000",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FF00",
+        "#FF00FF",
+        "#FFFF00",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#FFFF00",
+        "#8B4513",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#FF00FF",
+        "#800080",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#800080",
+        "#FF1493",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00CED1",
+        "#FFD700",
+        "#8B4513",
+        "#FF1493"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#FF1493",
+        "#FF1493",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#8B4513",
+        "#0000FF",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#800080",
+        "#00FFFF",
+        "#FFD700"
+      ],
+      [
+        "#00CED1",
+        "#8B4513",
+        "#FF0000",
+        "#FFFF00"
+      ],
+      [
+        "#00FF00",
+        "#00FFFF",
+        "#FFA500",
+        "#FFA500"
       ]
     ]
   },
@@ -5638,114 +5600,112 @@
     "level_id": 50,
     "bottles": [
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FF00",
+        "#FF00FF",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFFF00",
+        "#FFA500",
+        "#FF0000",
+        "#FFFF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#0000FF",
+        "#8B4513",
+        "#FFFF00",
+        "#00FFFF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF0000",
+        "#0000FF",
+        "#FF1493",
+        "#0000FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#00FFFF",
+        "#FFA500",
+        "#FF00FF"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#00FFFF",
+        "#FF00FF",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF0000",
+        "#00FF00",
+        "#FFA500"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FF00FF",
+        "#00FF00",
+        "#FF1493",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#FF0000",
+        "#FFFF00",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#8B4513",
+        "#0000FF",
+        "#FF1493",
+        "#FFD700"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FF00FF",
+        "#8B4513",
+        "#00FF00"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#FFD700",
+        "#00CED1",
+        "#00CED1",
+        "#00CED1"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#00FFFF",
+        "#00FFFF",
+        "#00FF00",
+        "#FF0000"
       ],
       [
-        null,
-        null,
-        null,
-        null
-      ],
-      [],
-      [
-        null,
-        null,
-        null,
-        null
+        "#FF1493",
+        "#0000FF",
+        "#00FF00",
+        "#800080"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#800080",
+        "#FFFF00",
+        "#8B4513"
       ],
       [
-        null,
-        null,
-        null,
-        null
+        "#800080",
+        "#FFA500",
+        "#00CED1",
+        "#FF1493"
+      ],
+      [
+        "#00FFFF",
+        "#FF0000",
+        "#FFA500",
+        "#FF00FF"
+      ],
+      [
+        "#00CED1",
+        "#FFD700",
+        "#FFA500",
+        "#0000FF"
       ]
     ]
   },
