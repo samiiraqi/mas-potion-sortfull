@@ -8,6 +8,7 @@ import { soundManager } from "../../utils/sounds";
 import { progressManager } from "../../utils/progressManager";
 
 import { solvePuzzle } from "./solver";
+import PasswordDialog from "./PasswordDialog";
 const API_URL = "https://water-sort-backend.onrender.com";
 
 interface MoveHistory {
@@ -60,8 +61,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return 'classic';
   });
   
+  const [hintFrom, setHintFrom] = useState<number | null>(null);
+  const [hintTo, setHintTo] = useState<number | null>(null);
   const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
   const [undosRemaining, setUndosRemaining] = useState(3);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
     soundManager.init();
@@ -218,7 +223,57 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     return completedBottles > 0 && (completedBottles + emptyBottles === newBottles.length);
   };
 
+  const showHint = () => {
+    if (hintsRemaining <= 0) {
+      alert("No hints remaining! Use the Robot button for more help (password required).");
+      return;
+    }
+    
+    setHintFrom(null);
+    setHintTo(null);
 
+    for (let from = 0; from < bottles.length; from++) {
+      if (bottles[from].length === 0) continue;
+      
+      const topColor = bottles[from][bottles[from].length - 1];
+      
+      for (let to = 0; to < bottles.length; to++) {
+        if (from === to) continue;
+        if (bottles[to].length >= 4) continue;
+        
+        if (bottles[to].length === 0 || bottles[to][bottles[to].length - 1] === topColor) {
+          setHintFrom(from);
+          setHintTo(to);
+          setHintsRemaining(hintsRemaining - 1);
+          soundManager.play("select");
+          
+          setTimeout(() => {
+            setHintFrom(null);
+            setHintTo(null);
+          }, 3000);
+          
+          return;
+        }
+      }
+    }
+    
+    alert("No obvious moves found!");
+  };
+
+  const solveWithRobot = async () => {
+    const solution = solvePuzzle(bottles);
+    
+    if (solution.length === 0) {
+      alert("Robot suggests: Try restarting this level!");
+      return;
+    }
+    
+    const move = solution[0];
+    alert(`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
+    
+    setSelectedBottle(move.from);
+    setTimeout(() => setSelectedBottle(null), 2000);
+  };
 
   const undoMove = () => {
     if (moveHistory.length === 0) {
@@ -341,6 +396,9 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white"
       }}>
         <h2>Loading level {currentLevel}...</h2>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
             onSuccess={solveWithRobot}
             levelNumber={currentLevel}
           />
@@ -484,6 +542,8 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
               const isSelected = selectedBottle === idx;
               const isFull = checkBottleFull(colors);
               const basePos = getBottlePosition(idx);
+              const isHintSource = hintFrom === idx;
+              const isHintTarget = hintTo === idx;
               const bottleKey = `bottle-${idx}-${bottleTheme}`;
 
               return (
@@ -498,9 +558,12 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
                   transition: "all 0.3s",
                   filter: isSelected 
                     ? "drop-shadow(0 0 20px rgba(255,215,0,0.9))" 
+                    : isHintSource 
                     ? "drop-shadow(0 0 30px rgba(0,255,0,1))"
+                    : isHintTarget
                     ? "drop-shadow(0 0 30px rgba(0,255,255,1))"
                     : "drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
+                  animation: isHintSource || isHintTarget ? 'pulse 1s infinite' : 'none'
                 }}>
                   <ThemedBottle 
                     colors={colors} 
@@ -524,6 +587,9 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
             50% { opacity: 0.6; }
           }
         `}</style>
+        {showPasswordDialog && (
+          <PasswordDialog
+            onClose={() => setShowPasswordDialog(false)}
             onSuccess={solveWithRobot}
             levelNumber={currentLevel}
           />
