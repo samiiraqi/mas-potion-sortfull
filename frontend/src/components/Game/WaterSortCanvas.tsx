@@ -269,7 +269,7 @@ export default function WaterSortCanvas({ onExit }: WaterSortCanvasProps) {
     }
     
     const move = solution[0];
-    alert(`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
+    alert((`Robot suggests: Pour from bottle ${move.from + 1} to bottle ${move.to + 1}`);
     
     setSelectedBottle(move.from);
     setTimeout(() => setSelectedBottle(null), 2000);
