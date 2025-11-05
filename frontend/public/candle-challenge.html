@@ -504,7 +504,7 @@
             document.getElementById('progressBar').style.width = (completed / 70 * 100) + '%';
         }
         
-        // SOLVABLE PUZZLE GENERATOR
+        // SOLVABLE PUZZLE GENERATOR - SHUFFLE INDIVIDUAL LAYERS
         function seededRandom(seed) {
             const x = Math.sin(seed++) * 10000;
             return x - Math.floor(x);
@@ -515,49 +515,32 @@
             const colors = allColors.slice(0, candles);
             const state = [];
             
-            // Start solved
+            // Create array of ALL individual layers
+            const allLayers = [];
             for(let i = 0; i < candles; i++) {
-                state.push([colors[i], colors[i], colors[i], colors[i]]);
+                for(let j = 0; j < 4; j++) {
+                    allLayers.push(colors[i]);
+                }
             }
+            
+            // Shuffle the individual layers using seeded random
+            for(let i = allLayers.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom(seed + i) * (i + 1));
+                [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
+            }
+            
+            // Distribute shuffled layers into candles (4 layers per candle)
+            for(let i = 0; i < candles; i++) {
+                const candle = [];
+                for(let j = 0; j < 4; j++) {
+                    candle.push(allLayers[i * 4 + j]);
+                }
+                state.push(candle);
+            }
+            
+            // Add empty bottles
             for(let i = 0; i < empty; i++) {
                 state.push([]);
-            }
-            
-            // Shuffle with valid moves
-            const numMoves = Math.floor(candles * 4 + seededRandom(seed) * 10);
-            
-            for(let move = 0; move < numMoves; move++) {
-                const validMoves = [];
-                
-                for(let from = 0; from < state.length; from++) {
-                    if(state[from].length === 0) continue;
-                    
-                    for(let to = 0; to < state.length; to++) {
-                        if(from === to || state[to].length >= 4) continue;
-                        
-                        const topFrom = state[from][state[from].length - 1];
-                        if(state[to].length === 0 || state[to][state[to].length - 1] === topFrom) {
-                            validMoves.push({from, to});
-                        }
-                    }
-                }
-                
-                if(validMoves.length > 0) {
-                    const idx = Math.floor(seededRandom(seed + move * 1000) * validMoves.length);
-                    const {from, to} = validMoves[idx];
-                    
-                    const topColor = state[from][state[from].length - 1];
-                    let count = 1;
-                    for(let i = state[from].length - 2; i >= 0; i--) {
-                        if(state[from][i] === topColor) count++;
-                        else break;
-                    }
-                    count = Math.min(count, 4 - state[to].length);
-                    
-                    for(let i = 0; i < count; i++) {
-                        state[to].push(state[from].pop());
-                    }
-                }
             }
             
             return state;
