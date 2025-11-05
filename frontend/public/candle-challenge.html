@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0066)file:///Users/sami/Downloads/candle-challenge-FINAL-BEAUTIFUL.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🕯️ Candle Challenge - @orouk.sami</title>
     <style>
@@ -17,22 +17,18 @@
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
-            transition: background 2s ease;
+            transition: background 3s ease;
             touch-action: pan-y;
         }
 
+        /* DARK MODE - Default */
         body.dark-mode {
             background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f1623 100%);
         }
 
+        /* BRIGHT MODE - After all candles lit */
         body.bright-mode {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            animation: brighten 2s ease;
-        }
-
-        @keyframes brighten {
-            from { background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f1623 100%); }
-            to { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         }
 
         .game-container {
@@ -43,7 +39,7 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            transition: all 1s ease;
+            transition: all 2s ease;
         }
 
         body.dark-mode .header {
@@ -59,7 +55,7 @@
         .header h1 {
             font-size: clamp(2em, 8vw, 3.5em);
             margin-bottom: 10px;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             font-weight: bold;
         }
 
@@ -69,7 +65,7 @@
         }
 
         body.dark-mode .subtitle { color: rgba(255, 215, 0, 0.8); }
-        body.bright-mode .subtitle { color: rgba(255, 255, 255, 0.9); }
+        body.bright-mode .subtitle { color: rgba(255, 255, 255, 0.95); }
 
         .difficulty-badge {
             display: inline-block;
@@ -78,6 +74,7 @@
             font-weight: bold;
             margin: 10px 0;
             font-size: clamp(0.9em, 3vw, 1.1em);
+            transition: all 2s ease;
         }
 
         body.dark-mode .difficulty-badge {
@@ -103,30 +100,30 @@
         .stat {
             text-align: center;
             min-width: 80px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 12px;
-            transition: all 1s ease;
+            transition: all 2s ease;
         }
 
         body.dark-mode .stat {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
         }
 
         body.bright-mode .stat {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .stat-value {
             font-size: clamp(1.8em, 6vw, 2.5em);
             font-weight: bold;
-            transition: all 1s ease;
+            transition: all 2s ease;
         }
 
         body.dark-mode .stat-value {
             color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
         }
 
         body.bright-mode .stat-value {
@@ -137,114 +134,242 @@
         .stat-label {
             font-size: clamp(0.8em, 3vw, 1em);
             margin-top: 5px;
-            transition: all 1s ease;
+            transition: all 2s ease;
         }
 
         body.dark-mode .stat-label { color: #ccc; }
         body.bright-mode .stat-label { color: rgba(255,255,255,0.9); }
 
+        /* CANDLES GRID */
         .candles-grid {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: clamp(15px, 3vw, 25px);
+            gap: clamp(20px, 4vw, 35px);
             flex-wrap: wrap;
-            margin: 40px 0;
-            min-height: 200px;
+            margin: 50px 0;
+            min-height: 250px;
         }
 
-        .candle {
-            width: clamp(60px, 15vw, 90px);
-            height: clamp(140px, 30vw, 200px);
-            position: relative;
+        /* CANDLE WRAPPER */
+        .candle-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column-reverse;
-            border-radius: 15px 15px 5px 5px;
-            overflow: hidden;
         }
 
-        .candle::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px 15px 5px 5px;
-            z-index: -1;
-            transition: all 0.5s ease;
-        }
-
-        .candle:active {
+        .candle-wrapper:active {
             transform: scale(0.95);
         }
 
         @media (min-width: 769px) {
-            .candle:hover {
+            .candle-wrapper:hover {
                 transform: translateY(-10px);
             }
         }
 
-        .candle.selected::before {
-            border-color: #FFD700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-        }
-
-        .candle.selected {
+        .candle-wrapper.selected {
             transform: translateY(-10px) scale(1.05);
         }
 
-        .candle.completed::before {
-            border-color: #4CAF50;
-            background: linear-gradient(180deg, #2a2a3a 0%, #1a1a2a 100%);
-            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.6);
-            animation: candleGlow 2s ease-in-out infinite;
+        /* FLAME - Always visible but changes color */
+        .flame {
+            width: clamp(20px, 5vw, 35px);
+            height: clamp(35px, 8vw, 60px);
+            background: radial-gradient(ellipse at center, #4a4a4a 0%, #2a2a2a 30%, #1a1a1a 60%, transparent 100%);
+            border-radius: 50% 50% 20% 20%;
+            margin-bottom: 5px;
+            filter: blur(0.5px);
+            transition: all 0.8s ease;
+            position: relative;
+            animation: flameMove 3s ease-in-out infinite;
         }
 
-        @keyframes candleGlow {
-            0%, 100% { box-shadow: 0 10px 40px rgba(255, 215, 0, 0.6); }
-            50% { box-shadow: 0 10px 50px rgba(255, 165, 0, 0.9); }
+        @keyframes flameMove {
+            0%, 100% { transform: rotate(-2deg) scaleY(1); }
+            50% { transform: rotate(2deg) scaleY(0.95); }
         }
 
-        .candle::after {
+        /* Extinguished flame (dark gray) */
+        .candle-wrapper:not(.lit) .flame {
+            background: radial-gradient(ellipse at center, #3a3a3a 0%, #2a2a2a 30%, #1a1a1a 60%, transparent 100%);
+            opacity: 0.7;
+            animation: flameMove 3s ease-in-out infinite;
+        }
+
+        /* LIT flame (bright fire colors!) */
+        .candle-wrapper.lit .flame {
+            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
+            opacity: 1;
+            filter: blur(1px);
+            animation: flameLit 0.15s ease-in-out infinite alternate, flameSway 3s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.8), 0 0 60px rgba(255, 100, 0, 0.4);
+        }
+
+        @keyframes flameLit {
+            0% { transform: scaleY(1) scaleX(1); }
+            100% { transform: scaleY(0.93) scaleX(1.07); }
+        }
+
+        @keyframes flameSway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        /* Inner flame glow */
+        .flame::before {
             content: '';
             position: absolute;
-            top: -8px;
+            top: 30%;
             left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 15px;
-            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
-            border-radius: 3px;
-            z-index: 100;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 100%);
+            border-radius: 50%;
+            transition: all 0.8s ease;
         }
 
-        .color-layer {
-            width: 100%;
-            height: 25%;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        .candle-wrapper.lit .flame::before {
+            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 50%, transparent 100%);
+            animation: innerGlow 0.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes innerGlow {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* Flame halo */
+        .flame::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, transparent 0%, transparent 100%);
+            border-radius: 50%;
+            transition: all 0.8s ease;
+        }
+
+        .candle-wrapper.lit .flame::after {
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.4) 0%, rgba(255, 100, 0, 0.2) 50%, transparent 80%);
+            animation: haloGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes haloGlow {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+            50% { transform: translateX(-50%) scale(1.2); opacity: 0.9; }
+        }
+
+        /* WICK */
+        .wick {
+            width: clamp(3px, 1vw, 6px);
+            height: clamp(8px, 2vw, 15px);
+            background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 2px;
+            margin-bottom: 2px;
+            transition: all 0.8s ease;
+        }
+
+        .candle-wrapper.lit .wick {
+            background: linear-gradient(180deg, #ff6347 0%, #1a1a1a 100%);
+            box-shadow: 0 0 8px rgba(255, 100, 0, 0.8);
+        }
+
+        /* CANDLE BODY */
+        .candle-body {
+            width: clamp(50px, 12vw, 80px);
+            height: clamp(120px, 25vw, 180px);
+            background: linear-gradient(180deg, #c9a961 0%, #b8975a 50%, #a68650 100%);
+            border-radius: 8px 8px 4px 4px;
             position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset -5px 0 15px rgba(0,0,0,0.3),
+                inset 5px 0 15px rgba(255,255,255,0.1),
+                0 8px 25px rgba(0,0,0,0.5);
+            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column-reverse;
         }
 
-        .color-layer::before {
+        /* Wax texture */
+        .candle-body::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
-            animation: shimmer 3s ease-in-out infinite;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Candle rim/top */
+        .candle-body::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: radial-gradient(ellipse at center, #d4b574 0%, #c9a961 50%, #a68650 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 15;
+        }
+
+        .candle-wrapper.selected .candle-body {
+            box-shadow: 
+                inset -5px 0 15px rgba(0,0,0,0.3),
+                inset 5px 0 15px rgba(255,255,255,0.1),
+                0 0 30px rgba(255, 215, 0, 0.8),
+                0 0 50px rgba(255, 215, 0, 0.4);
+            transform: scale(1.02);
+        }
+
+        .candle-wrapper.lit .candle-body {
+            box-shadow: 
+                inset -5px 0 15px rgba(0,0,0,0.3),
+                inset 5px 0 15px rgba(255,255,255,0.1),
+                0 10px 35px rgba(255, 165, 0, 0.6),
+                0 0 50px rgba(255, 140, 0, 0.3);
+        }
+
+        /* COLOR LAYERS inside candle */
+        .color-layer {
+            width: 100%;
+            height: 25%;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Glass effect on colors */
+        .color-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 8;
         }
 
         @keyframes shimmer {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
+            0%, 100% { transform: translateX(-20px); opacity: 0.5; }
+            50% { transform: translateX(40px); opacity: 1; }
         }
 
         .color-layer.pouring {
@@ -252,98 +377,35 @@
         }
 
         @keyframes pour {
-            0% { transform: translateY(-30px); opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        .flame {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 25px;
-            height: 40px;
-            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 20%, #ff9800 50%, #ff5722 80%, transparent 100%);
-            border-radius: 50% 50% 20% 20%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            filter: blur(1px);
-            z-index: 200;
-            pointer-events: none;
-        }
-
-        @media (min-width: 769px) {
-            .flame {
-                top: -60px;
-                width: 30px;
-                height: 50px;
+            0% { 
+                transform: translateY(-30px); 
+                opacity: 0.3;
+                filter: blur(3px);
+            }
+            50% { 
+                opacity: 0.8;
+                filter: blur(1px);
+            }
+            100% { 
+                transform: translateY(0); 
+                opacity: 1;
+                filter: blur(0);
             }
         }
 
-        .candle.completed .flame {
-            opacity: 1;
-            animation: flicker 0.2s ease-in-out infinite alternate, sway 3s ease-in-out infinite;
-        }
-
-        @keyframes flicker {
-            0% { transform: translateX(-50%) scaleY(1) scaleX(1); filter: blur(1px); }
-            100% { transform: translateX(-50%) scaleY(0.92) scaleX(1.08); filter: blur(1.5px); }
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: translateX(-50%) rotate(-3deg); }
-            50% { transform: translateX(-50%) rotate(3deg); }
-        }
-
-        .flame::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 15px;
-            height: 20px;
-            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 40%, transparent 70%);
-            border-radius: 50% 50% 20% 20%;
-            animation: innerFlicker 0.15s ease-in-out infinite alternate;
-        }
-
-        @keyframes innerFlicker {
-            0% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        .flame::after {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, rgba(255, 165, 0, 0.4) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: glowPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-            50% { transform: translateX(-50%) scale(1.3); opacity: 0.9; }
-        }
-
+        /* CONTROLS */
         .controls {
             display: flex;
             justify-content: center;
             gap: clamp(10px, 2vw, 15px);
             flex-wrap: wrap;
-            margin-top: 30px;
+            margin-top: 40px;
         }
 
         .btn {
-            padding: clamp(12px, 3vw, 18px) clamp(20px, 5vw, 40px);
+            padding: clamp(12px, 3vw, 18px) clamp(25px, 5vw, 45px);
             border: none;
-            border-radius: 12px;
+            border-radius: 15px;
             font-size: clamp(1em, 3vw, 1.3em);
             font-weight: bold;
             cursor: pointer;
@@ -370,6 +432,7 @@
         .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
         .btn-back { background: linear-gradient(135deg, #636363 0%, #a2ab58 100%); }
 
+        /* CELEBRATION */
         .celebration-overlay {
             position: fixed;
             top: 0;
@@ -382,11 +445,11 @@
             justify-content: center;
             z-index: 1000;
             padding: 20px;
+            animation: fadeIn 1s ease;
         }
 
         .celebration-overlay.show {
             display: flex;
-            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -396,20 +459,20 @@
 
         .celebration-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: clamp(30px, 8vw, 60px);
-            border-radius: 25px;
+            padding: clamp(35px, 8vw, 70px);
+            border-radius: 30px;
             text-align: center;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-            border: 4px solid rgba(255,255,255,0.4);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+            border: 4px solid rgba(255,255,255,0.5);
             position: relative;
             overflow: hidden;
             max-width: 90%;
-            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
         }
 
         .celebration-card::before {
@@ -420,7 +483,7 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-            animation: rotateGlow 10s linear infinite;
+            animation: rotateGlow 12s linear infinite;
         }
 
         @keyframes rotateGlow {
@@ -434,38 +497,39 @@
         }
 
         .celebration-card h2 {
-            font-size: clamp(2em, 8vw, 4em);
+            font-size: clamp(2em, 10vw, 4.5em);
             color: white;
-            margin-bottom: 20px;
-            text-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+            text-shadow: 0 0 50px rgba(255, 255, 255, 1);
             font-weight: bold;
-            animation: glow 2s ease-in-out infinite;
+            animation: textGlow 2s ease-in-out infinite;
         }
 
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 40px rgba(255, 255, 255, 0.8); }
-            50% { text-shadow: 0 0 60px rgba(255, 255, 255, 1); }
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 50px rgba(255, 255, 255, 1); }
+            50% { text-shadow: 0 0 80px rgba(255, 255, 255, 1), 0 0 120px rgba(255, 215, 0, 0.8); }
         }
 
         .celebration-card .candles-lit {
-            font-size: clamp(2.5em, 10vw, 5em);
+            font-size: clamp(3em, 12vw, 6em);
             color: white;
-            margin: 20px 0;
+            margin: 25px 0;
             line-height: 1.3;
+            filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.8));
         }
 
         .celebration-card p {
-            font-size: clamp(1.2em, 5vw, 2em);
+            font-size: clamp(1.3em, 5vw, 2.2em);
             color: white;
             margin: 15px 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 3px 15px rgba(0,0,0,0.4);
         }
 
         .share-buttons {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
             flex-wrap: wrap;
         }
 
@@ -476,13 +540,20 @@
         }
 
         @keyframes particleFall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            0% { 
+                transform: translateY(-100px) rotate(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg); 
+                opacity: 0; 
+            }
         }
 
         .instagram-tag {
             margin-top: 15px;
             font-size: clamp(0.9em, 3vw, 1.1em);
+            transition: all 2s ease;
         }
 
         body.dark-mode .instagram-tag { color: #ff69b4; }
@@ -492,6 +563,11 @@
             color: inherit;
             text-decoration: none;
             font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .instagram-tag a:hover {
+            text-shadow: 0 0 10px currentColor;
         }
     </style>
 </head>
@@ -499,7 +575,7 @@
     <div class="game-container">
         <div class="header">
             <h1>🕯️ CANDLE CHALLENGE 🕯️</h1>
-            <p class="subtitle">Fill the Candles & Light Them All!</p>
+            <p class="subtitle">Fill the Candles &amp; Light All Flames!</p>
             <div class="difficulty-badge" id="difficultyBadge">Medium Challenge</div>
             <p class="instagram-tag">Follow: <a href="https://instagram.com/orouk.sami" target="_blank">@orouk.sami</a></p>
         </div>
@@ -510,16 +586,16 @@
                 <div class="stat-label">Moves</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="litCount">0/?</div>
-                <div class="stat-label">Candles Lit</div>
+                <div class="stat-value" id="litCount">0/5</div>
+                <div class="stat-label">Flames Lit</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="timeDisplay">0:00</div>
+                <div class="stat-value" id="timeDisplay">0:11</div>
                 <div class="stat-label">Time</div>
             </div>
         </div>
 
-        <div class="candles-grid" id="candlesGrid"></div>
+        <div class="candles-grid" id="candlesGrid"><div class="candle-wrapper" data-index="0"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="1"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="2"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="3"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div></div></div><div class="candle-wrapper" data-index="4"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div></div></div><div class="candle-wrapper" data-index="5"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div><div class="candle-wrapper" data-index="6"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div></div>
 
         <div class="controls">
             <button class="btn btn-success" onclick="checkProgress()">✓ Check</button>
@@ -532,10 +608,10 @@
     <div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
         <div class="celebration-card">
             <div class="celebration-content">
-                <h2>🎉 ALL CANDLES LIT! 🎉</h2>
-                <div class="candles-lit" id="celebrationCandles">🕯️🕯️🕯️</div>
+                <h2>🎉 ALL FLAMES LIT! 🎉</h2>
+                <div class="candles-lit" id="celebrationCandles">🕯️🕯️🕯️🕯️🕯️</div>
                 <p>You completed the challenge!</p>
-                <p style="font-size: clamp(1em, 4vw, 1.5em);">Moves: <span id="finalMoves">0</span> | Time: <span id="finalTime">0:00</span></p>
+                <p style="font-size: clamp(1.1em, 4vw, 1.6em);">Moves: <span id="finalMoves">0</span> | Time: <span id="finalTime">0:00</span></p>
                 <div class="share-buttons">
                     <button class="btn btn-warning" onclick="shareToInstagram()">📱 Share</button>
                     <button class="btn btn-success" onclick="tryAgain()">🔄 Again</button>
@@ -544,6 +620,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const difficulty = urlParams.get('difficulty') || 'medium';
@@ -577,20 +654,17 @@
             const allLayers = [];
             const usedColors = colors.slice(0, settings.colors);
             
-            // Create all color layers
             usedColors.forEach(color => {
                 for (let i = 0; i < 4; i++) {
                     allLayers.push(color);
                 }
             });
 
-            // Shuffle
             for (let i = allLayers.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
 
-            // Distribute into candles
             for (let i = 0; i < settings.colors; i++) {
                 gameState.push([
                     allLayers[i * 4],
@@ -600,7 +674,6 @@
                 ]);
             }
 
-            // Add empty candles
             for (let i = 0; i < settings.emptyBottles; i++) {
                 gameState.push([]);
             }
@@ -621,30 +694,40 @@
             grid.innerHTML = '';
 
             gameState.forEach((candle, candleIndex) => {
-                const candleDiv = document.createElement('div');
-                candleDiv.className = 'candle';
-                candleDiv.dataset.index = candleIndex;
-                candleDiv.onclick = () => selectCandle(candleIndex);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'candle-wrapper';
+                wrapper.dataset.index = candleIndex;
+                wrapper.onclick = () => selectCandle(candleIndex);
 
-                // Check if candle is complete (all same color)
+                // Check if candle is complete
                 if (isCandleComplete(candle)) {
-                    candleDiv.classList.add('completed');
-                    
-                    // Add flame
-                    const flame = document.createElement('div');
-                    flame.className = 'flame';
-                    candleDiv.appendChild(flame);
+                    wrapper.classList.add('lit');
                 }
 
-                // Add color layers from bottom to top
+                // Flame (always present)
+                const flame = document.createElement('div');
+                flame.className = 'flame';
+                wrapper.appendChild(flame);
+
+                // Wick
+                const wick = document.createElement('div');
+                wick.className = 'wick';
+                wrapper.appendChild(wick);
+
+                // Candle body
+                const candleBody = document.createElement('div');
+                candleBody.className = 'candle-body';
+
+                // Add color layers
                 candle.forEach((color) => {
                     const layer = document.createElement('div');
                     layer.className = 'color-layer';
                     layer.style.backgroundColor = color;
-                    candleDiv.appendChild(layer);
+                    candleBody.appendChild(layer);
                 });
 
-                grid.appendChild(candleDiv);
+                wrapper.appendChild(candleBody);
+                grid.appendChild(wrapper);
             });
         }
 
@@ -652,20 +735,17 @@
             const candle = gameState[index];
             
             if (selectedCandle === null) {
-                // First selection - must have colors
                 if (candle.length > 0) {
                     selectedCandle = index;
-                    document.querySelectorAll('.candle')[index].classList.add('selected');
+                    document.querySelectorAll('.candle-wrapper')[index].classList.add('selected');
                 }
             } else {
                 if (selectedCandle === index) {
-                    // Deselect
-                    document.querySelectorAll('.candle')[selectedCandle].classList.remove('selected');
+                    document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
                     selectedCandle = null;
                 } else {
-                    // Pour from selected to this one
                     pourIntoCandle(selectedCandle, index);
-                    document.querySelectorAll('.candle')[selectedCandle].classList.remove('selected');
+                    document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
                     selectedCandle = null;
                 }
             }
@@ -680,13 +760,11 @@
 
             const topColorFrom = fromCandle[fromCandle.length - 1];
             
-            // Can only pour if target is empty or same color on top
             if (toCandle.length > 0) {
                 const topColorTo = toCandle[toCandle.length - 1];
                 if (topColorFrom !== topColorTo) return;
             }
 
-            // Count how many same colors to pour
             let countToPour = 1;
             for (let i = fromCandle.length - 2; i >= 0; i--) {
                 if (fromCandle[i] === topColorFrom) {
@@ -699,10 +777,8 @@
             const spaceAvailable = 4 - toCandle.length;
             countToPour = Math.min(countToPour, spaceAvailable);
 
-            // Save history for undo
             moveHistory.push(JSON.parse(JSON.stringify(gameState)));
 
-            // Pour
             for (let i = 0; i < countToPour; i++) {
                 const colorToPour = fromCandle.pop();
                 toCandle.push(colorToPour);
@@ -712,9 +788,8 @@
             updateStats();
             renderCandles();
 
-            // Animate pouring
             setTimeout(() => {
-                const targetCandle = document.querySelectorAll('.candle')[toIndex];
+                const targetCandle = document.querySelectorAll('.candle-wrapper')[toIndex];
                 const layers = targetCandle.querySelectorAll('.color-layer');
                 for (let i = 0; i < countToPour; i++) {
                     if (layers[layers.length - 1 - i]) {
@@ -740,18 +815,16 @@
                 litCandles = completed;
                 updateStats();
                 
-                // Create sparkles for newly lit candle
-                const candleElements = document.querySelectorAll('.candle.completed');
+                const candleElements = document.querySelectorAll('.candle-wrapper.lit');
                 if (candleElements[litCandles - 1]) {
                     createSparkles(candleElements[litCandles - 1]);
                 }
                 
-                // Check if all candles are lit
                 if (completed === totalCandles) {
                     setTimeout(() => {
                         turnBright();
-                        setTimeout(showCelebration, 1000);
-                    }, 500);
+                        setTimeout(showCelebration, 1500);
+                    }, 800);
                 }
             }
         }
@@ -763,20 +836,17 @@
 
         function createSparkles(candle) {
             const rect = candle.getBoundingClientRect();
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 40; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
+                particle.textContent = ['✨', '⭐', '💫', '🔥'][Math.floor(Math.random() * 4)];
                 particle.style.left = (rect.left + rect.width / 2) + 'px';
                 particle.style.top = rect.top + 'px';
-                particle.style.width = '8px';
-                particle.style.height = '8px';
-                particle.style.background = ['#FFD700', '#FFA500', '#FF6347', '#FFEB3B'][Math.floor(Math.random() * 4)];
-                particle.style.borderRadius = '50%';
-                particle.style.boxShadow = '0 0 10px currentColor';
-                particle.style.animation = `particleFall ${1.5 + Math.random()}s ease-out forwards`;
-                particle.style.transform = `translateX(${(Math.random() - 0.5) * 150}px)`;
+                particle.style.fontSize = (15 + Math.random() * 15) + 'px';
+                particle.style.animation = `particleFall ${1.5 + Math.random() * 1.5}s ease-out forwards`;
+                particle.style.transform = `translateX(${(Math.random() - 0.5) * 200}px)`;
                 document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 2500);
+                setTimeout(() => particle.remove(), 3000);
             }
         }
 
@@ -799,11 +869,11 @@
 
         function checkProgress() {
             if (litCandles === 0) {
-                alert('🕯️ No candles lit yet! Keep sorting!');
+                alert('🕯️ No flames lit yet! Keep sorting!');
             } else if (litCandles === totalCandles) {
-                alert('🎉 All candles lit! You won!');
+                alert('🎉 All flames lit! You won!');
             } else {
-                alert(`🕯️ ${litCandles}/${totalCandles} candles lit!\n\n${totalCandles - litCandles} more to go!`);
+                alert(`🔥 ${litCandles}/${totalCandles} flames lit!\n\n${totalCandles - litCandles} more to go!`);
             }
         }
 
@@ -839,6 +909,7 @@
             document.body.classList.add('dark-mode');
             initGame();
         }
+
         function showCelebration() {
             clearInterval(timerInterval);
             document.getElementById('finalMoves').textContent = moveCount;
@@ -853,19 +924,18 @@
             
             document.getElementById('celebrationOverlay').classList.add('show');
             
-            // Confetti
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 150; i++) {
                 setTimeout(() => {
                     const particle = document.createElement('div');
-                    particle.textContent = ['🕯️', '🔥', '✨', '⭐', '💫', '🎉'][Math.floor(Math.random() * 6)];
+                    particle.textContent = ['🕯️', '🔥', '✨', '⭐', '💫', '🎉', '🎊'][Math.floor(Math.random() * 7)];
                     particle.className = 'particle';
                     particle.style.left = Math.random() * window.innerWidth + 'px';
                     particle.style.top = '-50px';
-                    particle.style.fontSize = (25 + Math.random() * 25) + 'px';
+                    particle.style.fontSize = (20 + Math.random() * 30) + 'px';
                     particle.style.animation = `particleFall ${2 + Math.random() * 3}s linear forwards`;
                     document.body.appendChild(particle);
                     setTimeout(() => particle.remove(), 5000);
-                }, i * 20);
+                }, i * 25);
             }
         }
 
@@ -897,5 +967,6 @@
 
         initGame();
     </script>
-</body>
-</html>
+
+
+</body></html>
