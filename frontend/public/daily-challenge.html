@@ -130,6 +130,47 @@
             font-size: 2.5em;
             text-shadow: 0 0 30px rgba(102, 126, 234, 1);
         }
+        
+        /* SOUND CONTROLS */
+        .sound-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(26, 13, 46, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sound-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .sound-toggle:hover {
+            color: #f093fb;
+        }
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        .volume-slider {
+            width: 100px;
+            cursor: pointer;
+        }
+        .volume-label {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
         .countdown-container {
             text-align: center;
             padding: 15px;
@@ -324,6 +365,19 @@
         </div>
     </div>
 
+    <!-- SOUND CONTROLS -->
+    <div class="sound-controls">
+        <div class="sound-toggle" onclick="toggleSound()">
+            <span id="soundIcon">🔊</span>
+            <span id="soundText">Sound ON</span>
+        </div>
+        <div class="volume-control">
+            <span class="volume-label">Vol:</span>
+            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" onchange="changeVolume(this.value)">
+            <span id="volumeValue">50%</span>
+        </div>
+    </div>
+
     <button class="back-fixed" onclick="goBack()" id="backBtn">← Back</button>
 
     <div class="game-container" id="gameContainer">
@@ -382,7 +436,127 @@
     </div>
 
     <script>
-        // DISTINCT DARK COLORS - Easy to tell apart!
+        // SOUND SYSTEM
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        let volume = parseFloat(localStorage.getItem('soundVolume') || '0.5');
+        
+        // Initialize audio context on first user interaction
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        // Play a tone (synthesized sound)
+        function playTone(frequency, duration, type = 'sine') {
+            if (!soundEnabled || !audioCtx) return;
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        // Click sound
+        function playSoundClick() {
+            playTone(800, 0.1, 'square');
+        }
+
+        // Pour sound (water pouring effect)
+        function playSoundPour() {
+            if (!soundEnabled || !audioCtx) return;
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    playTone(400 - i * 20, 0.05, 'sine');
+                }, i * 30);
+            }
+        }
+
+        // Candle light sound (whoosh + fire)
+        function playSoundLight() {
+            if (!soundEnabled || !audioCtx) return;
+            playTone(1000, 0.2, 'sawtooth');
+            setTimeout(() => playTone(600, 0.3, 'triangle'), 100);
+        }
+
+        // Victory fanfare
+        function playSoundVictory() {
+            if (!soundEnabled || !audioCtx) return;
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((freq, i) => {
+                setTimeout(() => {
+                    playTone(freq, 0.4, 'square');
+                }, i * 200);
+            });
+        }
+
+        // Background ambient music (simple loop)
+        let ambientOscillator = null;
+        function startAmbientMusic() {
+            if (!soundEnabled || !audioCtx || ambientOscillator) return;
+            
+            ambientOscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            ambientOscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            ambientOscillator.frequency.value = 110;
+            ambientOscillator.type = 'sine';
+            gainNode.gain.value = volume * 0.05;
+            
+            ambientOscillator.start();
+        }
+
+        function stopAmbientMusic() {
+            if (ambientOscillator) {
+                ambientOscillator.stop();
+                ambientOscillator = null;
+            }
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled);
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
+            
+            if (soundEnabled) {
+                initAudio();
+                playSoundClick();
+            } else {
+                stopAmbientMusic();
+            }
+        }
+
+        // Change volume
+        function changeVolume(val) {
+            volume = val / 100;
+            localStorage.setItem('soundVolume', volume);
+            document.getElementById('volumeValue').textContent = val + '%';
+            playSoundClick();
+        }
+
+        // Initialize sound controls
+        document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+        document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
+        document.getElementById('volumeSlider').value = volume * 100;
+        document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
+
+        // GAME CODE
         const colors = [
             '#8B2626',  // Deep Red
             '#1E4D7B',  // Royal Blue
@@ -434,6 +608,10 @@
         }
 
         function startChallenge() {
+            initAudio();
+            playSoundClick();
+            startAmbientMusic();
+            
             document.getElementById('introScreen').classList.add('hidden');
             setTimeout(() => {
                 document.getElementById('introScreen').style.display = 'none';
@@ -448,24 +626,20 @@
             const seed = getDailySeed();
             let idx = 0;
             
-            // Create solvable puzzle: all colors grouped initially
             const allLayers = [];
             colors.slice(0, totalCandles).forEach(c => {
                 for(let i=0;i<4;i++) allLayers.push(c);
             });
             
-            // Shuffle with limited moves to ensure solvability
             for(let i = allLayers.length-1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + idx++) * (i+1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
             
-            // Distribute into candles
             for(let i=0;i<totalCandles;i++) {
                 gameState.push([allLayers[i*4],allLayers[i*4+1],allLayers[i*4+2],allLayers[i*4+3]]);
             }
             
-            // Add empty bottles
             for(let i=0;i<emptyBottles;i++) gameState.push([]);
             
             moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
@@ -508,6 +682,7 @@
         }
 
         function selectCandle(idx) {
+            playSoundClick();
             const candle = gameState[idx];
             if(selectedCandle === null) {
                 if(candle.length > 0) {
@@ -533,6 +708,9 @@
             if(fC.length === 0 || tC.length >= 4) return;
             const topF = fC[fC.length-1];
             if(tC.length > 0 && tC[tC.length-1] !== topF) return;
+            
+            playSoundPour();
+            
             let cnt = 1;
             for(let i=fC.length-2;i>=0;i--) {
                 if(fC[i]===topF) cnt++; else break;
@@ -560,9 +738,13 @@
             if(comp > litCandles) {
                 litCandles = comp;
                 updateStats();
+                playSoundLight();
+                
                 if(comp === totalCandles) {
                     setTimeout(() => {
                         document.body.classList.add('universe-mode');
+                        stopAmbientMusic();
+                        playSoundVictory();
                         setTimeout(showCelebration, 1500);
                     }, 800);
                 }
@@ -586,10 +768,12 @@
         }
 
         function checkProgress() {
+            playSoundClick();
             alert(litCandles === 0 ? '🕯️ No flames lit yet!' : litCandles === totalCandles ? '🌌 Challenge complete!' : `🔥 ${litCandles}/${totalCandles} flames lit!`);
         }
 
         function undoMove() {
+            playSoundClick();
             if(moveHistory.length > 0) {
                 gameState = moveHistory.pop();
                 moveCount = Math.max(0, moveCount-1);
@@ -601,6 +785,7 @@
         }
 
         function resetGame() {
+            playSoundClick();
             if(confirm('Reset? You will lose progress!')) {
                 document.body.classList.remove('universe-mode');
                 initGame();
@@ -628,10 +813,12 @@
         }
 
         function hideCelebration() {
+            playSoundClick();
             document.getElementById('celebrationOverlay').classList.remove('show');
         }
 
         function shareChallenge() {
+            playSoundClick();
             const text = `I completed today's COSMIC DAILY CHALLENGE! 🌌\n\nRank: #${document.getElementById('userRank').textContent}\nStreak: ${document.getElementById('finalStreak').textContent} days 🔥\nMoves: ${moveCount}\n\n@orouk.sami #DailyChallenge`;
             if(navigator.share) {
                 navigator.share({title:'Daily Challenge',text:text,url:window.location.href}).catch(()=>{});
@@ -641,6 +828,8 @@
         }
 
         function goBack() {
+            playSoundClick();
+            stopAmbientMusic();
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
 
