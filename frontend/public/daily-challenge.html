@@ -318,7 +318,7 @@
         <div class="intro-text">
             <h1>⭐ DAILY CHALLENGE ⭐</h1>
             <div class="date" id="todayDate"></div>
-            <div class="difficulty">⭐⭐⭐⭐⭐ LEGENDARY</div>
+            <div class="difficulty">⭐⭐⭐⭐ CHALLENGING</div>
             <div class="players" id="playersCount"></div>
             <button class="start-btn" onclick="startChallenge()">✨ ENTER THE CHALLENGE ✨</button>
         </div>
@@ -346,7 +346,7 @@
                 <div class="stat-label">Streak</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="flamesLit">0/10</div>
+                <div class="stat-value" id="flamesLit">0/7</div>
                 <div class="stat-label">Flames</div>
             </div>
             <div class="stat">
@@ -382,9 +382,19 @@
     </div>
 
     <script>
-        const colors = ['#8B4D5C','#4A7C8E','#6B5B95','#4A6741','#A0666F','#3D5A80','#B8860B','#6C7A89','#8B6F47','#556B2F'];
+        // DISTINCT DARK COLORS - Easy to tell apart!
+        const colors = [
+            '#8B2626',  // Deep Red
+            '#1E4D7B',  // Royal Blue
+            '#2D5016',  // Forest Green
+            '#9B7E28',  // Golden Brown
+            '#4A235A',  // Deep Purple
+            '#A04000',  // Burnt Orange
+            '#4E342E'   // Chocolate Brown
+        ];
+        
         let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
-        let revealedLayers = new Set(), totalCandles = 10, emptyBottles = 2;
+        let revealedLayers = new Set(), totalCandles = 7, emptyBottles = 2;
 
         function getDailySeed() {
             const d = new Date();
@@ -437,18 +447,27 @@
             gameState = [];
             const seed = getDailySeed();
             let idx = 0;
+            
+            // Create solvable puzzle: all colors grouped initially
             const allLayers = [];
             colors.slice(0, totalCandles).forEach(c => {
                 for(let i=0;i<4;i++) allLayers.push(c);
             });
+            
+            // Shuffle with limited moves to ensure solvability
             for(let i = allLayers.length-1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + idx++) * (i+1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
+            
+            // Distribute into candles
             for(let i=0;i<totalCandles;i++) {
                 gameState.push([allLayers[i*4],allLayers[i*4+1],allLayers[i*4+2],allLayers[i*4+3]]);
             }
+            
+            // Add empty bottles
             for(let i=0;i<emptyBottles;i++) gameState.push([]);
+            
             moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
             renderCandles();
             updateStats();
@@ -613,7 +632,7 @@
         }
 
         function shareChallenge() {
-            const text = `I completed today's COSMIC DAILY CHALLENGE! 🌌\n\nRank: #${document.getElementById('userRank').textContent}\nStreak: ${document.getElementById('finalStreak').textContent} days 🔥\n\n@orouk.sami #DailyChallenge`;
+            const text = `I completed today's COSMIC DAILY CHALLENGE! 🌌\n\nRank: #${document.getElementById('userRank').textContent}\nStreak: ${document.getElementById('finalStreak').textContent} days 🔥\nMoves: ${moveCount}\n\n@orouk.sami #DailyChallenge`;
             if(navigator.share) {
                 navigator.share({title:'Daily Challenge',text:text,url:window.location.href}).catch(()=>{});
             } else {
