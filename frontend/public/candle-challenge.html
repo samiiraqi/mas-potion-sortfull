@@ -1,972 +1,759 @@
 <!DOCTYPE html>
-<!-- saved from url=(0066)file:///Users/sami/Downloads/candle-challenge-FINAL-BEAUTIFUL.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🕯️ Candle Challenge - @orouk.sami</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕯️ Candle Challenge - 70 Levels</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: background 3s ease;
-            touch-action: pan-y;
+            overflow-x: hidden;
         }
-
-        /* DARK MODE - Default */
         body.dark-mode {
             background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f1623 100%);
         }
-
-        /* BRIGHT MODE - After all candles lit */
         body.bright-mode {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        .game-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        
+        /* LEVEL SELECT SCREEN */
+        .level-select {
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
         }
-
-        .header {
+        .level-header {
             text-align: center;
             margin-bottom: 30px;
-            transition: all 2s ease;
         }
-
-        body.dark-mode .header {
-            color: #f0e68c;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        body.bright-mode .header {
-            color: white;
+        .level-header h1 {
+            font-size: 3em;
             text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .header h1 {
-            font-size: clamp(2em, 8vw, 3.5em);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-            font-weight: bold;
-        }
-
-        .header .subtitle {
-            font-size: clamp(1em, 4vw, 1.5em);
             margin-bottom: 10px;
         }
-
-        body.dark-mode .subtitle { color: rgba(255, 215, 0, 0.8); }
-        body.bright-mode .subtitle { color: rgba(255, 255, 255, 0.95); }
-
-        .difficulty-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            margin: 10px 0;
-            font-size: clamp(0.9em, 3vw, 1.1em);
-            transition: all 2s ease;
-        }
-
-        body.dark-mode .difficulty-badge {
-            background: rgba(255, 215, 0, 0.2);
-            color: #ffd700;
-            border: 2px solid #ffd700;
-        }
-
-        body.bright-mode .difficulty-badge {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            border: 2px solid white;
-        }
-
-        .game-stats {
-            display: flex;
-            justify-content: center;
-            gap: clamp(20px, 5vw, 40px);
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .stat {
+        .level-progress {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 600px;
             text-align: center;
-            min-width: 80px;
-            padding: 12px;
-            border-radius: 12px;
-            transition: all 2s ease;
         }
-
-        body.dark-mode .stat {
-            background: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.4);
+        .level-progress-bar {
+            background: rgba(0,0,0,0.3);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
         }
-
-        body.bright-mode .stat {
-            background: rgba(255, 255, 255, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+        .level-progress-fill {
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            height: 100%;
+            transition: width 0.5s ease;
         }
-
-        .stat-value {
-            font-size: clamp(1.8em, 6vw, 2.5em);
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .level-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5em;
             font-weight: bold;
-            transition: all 2s ease;
-        }
-
-        body.dark-mode .stat-value {
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-        }
-
-        body.bright-mode .stat-value {
-            color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .stat-label {
-            font-size: clamp(0.8em, 3vw, 1em);
-            margin-top: 5px;
-            transition: all 2s ease;
-        }
-
-        body.dark-mode .stat-label { color: #ccc; }
-        body.bright-mode .stat-label { color: rgba(255,255,255,0.9); }
-
-        /* CANDLES GRID */
-        .candles-grid {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: clamp(20px, 4vw, 35px);
-            flex-wrap: wrap;
-            margin: 50px 0;
-            min-height: 250px;
-        }
-
-        /* CANDLE WRAPPER */
-        .candle-wrapper {
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .level-btn.unlocked {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+        .level-btn.unlocked:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .level-btn.locked {
+            background: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
+        }
+        .level-btn.completed {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        .stars {
+            display: flex;
+            gap: 2px;
+            font-size: 0.6em;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .back-btn:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        /* GAME SCREEN */
+        .game-screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .game-screen.active {
+            display: block;
+        }
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-header h2 {
+            font-size: 2.5em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 100px;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: rgba(255,255,255,0.8);
+        }
+        .candles-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px auto;
+            max-width: 100%;
+        }
+        .candle-wrapper {
             cursor: pointer;
             transition: all 0.3s ease;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
         }
-
-        .candle-wrapper:active {
-            transform: scale(0.95);
+        .candle-wrapper:hover {
+            transform: translateY(-10px);
         }
-
-        @media (min-width: 769px) {
-            .candle-wrapper:hover {
-                transform: translateY(-10px);
-            }
-        }
-
         .candle-wrapper.selected {
-            transform: translateY(-10px) scale(1.05);
+            transform: translateY(-15px) scale(1.1);
         }
-
-        /* FLAME - Always visible but changes color */
         .flame {
-            width: clamp(20px, 5vw, 35px);
-            height: clamp(35px, 8vw, 60px);
-            background: radial-gradient(ellipse at center, #4a4a4a 0%, #2a2a2a 30%, #1a1a1a 60%, transparent 100%);
+            width: 25px;
+            height: 40px;
+            background: radial-gradient(ellipse at center, #3a3a3a 0%, #1a1a1a 60%, transparent 100%);
             border-radius: 50% 50% 20% 20%;
-            margin-bottom: 5px;
+            margin: 0 auto 5px;
             filter: blur(0.5px);
             transition: all 0.8s ease;
-            position: relative;
-            animation: flameMove 3s ease-in-out infinite;
         }
-
-        @keyframes flameMove {
-            0%, 100% { transform: rotate(-2deg) scaleY(1); }
-            50% { transform: rotate(2deg) scaleY(0.95); }
-        }
-
-        /* Extinguished flame (dark gray) */
-        .candle-wrapper:not(.lit) .flame {
-            background: radial-gradient(ellipse at center, #3a3a3a 0%, #2a2a2a 30%, #1a1a1a 60%, transparent 100%);
-            opacity: 0.7;
-            animation: flameMove 3s ease-in-out infinite;
-        }
-
-        /* LIT flame (bright fire colors!) */
         .candle-wrapper.lit .flame {
             background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
-            opacity: 1;
-            filter: blur(1px);
-            animation: flameLit 0.15s ease-in-out infinite alternate, flameSway 3s ease-in-out infinite;
-            box-shadow: 0 0 30px rgba(255, 165, 0, 0.8), 0 0 60px rgba(255, 100, 0, 0.4);
+            box-shadow: 0 0 30px rgba(255, 165, 0, 1);
+            animation: flicker 0.15s infinite alternate;
         }
-
-        @keyframes flameLit {
-            0% { transform: scaleY(1) scaleX(1); }
-            100% { transform: scaleY(0.93) scaleX(1.07); }
+        @keyframes flicker {
+            0% { transform: scaleY(1); }
+            100% { transform: scaleY(0.95); }
         }
-
-        @keyframes flameSway {
-            0%, 100% { transform: rotate(-3deg); }
-            50% { transform: rotate(3deg); }
-        }
-
-        /* Inner flame glow */
-        .flame::before {
-            content: '';
-            position: absolute;
-            top: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50%;
-            height: 50%;
-            background: radial-gradient(ellipse at center, transparent 0%, transparent 100%);
-            border-radius: 50%;
-            transition: all 0.8s ease;
-        }
-
-        .candle-wrapper.lit .flame::before {
-            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 50%, transparent 100%);
-            animation: innerGlow 0.2s ease-in-out infinite alternate;
-        }
-
-        @keyframes innerGlow {
-            0% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        /* Flame halo */
-        .flame::after {
-            content: '';
-            position: absolute;
-            top: -20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150%;
-            height: 150%;
-            background: radial-gradient(circle, transparent 0%, transparent 100%);
-            border-radius: 50%;
-            transition: all 0.8s ease;
-        }
-
-        .candle-wrapper.lit .flame::after {
-            background: radial-gradient(circle, rgba(255, 165, 0, 0.4) 0%, rgba(255, 100, 0, 0.2) 50%, transparent 80%);
-            animation: haloGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes haloGlow {
-            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-            50% { transform: translateX(-50%) scale(1.2); opacity: 0.9; }
-        }
-
-        /* WICK */
         .wick {
-            width: clamp(3px, 1vw, 6px);
-            height: clamp(8px, 2vw, 15px);
-            background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
-            border-radius: 2px;
-            margin-bottom: 2px;
+            width: 4px;
+            height: 10px;
+            background: #1a1a1a;
+            margin: 0 auto 2px;
             transition: all 0.8s ease;
         }
-
         .candle-wrapper.lit .wick {
             background: linear-gradient(180deg, #ff6347 0%, #1a1a1a 100%);
-            box-shadow: 0 0 8px rgba(255, 100, 0, 0.8);
         }
-
-        /* CANDLE BODY */
         .candle-body {
-            width: clamp(50px, 12vw, 80px);
-            height: clamp(120px, 25vw, 180px);
+            width: 60px;
+            height: 130px;
             background: linear-gradient(180deg, #c9a961 0%, #b8975a 50%, #a68650 100%);
             border-radius: 8px 8px 4px 4px;
-            position: relative;
             overflow: hidden;
-            box-shadow: 
-                inset -5px 0 15px rgba(0,0,0,0.3),
-                inset 5px 0 15px rgba(255,255,255,0.1),
-                0 8px 25px rgba(0,0,0,0.5);
-            transition: all 0.5s ease;
             display: flex;
             flex-direction: column-reverse;
+            box-shadow: inset -3px 0 10px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.4);
         }
-
-        /* Wax texture */
         .candle-body::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%),
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        /* Candle rim/top */
-        .candle-body::after {
-            content: '';
-            position: absolute;
             top: -2px;
-            left: 0;
             width: 100%;
-            height: 8px;
-            background: radial-gradient(ellipse at center, #d4b574 0%, #c9a961 50%, #a68650 100%);
+            height: 6px;
+            background: radial-gradient(ellipse, #d4b574, #a68650);
             border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            z-index: 15;
         }
-
-        .candle-wrapper.selected .candle-body {
-            box-shadow: 
-                inset -5px 0 15px rgba(0,0,0,0.3),
-                inset 5px 0 15px rgba(255,255,255,0.1),
-                0 0 30px rgba(255, 215, 0, 0.8),
-                0 0 50px rgba(255, 215, 0, 0.4);
-            transform: scale(1.02);
-        }
-
-        .candle-wrapper.lit .candle-body {
-            box-shadow: 
-                inset -5px 0 15px rgba(0,0,0,0.3),
-                inset 5px 0 15px rgba(255,255,255,0.1),
-                0 10px 35px rgba(255, 165, 0, 0.6),
-                0 0 50px rgba(255, 140, 0, 0.3);
-        }
-
-        /* COLOR LAYERS inside candle */
         .color-layer {
             width: 100%;
             height: 25%;
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.6s ease;
             position: relative;
-            z-index: 5;
         }
-
-        /* Glass effect on colors */
-        .color-layer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 10%;
-            width: 30%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-            animation: shimmer 4s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 8;
+        .color-layer.revealed {
+            animation: colorReveal 1s ease-out;
         }
-
-        @keyframes shimmer {
-            0%, 100% { transform: translateX(-20px); opacity: 0.5; }
-            50% { transform: translateX(40px); opacity: 1; }
+        @keyframes colorReveal {
+            0% { filter: brightness(0.5); }
+            100% { filter: brightness(1); }
         }
-
-        .color-layer.pouring {
-            animation: pour 0.8s ease-out;
-        }
-
-        @keyframes pour {
-            0% { 
-                transform: translateY(-30px); 
-                opacity: 0.3;
-                filter: blur(3px);
-            }
-            50% { 
-                opacity: 0.8;
-                filter: blur(1px);
-            }
-            100% { 
-                transform: translateY(0); 
-                opacity: 1;
-                filter: blur(0);
-            }
-        }
-
-        /* CONTROLS */
         .controls {
             display: flex;
             justify-content: center;
-            gap: clamp(10px, 2vw, 15px);
+            gap: 10px;
             flex-wrap: wrap;
-            margin-top: 40px;
+            margin-top: 30px;
         }
-
         .btn {
-            padding: clamp(12px, 3vw, 18px) clamp(25px, 5vw, 45px);
+            padding: 12px 30px;
             border: none;
-            border-radius: 15px;
-            font-size: clamp(1em, 3vw, 1.3em);
+            border-radius: 12px;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
             color: white;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            touch-action: manipulation;
+            transition: all 0.3s;
         }
-
-        .btn:active {
-            transform: scale(0.95);
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .btn-warning { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-
-        @media (min-width: 769px) {
-            .btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            }
-        }
-
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-        .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
-        .btn-back { background: linear-gradient(135deg, #636363 0%, #a2ab58 100%); }
-
-        /* CELEBRATION */
-        .celebration-overlay {
+        
+        /* VICTORY SCREEN */
+        .victory-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0,0,0,0.9);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-            animation: fadeIn 1s ease;
+            z-index: 10000;
         }
-
-        .celebration-overlay.show {
+        .victory-overlay.show {
             display: flex;
+            animation: fadeIn 0.5s ease;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        .celebration-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: clamp(35px, 8vw, 70px);
+        .victory-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 50px;
             border-radius: 30px;
             text-align: center;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-            border: 4px solid rgba(255,255,255,0.5);
-            position: relative;
-            overflow: hidden;
+            color: white;
             max-width: 90%;
             animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-
         @keyframes popIn {
-            0% { transform: scale(0.3) rotate(-5deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0); opacity: 1; }
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-
-        .celebration-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-            animation: rotateGlow 12s linear infinite;
+        .victory-card h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
         }
-
-        @keyframes rotateGlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .victory-stars {
+            font-size: 3em;
+            margin: 20px 0;
         }
-
-        .celebration-content {
-            position: relative;
-            z-index: 1;
+        .victory-stats {
+            font-size: 1.3em;
+            margin: 20px 0;
         }
-
-        .celebration-card h2 {
-            font-size: clamp(2em, 10vw, 4.5em);
-            color: white;
-            margin-bottom: 25px;
-            text-shadow: 0 0 50px rgba(255, 255, 255, 1);
-            font-weight: bold;
-            animation: textGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 50px rgba(255, 255, 255, 1); }
-            50% { text-shadow: 0 0 80px rgba(255, 255, 255, 1), 0 0 120px rgba(255, 215, 0, 0.8); }
-        }
-
-        .celebration-card .candles-lit {
-            font-size: clamp(3em, 12vw, 6em);
-            color: white;
-            margin: 25px 0;
-            line-height: 1.3;
-            filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.8));
-        }
-
-        .celebration-card p {
-            font-size: clamp(1.3em, 5vw, 2.2em);
-            color: white;
-            margin: 15px 0;
-            text-shadow: 0 3px 15px rgba(0,0,0,0.4);
-        }
-
-        .share-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        @keyframes particleFall {
-            0% { 
-                transform: translateY(-100px) rotate(0deg); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translateY(100vh) rotate(720deg); 
-                opacity: 0; 
-            }
-        }
-
-        .instagram-tag {
-            margin-top: 15px;
-            font-size: clamp(0.9em, 3vw, 1.1em);
-            transition: all 2s ease;
-        }
-
-        body.dark-mode .instagram-tag { color: #ff69b4; }
-        body.bright-mode .instagram-tag { color: white; }
-
-        .instagram-tag a {
-            color: inherit;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .instagram-tag a:hover {
-            text-shadow: 0 0 10px currentColor;
+        .difficulty-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.2);
         }
     </style>
 </head>
-<body class="dark-mode">
-    <div class="game-container">
-        <div class="header">
+<body>
+    <!-- LEVEL SELECT SCREEN -->
+    <div class="level-select" id="levelSelect">
+        <button class="back-btn" onclick="goHome()">← Back</button>
+        
+        <div class="level-header">
             <h1>🕯️ CANDLE CHALLENGE 🕯️</h1>
-            <p class="subtitle">Fill the Candles &amp; Light All Flames!</p>
-            <div class="difficulty-badge" id="difficultyBadge">Medium Challenge</div>
-            <p class="instagram-tag">Follow: <a href="https://instagram.com/orouk.sami" target="_blank">@orouk.sami</a></p>
+            <p style="font-size: 1.2em; margin: 10px 0;">70 Levels of Puzzle Mastery</p>
+            
+            <div class="level-progress">
+                <div>Progress: <span id="completedCount">0</span>/70 Levels</div>
+                <div class="level-progress-bar">
+                    <div class="level-progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div>Total Stars: <span id="totalStars">0</span>/210 ⭐</div>
+            </div>
         </div>
-
+        
+        <div class="levels-grid" id="levelsGrid"></div>
+    </div>
+    
+    <!-- GAME SCREEN -->
+    <div class="game-screen" id="gameScreen">
+        <button class="back-btn" onclick="backToLevels()">← Levels</button>
+        
+        <div class="game-header">
+            <h2 id="levelTitle">Level 1</h2>
+            <div class="difficulty-badge" id="difficultyBadge">Easy</div>
+        </div>
+        
         <div class="game-stats">
             <div class="stat">
                 <div class="stat-value" id="moveCount">0</div>
                 <div class="stat-label">Moves</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="litCount">0/5</div>
-                <div class="stat-label">Flames Lit</div>
+                <div class="stat-value" id="targetMoves">0</div>
+                <div class="stat-label">Target</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="timeDisplay">0:11</div>
-                <div class="stat-label">Time</div>
+                <div class="stat-value" id="litCount">0/0</div>
+                <div class="stat-label">Completed</div>
             </div>
         </div>
-
-        <div class="candles-grid" id="candlesGrid"><div class="candle-wrapper" data-index="0"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="1"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="2"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(69, 183, 209);"></div></div></div><div class="candle-wrapper" data-index="3"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div><div class="color-layer" style="background-color: rgb(255, 160, 122);"></div></div></div><div class="candle-wrapper" data-index="4"><div class="flame"></div><div class="wick"></div><div class="candle-body"><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(152, 216, 200);"></div><div class="color-layer" style="background-color: rgb(78, 205, 196);"></div><div class="color-layer" style="background-color: rgb(255, 107, 107);"></div></div></div><div class="candle-wrapper" data-index="5"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div><div class="candle-wrapper" data-index="6"><div class="flame"></div><div class="wick"></div><div class="candle-body"></div></div></div>
-
+        
+        <div class="candles-container" id="candlesContainer"></div>
+        
         <div class="controls">
-            <button class="btn btn-success" onclick="checkProgress()">✓ Check</button>
+            <button class="btn btn-success" onclick="checkVictory()">✓ Check</button>
             <button class="btn btn-primary" onclick="undoMove()">↶ Undo</button>
-            <button class="btn btn-warning" onclick="resetGame()">🔄 Reset</button>
-            <button class="btn btn-back" onclick="goBack()">← Back</button>
+            <button class="btn btn-warning" onclick="resetLevel()">🔄 Reset</button>
         </div>
     </div>
-
-    <div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
-        <div class="celebration-card">
-            <div class="celebration-content">
-                <h2>🎉 ALL FLAMES LIT! 🎉</h2>
-                <div class="candles-lit" id="celebrationCandles">🕯️🕯️🕯️🕯️🕯️</div>
-                <p>You completed the challenge!</p>
-                <p style="font-size: clamp(1.1em, 4vw, 1.6em);">Moves: <span id="finalMoves">0</span> | Time: <span id="finalTime">0:00</span></p>
-                <div class="share-buttons">
-                    <button class="btn btn-warning" onclick="shareToInstagram()">📱 Share</button>
-                    <button class="btn btn-success" onclick="tryAgain()">🔄 Again</button>
-                    <button class="btn btn-back" onclick="goBack()">← Back</button>
-                </div>
+    
+    <!-- VICTORY OVERLAY -->
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-card">
+            <h2>🎉 LEVEL COMPLETE! 🎉</h2>
+            <div class="victory-stars" id="earnedStars">⭐⭐⭐</div>
+            <div class="victory-stats">
+                Moves: <span id="finalMoves">0</span><br>
+                Target: <span id="finalTarget">0</span>
+            </div>
+            <div style="margin-top: 30px;">
+                <button class="btn btn-success" onclick="nextLevel()" id="nextLevelBtn">Next Level →</button>
+                <button class="btn btn-primary" onclick="backToLevels()">← Levels</button>
             </div>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const difficulty = urlParams.get('difficulty') || 'medium';
-
-        const difficultySettings = {
-            easy: { colors: 3, emptyBottles: 2, label: 'Easy Challenge' },
-            medium: { colors: 5, emptyBottles: 2, label: 'Medium Challenge' },
-            hard: { colors: 8, emptyBottles: 3, label: 'Hard Challenge' }
-        };
-
-        const settings = difficultySettings[difficulty];
-        document.getElementById('difficultyBadge').textContent = settings.label;
-
+        // LEVEL CONFIGURATIONS
+        const levels = [];
+        
+        // Generate 70 levels with progressive difficulty
+        function generateLevels() {
+            const difficulties = [
+                {name: 'Easy', candles: 3, empty: 2, targetMultiplier: 1.5},
+                {name: 'Easy', candles: 4, empty: 2, targetMultiplier: 1.6},
+                {name: 'Medium', candles: 5, empty: 2, targetMultiplier: 1.7},
+                {name: 'Medium', candles: 6, empty: 2, targetMultiplier: 1.8},
+                {name: 'Hard', candles: 7, empty: 2, targetMultiplier: 1.9},
+                {name: 'Hard', candles: 8, empty: 2, targetMultiplier: 2.0},
+                {name: 'Very Hard', candles: 9, empty: 2, targetMultiplier: 2.1},
+                {name: 'Expert', candles: 10, empty: 2, targetMultiplier: 2.2},
+                {name: 'Expert', candles: 11, empty: 2, targetMultiplier: 2.3},
+                {name: 'Master', candles: 12, empty: 2, targetMultiplier: 2.5}
+            ];
+            
+            for(let i = 0; i < 70; i++) {
+                const diffIndex = Math.min(Math.floor(i / 7), 9);
+                const config = difficulties[diffIndex];
+                levels.push({
+                    level: i + 1,
+                    ...config,
+                    seed: 1000 + i * 123
+                });
+            }
+        }
+        
+        generateLevels();
+        
+        // COLORS
+        const allColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B500', '#E74C3C',
+            '#3498DB', '#2ECC71'
+        ];
+        
+        // GAME STATE
+        let currentLevel = 1;
         let gameState = [];
         let selectedCandle = null;
         let moveCount = 0;
-        let litCandles = 0;
         let moveHistory = [];
-        let startTime = Date.now();
-        let timerInterval;
-        let totalCandles = settings.colors;
-
-        const colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
-            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
-            '#F8B500', '#E74C3C', '#3498DB', '#2ECC71'
-        ];
-
-        function initGame() {
-            gameState = [];
-            const allLayers = [];
-            const usedColors = colors.slice(0, settings.colors);
+        let targetMoves = 0;
+        let totalCandles = 0;
+        
+        // SAVE SYSTEM
+        function getSaveData() {
+            const saved = localStorage.getItem('candleChallengeProgress');
+            return saved ? JSON.parse(saved) : {};
+        }
+        
+        function saveLevelProgress(level, stars, moves) {
+            const data = getSaveData();
+            if(!data[level] || data[level].stars < stars) {
+                data[level] = {stars, moves, completed: true};
+                localStorage.setItem('candleChallengeProgress', JSON.stringify(data));
+            }
+        }
+        
+        function isLevelUnlocked(level) {
+            if(level === 1) return true;
+            const data = getSaveData();
+            return data[level - 1] && data[level - 1].completed;
+        }
+        
+        function getLevelStars(level) {
+            const data = getSaveData();
+            return data[level] ? data[level].stars : 0;
+        }
+        
+        // RENDER LEVEL SELECT
+        function renderLevelSelect() {
+            const grid = document.getElementById('levelsGrid');
+            grid.innerHTML = '';
             
-            usedColors.forEach(color => {
-                for (let i = 0; i < 4; i++) {
-                    allLayers.push(color);
+            let completed = 0;
+            let totalStars = 0;
+            
+            levels.forEach(levelData => {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                
+                const stars = getLevelStars(levelData.level);
+                const unlocked = isLevelUnlocked(levelData.level);
+                
+                if(stars > 0) {
+                    btn.classList.add('completed');
+                    completed++;
+                    totalStars += stars;
+                } else if(unlocked) {
+                    btn.classList.add('unlocked');
+                } else {
+                    btn.classList.add('locked');
                 }
+                
+                btn.innerHTML = `
+                    <div>${levelData.level}</div>
+                    ${stars > 0 ? `<div class="stars">${'⭐'.repeat(stars)}</div>` : ''}
+                `;
+                
+                if(unlocked) {
+                    btn.onclick = () => startLevel(levelData.level);
+                }
+                
+                grid.appendChild(btn);
             });
-
-            for (let i = allLayers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
-            }
-
-            for (let i = 0; i < settings.colors; i++) {
-                gameState.push([
-                    allLayers[i * 4],
-                    allLayers[i * 4 + 1],
-                    allLayers[i * 4 + 2],
-                    allLayers[i * 4 + 3]
-                ]);
-            }
-
-            for (let i = 0; i < settings.emptyBottles; i++) {
-                gameState.push([]);
-            }
-
-            renderCandles();
             
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalStars').textContent = totalStars;
+            document.getElementById('progressBar').style.width = (completed / 70 * 100) + '%';
+        }
+        
+        // SOLVABLE PUZZLE GENERATOR
+        function seededRandom(seed) {
+            const x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+        
+        function generateSolvablePuzzle(levelData) {
+            const {candles, empty, seed} = levelData;
+            const colors = allColors.slice(0, candles);
+            const state = [];
+            
+            // Start solved
+            for(let i = 0; i < candles; i++) {
+                state.push([colors[i], colors[i], colors[i], colors[i]]);
+            }
+            for(let i = 0; i < empty; i++) {
+                state.push([]);
+            }
+            
+            // Shuffle with valid moves
+            const numMoves = Math.floor(candles * 4 + seededRandom(seed) * 10);
+            
+            for(let move = 0; move < numMoves; move++) {
+                const validMoves = [];
+                
+                for(let from = 0; from < state.length; from++) {
+                    if(state[from].length === 0) continue;
+                    
+                    for(let to = 0; to < state.length; to++) {
+                        if(from === to || state[to].length >= 4) continue;
+                        
+                        const topFrom = state[from][state[from].length - 1];
+                        if(state[to].length === 0 || state[to][state[to].length - 1] === topFrom) {
+                            validMoves.push({from, to});
+                        }
+                    }
+                }
+                
+                if(validMoves.length > 0) {
+                    const idx = Math.floor(seededRandom(seed + move * 1000) * validMoves.length);
+                    const {from, to} = validMoves[idx];
+                    
+                    const topColor = state[from][state[from].length - 1];
+                    let count = 1;
+                    for(let i = state[from].length - 2; i >= 0; i--) {
+                        if(state[from][i] === topColor) count++;
+                        else break;
+                    }
+                    count = Math.min(count, 4 - state[to].length);
+                    
+                    for(let i = 0; i < count; i++) {
+                        state[to].push(state[from].pop());
+                    }
+                }
+            }
+            
+            return state;
+        }
+        
+        // START LEVEL
+        function startLevel(level) {
+            currentLevel = level;
+            const levelData = levels[level - 1];
+            
+            document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            document.body.classList.remove('bright-mode');
+            document.body.classList.add('dark-mode');
+            
+            document.getElementById('levelTitle').textContent = `Level ${level}`;
+            document.getElementById('difficultyBadge').textContent = levelData.name;
+            
+            totalCandles = levelData.candles;
+            targetMoves = Math.ceil(levelData.candles * 4 * levelData.targetMultiplier);
+            document.getElementById('targetMoves').textContent = targetMoves;
+            
+            gameState = generateSolvablePuzzle(levelData);
             moveCount = 0;
-            litCandles = 0;
             moveHistory = [];
             selectedCandle = null;
             
+            renderCandles();
             updateStats();
-            startTimer();
         }
-
+        
+        // RENDER CANDLES
         function renderCandles() {
-            const grid = document.getElementById('candlesGrid');
-            grid.innerHTML = '';
-
-            gameState.forEach((candle, candleIndex) => {
+            const container = document.getElementById('candlesContainer');
+            container.innerHTML = '';
+            
+            gameState.forEach((candle, idx) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'candle-wrapper';
-                wrapper.dataset.index = candleIndex;
-                wrapper.onclick = () => selectCandle(candleIndex);
-
-                // Check if candle is complete
-                if (isCandleComplete(candle)) {
-                    wrapper.classList.add('lit');
-                }
-
-                // Flame (always present)
+                if(isCandleComplete(candle)) wrapper.classList.add('lit');
+                wrapper.onclick = () => selectCandle(idx);
+                
                 const flame = document.createElement('div');
                 flame.className = 'flame';
                 wrapper.appendChild(flame);
-
-                // Wick
+                
                 const wick = document.createElement('div');
                 wick.className = 'wick';
                 wrapper.appendChild(wick);
-
-                // Candle body
-                const candleBody = document.createElement('div');
-                candleBody.className = 'candle-body';
-
-                // Add color layers
-                candle.forEach((color) => {
+                
+                const body = document.createElement('div');
+                body.className = 'candle-body';
+                
+                candle.forEach(color => {
                     const layer = document.createElement('div');
-                    layer.className = 'color-layer';
+                    layer.className = 'color-layer revealed';
                     layer.style.backgroundColor = color;
-                    candleBody.appendChild(layer);
+                    body.appendChild(layer);
                 });
-
-                wrapper.appendChild(candleBody);
-                grid.appendChild(wrapper);
+                
+                wrapper.appendChild(body);
+                container.appendChild(wrapper);
             });
         }
-
-        function selectCandle(index) {
-            const candle = gameState[index];
-            
-            if (selectedCandle === null) {
-                if (candle.length > 0) {
-                    selectedCandle = index;
-                    document.querySelectorAll('.candle-wrapper')[index].classList.add('selected');
+        
+        function selectCandle(idx) {
+            if(selectedCandle === null) {
+                if(gameState[idx].length > 0) {
+                    selectedCandle = idx;
+                    document.querySelectorAll('.candle-wrapper')[idx].classList.add('selected');
                 }
             } else {
-                if (selectedCandle === index) {
+                if(selectedCandle === idx) {
                     document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
                     selectedCandle = null;
                 } else {
-                    pourIntoCandle(selectedCandle, index);
+                    pourIntoCandle(selectedCandle, idx);
                     document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
                     selectedCandle = null;
                 }
             }
         }
-
-        function pourIntoCandle(fromIndex, toIndex) {
-            const fromCandle = gameState[fromIndex];
-            const toCandle = gameState[toIndex];
-
-            if (fromCandle.length === 0) return;
-            if (toCandle.length >= 4) return;
-
-            const topColorFrom = fromCandle[fromCandle.length - 1];
+        
+        function pourIntoCandle(from, to) {
+            const fC = gameState[from], tC = gameState[to];
+            if(fC.length === 0 || tC.length >= 4) return;
             
-            if (toCandle.length > 0) {
-                const topColorTo = toCandle[toCandle.length - 1];
-                if (topColorFrom !== topColorTo) return;
+            const topF = fC[fC.length - 1];
+            if(tC.length > 0 && tC[tC.length - 1] !== topF) return;
+            
+            let cnt = 1;
+            for(let i = fC.length - 2; i >= 0; i--) {
+                if(fC[i] === topF) cnt++;
+                else break;
             }
-
-            let countToPour = 1;
-            for (let i = fromCandle.length - 2; i >= 0; i--) {
-                if (fromCandle[i] === topColorFrom) {
-                    countToPour++;
-                } else {
-                    break;
-                }
-            }
-
-            const spaceAvailable = 4 - toCandle.length;
-            countToPour = Math.min(countToPour, spaceAvailable);
-
+            cnt = Math.min(cnt, 4 - tC.length);
+            
             moveHistory.push(JSON.parse(JSON.stringify(gameState)));
-
-            for (let i = 0; i < countToPour; i++) {
-                const colorToPour = fromCandle.pop();
-                toCandle.push(colorToPour);
-            }
-
-            moveCount++;
-            updateStats();
-            renderCandles();
-
-            setTimeout(() => {
-                const targetCandle = document.querySelectorAll('.candle-wrapper')[toIndex];
-                const layers = targetCandle.querySelectorAll('.color-layer');
-                for (let i = 0; i < countToPour; i++) {
-                    if (layers[layers.length - 1 - i]) {
-                        layers[layers.length - 1 - i].classList.add('pouring');
-                    }
-                }
-            }, 10);
-
-            checkCompletion();
-        }
-
-        function isCandleComplete(candle) {
-            if (candle.length === 0) return false;
-            if (candle.length !== 4) return false;
-            const firstColor = candle[0];
-            return candle.every(color => color === firstColor);
-        }
-
-        function checkCompletion() {
-            const completed = gameState.filter(candle => isCandleComplete(candle)).length;
             
-            if (completed > litCandles) {
-                litCandles = completed;
-                updateStats();
-                
-                const candleElements = document.querySelectorAll('.candle-wrapper.lit');
-                if (candleElements[litCandles - 1]) {
-                    createSparkles(candleElements[litCandles - 1]);
-                }
-                
-                if (completed === totalCandles) {
-                    setTimeout(() => {
-                        turnBright();
-                        setTimeout(showCelebration, 1500);
-                    }, 800);
-                }
+            for(let i = 0; i < cnt; i++) {
+                tC.push(fC.pop());
+            }
+            
+            moveCount++;
+            renderCandles();
+            updateStats();
+            
+            if(isLevelComplete()) {
+                setTimeout(showVictory, 800);
             }
         }
-
-        function turnBright() {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('bright-mode');
+        
+        function isCandleComplete(c) {
+            return c.length === 4 && c.every(x => x === c[0]);
         }
-
-        function createSparkles(candle) {
-            const rect = candle.getBoundingClientRect();
-            for (let i = 0; i < 40; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.textContent = ['✨', '⭐', '💫', '🔥'][Math.floor(Math.random() * 4)];
-                particle.style.left = (rect.left + rect.width / 2) + 'px';
-                particle.style.top = rect.top + 'px';
-                particle.style.fontSize = (15 + Math.random() * 15) + 'px';
-                particle.style.animation = `particleFall ${1.5 + Math.random() * 1.5}s ease-out forwards`;
-                particle.style.transform = `translateX(${(Math.random() - 0.5) * 200}px)`;
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 3000);
-            }
+        
+        function isLevelComplete() {
+            return gameState.filter(c => isCandleComplete(c)).length === totalCandles;
         }
-
+        
         function updateStats() {
             document.getElementById('moveCount').textContent = moveCount;
-            document.getElementById('litCount').textContent = litCandles + '/' + totalCandles;
+            const completed = gameState.filter(c => isCandleComplete(c)).length;
+            document.getElementById('litCount').textContent = `${completed}/${totalCandles}`;
         }
-
-        function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            startTime = Date.now();
-            timerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
-                const seconds = elapsed % 60;
-                document.getElementById('timeDisplay').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function checkProgress() {
-            if (litCandles === 0) {
-                alert('🕯️ No flames lit yet! Keep sorting!');
-            } else if (litCandles === totalCandles) {
-                alert('🎉 All flames lit! You won!');
-            } else {
-                alert(`🔥 ${litCandles}/${totalCandles} flames lit!\n\n${totalCandles - litCandles} more to go!`);
-            }
-        }
-
+        
         function undoMove() {
-            if (moveHistory.length > 0) {
+            if(moveHistory.length > 0) {
                 gameState = moveHistory.pop();
                 moveCount = Math.max(0, moveCount - 1);
-                
-                const completed = gameState.filter(candle => isCandleComplete(candle)).length;
-                litCandles = completed;
-                
-                if (litCandles < totalCandles) {
-                    document.body.classList.remove('bright-mode');
-                    document.body.classList.add('dark-mode');
-                }
-                
                 renderCandles();
                 updateStats();
             }
         }
-
-        function resetGame() {
-            if (confirm('Reset? You will lose progress!')) {
-                document.body.classList.remove('bright-mode');
-                document.body.classList.add('dark-mode');
-                initGame();
+        
+        function resetLevel() {
+            if(confirm('Reset level? You will lose progress!')) {
+                startLevel(currentLevel);
             }
         }
-
-        function tryAgain() {
-            hideCelebration();
-            document.body.classList.remove('bright-mode');
-            document.body.classList.add('dark-mode');
-            initGame();
+        
+        function checkVictory() {
+            if(isLevelComplete()) {
+                showVictory();
+            } else {
+                const completed = gameState.filter(c => isCandleComplete(c)).length;
+                alert(`${completed}/${totalCandles} candles complete! Keep going!`);
+            }
         }
-
-        function showCelebration() {
-            clearInterval(timerInterval);
+        
+        function showVictory() {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('bright-mode');
+            
+            // Calculate stars
+            let stars = 1;
+            if(moveCount <= targetMoves) stars = 3;
+            else if(moveCount <= targetMoves * 1.3) stars = 2;
+            
+            document.getElementById('earnedStars').textContent = '⭐'.repeat(stars);
             document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = document.getElementById('timeDisplay').textContent;
+            document.getElementById('finalTarget').textContent = targetMoves;
             
-            let candleEmojis = '';
-            for (let i = 0; i < totalCandles; i++) {
-                candleEmojis += '🕯️';
-                if ((i + 1) % 6 === 0 && i !== totalCandles - 1) candleEmojis += '<br>';
-            }
-            document.getElementById('celebrationCandles').innerHTML = candleEmojis;
+            saveLevelProgress(currentLevel, stars, moveCount);
             
-            document.getElementById('celebrationOverlay').classList.add('show');
-            
-            for (let i = 0; i < 150; i++) {
-                setTimeout(() => {
-                    const particle = document.createElement('div');
-                    particle.textContent = ['🕯️', '🔥', '✨', '⭐', '💫', '🎉', '🎊'][Math.floor(Math.random() * 7)];
-                    particle.className = 'particle';
-                    particle.style.left = Math.random() * window.innerWidth + 'px';
-                    particle.style.top = '-50px';
-                    particle.style.fontSize = (20 + Math.random() * 30) + 'px';
-                    particle.style.animation = `particleFall ${2 + Math.random() * 3}s linear forwards`;
-                    document.body.appendChild(particle);
-                    setTimeout(() => particle.remove(), 5000);
-                }, i * 25);
-            }
-        }
-
-        function hideCelebration() {
-            document.getElementById('celebrationOverlay').classList.remove('show');
-        }
-
-        function shareToInstagram() {
-            const text = `I lit all ${totalCandles} candles in the ${settings.label}! 🕯️🔥\n\nMoves: ${moveCount}\nTime: ${document.getElementById('timeDisplay').textContent}\n\nCan you beat me?\n\n@orouk.sami #PotionSort #CandleChallenge`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Candle Challenge',
-                    text: text,
-                    url: window.location.href
-                }).catch(() => {});
+            if(currentLevel < 70) {
+                document.getElementById('nextLevelBtn').style.display = 'inline-block';
             } else {
-                alert('📱 Share this:\n\n' + text);
+                document.getElementById('nextLevelBtn').style.display = 'none';
+            }
+            
+            document.getElementById('victoryOverlay').classList.add('show');
+        }
+        
+        function nextLevel() {
+            document.getElementById('victoryOverlay').classList.remove('show');
+            if(currentLevel < 70) {
+                startLevel(currentLevel + 1);
             }
         }
-
-        function goBack() {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                window.location.href = '/';
-            }
+        
+        function backToLevels() {
+            document.getElementById('victoryOverlay').classList.remove('show');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('levelSelect').style.display = 'block';
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('bright-mode');
+            renderLevelSelect();
         }
-
-        initGame();
+        
+        function goHome() {
+            window.history.length > 1 ? window.history.back() : window.location.href = '/';
+        }
+        
+        // Initialize
+        renderLevelSelect();
     </script>
-
-
-</body></html>
+</body>
+</html>
