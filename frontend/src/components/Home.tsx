@@ -31,14 +31,47 @@ export default function Home({ onStartGame }: HomeProps) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      textAlign: 'center'
+      textAlign: 'center',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Animated background stars */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        overflow: 'hidden'
+      }}>
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: '3px',
+              height: '3px',
+              background: 'white',
+              borderRadius: '50%',
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 3}s`,
+              opacity: 0.6
+            }}
+          />
+        ))}
+      </div>
+
       <h1 style={{
         fontSize: 'clamp(2.5rem, 8vw, 5rem)',
         color: 'white',
         margin: '0 0 20px 0',
         textShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        position: 'relative',
+        zIndex: 1
       }}>
         🧪 POTION SORT
       </h1>
@@ -47,7 +80,9 @@ export default function Home({ onStartGame }: HomeProps) {
         fontSize: 'clamp(1rem, 3vw, 1.5rem)',
         color: 'rgba(255,255,255,0.9)',
         marginBottom: '40px',
-        maxWidth: '600px'
+        maxWidth: '600px',
+        position: 'relative',
+        zIndex: 1
       }}>
         Sort the magical potions! Match colors to complete each level.
       </p>
@@ -57,7 +92,9 @@ export default function Home({ onStartGame }: HomeProps) {
         flexDirection: 'column',
         gap: '15px',
         width: '100%',
-        maxWidth: '400px'
+        maxWidth: '400px',
+        position: 'relative',
+        zIndex: 1
       }}>
         <button onClick={() => onStartGame()} style={{
           padding: '20px 40px',
@@ -74,7 +111,55 @@ export default function Home({ onStartGame }: HomeProps) {
           ▶️ START GAME
         </button>
 
-        {/* 🕯️ CANDLE CHALLENGE BUTTON - NEW! */}
+        {/* 🌟 DAILY CHALLENGE BUTTON - EPIC! */}
+        <button 
+          onClick={() => window.location.href = '/daily-challenge.html'} 
+          style={{
+            padding: '20px 40px',
+            fontSize: '1.5rem',
+            background: 'linear-gradient(135deg, #1a0d2e 0%, #2d1b4e 100%)',
+            border: '3px solid rgba(102, 126, 234, 0.6)',
+            borderRadius: '15px',
+            color: 'white',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            boxShadow: '0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4)',
+            transition: 'all 0.3s',
+            position: 'relative',
+            overflow: 'hidden',
+            animation: 'cosmicPulse 3s ease-in-out infinite'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
+            e.currentTarget.style.boxShadow = '0 0 50px rgba(102, 126, 234, 1), 0 12px 40px rgba(0, 0, 0, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4)';
+          }}
+        >
+          <span style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}>
+            ⭐ DAILY CHALLENGE ⭐
+          </span>
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '100%',
+            height: '100%',
+            background: 'radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%)',
+            transform: 'translate(-50%, -50%)',
+            animation: 'glow 2s ease-in-out infinite',
+            pointerEvents: 'none'
+          }}></div>
+        </button>
+
+        {/* 🕯️ CANDLE CHALLENGE BUTTON */}
         <button onClick={() => window.location.href = '/candle-challenge.html?difficulty=medium'} style={{
           padding: '18px 35px',
           fontSize: '1.3rem',
@@ -159,7 +244,7 @@ export default function Home({ onStartGame }: HomeProps) {
         </button>
       </div>
 
-      {/* Add pulse animation for Candle Challenge button */}
+      {/* Animations */}
       <style>{`
         @keyframes pulse {
           0%, 100% {
@@ -172,9 +257,44 @@ export default function Home({ onStartGame }: HomeProps) {
           }
         }
 
+        @keyframes cosmicPulse {
+          0%, 100% {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 50px rgba(102, 126, 234, 1), 0 0 80px rgba(118, 75, 162, 0.6), 0 12px 40px rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        @keyframes glow {
+          0%, 100% {
+            opacity: 0.3;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          50% {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) scale(1.2);
+          }
+        }
+
+        @keyframes twinkle {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.5);
+          }
+        }
+
         button:hover {
           transform: translateY(-2px);
           filter: brightness(1.1);
+        }
+
+        button:active {
+          transform: translateY(0) scale(0.98);
         }
       `}</style>
     </div>
