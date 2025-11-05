@@ -436,20 +436,18 @@
     </div>
 
     <script>
-        // SOUND SYSTEM
+        // SOUND SYSTEM (NO AMBIENT MUSIC!)
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let volume = parseFloat(localStorage.getItem('soundVolume') || '0.5');
         
-        // Initialize audio context on first user interaction
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new AudioContext();
             }
         }
 
-        // Play a tone (synthesized sound)
         function playTone(frequency, duration, type = 'sine') {
             if (!soundEnabled || !audioCtx) return;
             
@@ -502,31 +500,6 @@
             });
         }
 
-        // Background ambient music (simple loop)
-        let ambientOscillator = null;
-        function startAmbientMusic() {
-            if (!soundEnabled || !audioCtx || ambientOscillator) return;
-            
-            ambientOscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            ambientOscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            ambientOscillator.frequency.value = 110;
-            ambientOscillator.type = 'sine';
-            gainNode.gain.value = volume * 0.05;
-            
-            ambientOscillator.start();
-        }
-
-        function stopAmbientMusic() {
-            if (ambientOscillator) {
-                ambientOscillator.stop();
-                ambientOscillator = null;
-            }
-        }
-
         // Toggle sound
         function toggleSound() {
             soundEnabled = !soundEnabled;
@@ -537,8 +510,6 @@
             if (soundEnabled) {
                 initAudio();
                 playSoundClick();
-            } else {
-                stopAmbientMusic();
             }
         }
 
@@ -610,7 +581,6 @@
         function startChallenge() {
             initAudio();
             playSoundClick();
-            startAmbientMusic();
             
             document.getElementById('introScreen').classList.add('hidden');
             setTimeout(() => {
@@ -743,7 +713,6 @@
                 if(comp === totalCandles) {
                     setTimeout(() => {
                         document.body.classList.add('universe-mode');
-                        stopAmbientMusic();
                         playSoundVictory();
                         setTimeout(showCelebration, 1500);
                     }, 800);
@@ -829,7 +798,6 @@
 
         function goBack() {
             playSoundClick();
-            stopAmbientMusic();
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
 
