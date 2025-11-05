@@ -37,7 +37,7 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
-        .intro-screen {
+        .intro-screen, .completed-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -49,6 +49,9 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            color: white;
+            text-align: center;
+            padding: 20px;
         }
         .intro-screen.hidden {
             animation: fadeOut 1s ease forwards;
@@ -56,23 +59,8 @@
         @keyframes fadeOut {
             to { opacity: 0; pointer-events: none; }
         }
-        
-        /* ALREADY COMPLETED SCREEN */
         .completed-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, #1a0d2e 0%, #000000 100%);
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            color: white;
-            text-align: center;
-            padding: 20px;
         }
         .completed-screen.show {
             display: flex;
@@ -111,7 +99,6 @@
             color: #aaa;
             margin: 20px 0;
         }
-        
         .portal {
             width: 300px;
             height: 300px;
@@ -124,10 +111,6 @@
         @keyframes portalSpin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
-        }
-        .intro-text {
-            color: white;
-            text-align: center;
         }
         .intro-text h1 {
             font-size: 3em;
@@ -149,7 +132,7 @@
             color: #aaa;
             margin-bottom: 40px;
         }
-        .start-btn {
+        .start-btn, .btn {
             padding: 20px 60px;
             font-size: 1.5em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -160,7 +143,7 @@
             cursor: pointer;
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
         }
-        .start-btn:hover {
+        .start-btn:hover, .btn:hover {
             transform: scale(1.05);
         }
         .game-container {
@@ -220,18 +203,14 @@
             width: 100px;
             cursor: pointer;
         }
-        .volume-label {
-            font-size: 0.9em;
-            color: #aaa;
-        }
-        .countdown-container {
+        .countdown-container, .stats-bar {
             text-align: center;
             padding: 15px;
             background: rgba(26, 13, 46, 0.8);
             border: 2px solid rgba(102, 126, 234, 0.5);
             border-radius: 20px;
             margin: 15px auto;
-            max-width: 500px;
+            max-width: 900px;
         }
         .countdown-timer {
             font-size: 2em;
@@ -241,17 +220,13 @@
         }
         .stats-bar {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            justify-content: space-around;
             flex-wrap: wrap;
-            margin: 20px 0;
+            gap: 15px;
         }
         .stat {
-            background: rgba(26, 13, 46, 0.8);
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 15px;
-            padding: 15px 25px;
             text-align: center;
+            min-width: 80px;
         }
         .stat-value {
             font-size: 2em;
@@ -286,9 +261,7 @@
             height: 40px;
             background: radial-gradient(ellipse at center, #3a3a3a 0%, #1a1a1a 60%, transparent 100%);
             border-radius: 50% 50% 20% 20%;
-            margin-bottom: 5px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 5px;
         }
         .candle-wrapper.lit .flame {
             background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
@@ -313,7 +286,6 @@
             height: 130px;
             background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
             border-radius: 8px 8px 4px 4px;
-            position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column-reverse;
@@ -337,11 +309,11 @@
             flex-wrap: wrap;
             margin-top: 30px;
         }
-        .btn {
+        .btn-small {
             padding: 12px 30px;
+            font-size: 1.1em;
             border: none;
             border-radius: 12px;
-            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             color: white;
@@ -349,7 +321,7 @@
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
         .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .btn:hover {
+        .btn-small:hover {
             transform: translateY(-2px);
         }
         .celebration-overlay {
@@ -407,27 +379,16 @@
 <body>
     <div class="stars" id="starsContainer"></div>
     
-    <!-- ALREADY COMPLETED SCREEN -->
     <div class="completed-screen" id="completedScreen">
         <div class="completed-badge">🏆</div>
         <div class="completed-title">CHALLENGE COMPLETED!</div>
-        <div class="completed-stats" id="todayStats">
-            <div>Today's Results:</div>
-            <div style="margin: 15px 0;">
-                <strong>Moves:</strong> <span id="savedMoves">0</span><br>
-                <strong>Time:</strong> <span id="savedTime">0:00</span><br>
-                <strong>Rank:</strong> #<span id="savedRank">0</span>
-            </div>
-            <div style="margin-top: 15px;">
-                🔥 <span id="savedStreak">0</span> Day Streak!
-            </div>
-        </div>
+        <div class="completed-stats" id="todayStats"></div>
         <div class="completed-message">See you tomorrow, Cosmic Master! 🌟</div>
         <div class="completed-countdown">
             <div style="font-size: 0.6em; margin-bottom: 10px;">Next Challenge In:</div>
             <div id="nextChallengeCountdown">23:45:32</div>
         </div>
-        <button class="btn btn-primary" onclick="goBack()" style="margin-top: 20px;">← Back to Menu</button>
+        <button class="btn" onclick="goBack()" style="margin-top: 20px; padding: 15px 40px; font-size: 1.2em;">← Back to Menu</button>
     </div>
     
     <div class="intro-screen" id="introScreen">
@@ -435,7 +396,7 @@
         <div class="intro-text">
             <h1>⭐ DAILY CHALLENGE ⭐</h1>
             <div class="date" id="todayDate"></div>
-            <div class="difficulty">⭐⭐⭐⭐⭐ HARD</div>
+            <div class="difficulty">⭐⭐⭐⭐⭐ EXPERT</div>
             <div class="players" id="playersCount"></div>
             <button class="start-btn" onclick="startChallenge()">✨ ENTER THE CHALLENGE ✨</button>
         </div>
@@ -447,7 +408,7 @@
             <span id="soundText">Sound ON</span>
         </div>
         <div class="volume-control">
-            <span class="volume-label">Vol:</span>
+            <span style="font-size: 0.9em; color: #aaa;">Vol:</span>
             <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" onchange="changeVolume(this.value)">
             <span id="volumeValue">50%</span>
         </div>
@@ -475,7 +436,7 @@
                 <div class="stat-label">Streak</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="flamesLit">0/8</div>
+                <div class="stat-value" id="flamesLit">0/10</div>
                 <div class="stat-label">Flames</div>
             </div>
             <div class="stat">
@@ -487,13 +448,13 @@
         <div class="candles-container" id="candlesContainer"></div>
 
         <div class="controls">
-            <button class="btn btn-success" onclick="checkProgress()">✓ Check</button>
-            <button class="btn btn-primary" onclick="undoMove()">↶ Undo</button>
-            <button class="btn btn-warning" onclick="resetGame()">🔄 Reset</button>
+            <button class="btn-small btn-success" onclick="checkProgress()">✓ Check</button>
+            <button class="btn-small btn-primary" onclick="undoMove()">↶ Undo</button>
+            <button class="btn-small btn-warning" onclick="resetGame()">🔄 Reset</button>
         </div>
     </div>
 
-    <div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
+    <div class="celebration-overlay" id="celebrationOverlay">
         <div class="celebration-card">
             <h2>🌌 CHALLENGE COMPLETE! 🌌</h2>
             <div>🏆 COSMIC MASTER 🏆</div>
@@ -504,25 +465,19 @@
             <div class="rank-display">RANK: #<span id="userRank">156</span></div>
             <div>🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
             <div style="margin-top: 25px;">
-                <button class="btn btn-warning" onclick="shareChallenge()">📱 Share</button>
-                <button class="btn btn-primary" onclick="goBackAfterWin()">← Back to Menu</button>
+                <button class="btn" onclick="shareChallenge()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">📱 Share</button>
+                <button class="btn" onclick="goBackAfterWin()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">← Back</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 5 ROTATING COLOR PALETTES (Different each day!)
         const colorPalettes = [
-            // Palette 1: Reds & Purples
-            ['#8B2626', '#6B1F3D', '#4A235A', '#7B2D3E', '#5A1F4E', '#8B3A62', '#6B2D52', '#9B2D5A'],
-            // Palette 2: Blues & Greens
-            ['#1E4D7B', '#2D5016', '#1A5F7A', '#2E5D3A', '#1B3B6F', '#2F6E4E', '#1C4966', '#2A5E42'],
-            // Palette 3: Oranges & Browns
-            ['#A04000', '#8B6F47', '#9B5500', '#7A5230', '#B04500', '#6E4F2C', '#9A4500', '#8A6038'],
-            // Palette 4: Pinks & Yellows
-            ['#9B4F6B', '#9B7E28', '#8B3E5A', '#8B7020', '#A04566', '#A07528', '#8E4058', '#957525'],
-            // Palette 5: Mixed Dark
-            ['#5D3A3A', '#3A5D5D', '#5D5D3A', '#5D3A5D', '#3A3A5D', '#5D4F3A', '#4F3A5D', '#3A5D4F']
+            ['#8B2626', '#6B1F3D', '#4A235A', '#7B2D3E', '#5A1F4E', '#8B3A62', '#6B2D52', '#9B2D5A', '#7A2848', '#5B2F47'],
+            ['#1E4D7B', '#2D5016', '#1A5F7A', '#2E5D3A', '#1B3B6F', '#2F6E4E', '#1C4966', '#2A5E42', '#1D4A72', '#2C5840'],
+            ['#A04000', '#8B6F47', '#9B5500', '#7A5230', '#B04500', '#6E4F2C', '#9A4500', '#8A6038', '#A54200', '#7E5834'],
+            ['#9B4F6B', '#9B7E28', '#8B3E5A', '#8B7020', '#A04566', '#A07528', '#8E4058', '#957525', '#944860', '#8E7222'],
+            ['#5D3A3A', '#3A5D5D', '#5D5D3A', '#5D3A5D', '#3A3A5D', '#5D4F3A', '#4F3A5D', '#3A5D4F', '#553838', '#385555']
         ];
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -531,31 +486,27 @@
         let volume = parseFloat(localStorage.getItem('soundVolume') || '0.5');
         
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
+            if (!audioCtx) audioCtx = new AudioContext();
         }
 
         function playTone(frequency, duration, type = 'sine') {
             if (!soundEnabled || !audioCtx) return;
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.frequency.value = frequency;
-            oscillator.type = type;
-            gainNode.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + duration);
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = frequency;
+            osc.type = type;
+            gain.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + duration);
         }
 
         function playSoundClick() { playTone(800, 0.1, 'square'); }
         function playSoundPour() {
             if (!soundEnabled || !audioCtx) return;
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => playTone(400 - i * 20, 0.05, 'sine'), i * 30);
-            }
+            for (let i = 0; i < 5; i++) setTimeout(() => playTone(400 - i * 20, 0.05, 'sine'), i * 30);
         }
         function playSoundLight() {
             if (!soundEnabled || !audioCtx) return;
@@ -564,10 +515,7 @@
         }
         function playSoundVictory() {
             if (!soundEnabled || !audioCtx) return;
-            const notes = [523, 659, 784, 1047];
-            notes.forEach((freq, i) => {
-                setTimeout(() => playTone(freq, 0.4, 'square'), i * 200);
-            });
+            [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.4, 'square'), i * 200));
         }
 
         function toggleSound() {
@@ -594,7 +542,7 @@
         document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
 
         let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
-        let revealedLayers = new Set(), totalCandles = 8, emptyBottles = 2;
+        let revealedLayers = new Set(), totalCandles = 10, emptyBottles = 2;
         let colors = [];
 
         function getDailySeed() {
@@ -612,8 +560,7 @@
         }
 
         function isCompletedToday() {
-            const lastCompleted = localStorage.getItem('dailyChallengeDate');
-            return lastCompleted === getTodayDate();
+            return localStorage.getItem('dailyChallengeDate') === getTodayDate();
         }
 
         function saveCompletionData(moves, time, rank, streak) {
@@ -625,10 +572,17 @@
         }
 
         function showCompletedScreen() {
-            document.getElementById('savedMoves').textContent = localStorage.getItem('dailyChallengeMoves') || '0';
-            document.getElementById('savedTime').textContent = localStorage.getItem('dailyChallengeTime') || '0:00';
-            document.getElementById('savedRank').textContent = localStorage.getItem('dailyChallengeRank') || '0';
-            document.getElementById('savedStreak').textContent = localStorage.getItem('dailyChallengeStreak') || '0';
+            document.getElementById('todayStats').innerHTML = `
+                <div>Today's Results:</div>
+                <div style="margin: 15px 0;">
+                    <strong>Moves:</strong> ${localStorage.getItem('dailyChallengeMoves') || '0'}<br>
+                    <strong>Time:</strong> ${localStorage.getItem('dailyChallengeTime') || '0:00'}<br>
+                    <strong>Rank:</strong> #${localStorage.getItem('dailyChallengeRank') || '0'}
+                </div>
+                <div style="margin-top: 15px;">
+                    🔥 ${localStorage.getItem('dailyChallengeStreak') || '0'} Day Streak!
+                </div>
+            `;
             document.getElementById('completedScreen').classList.add('show');
             updateNextChallengeCountdown();
             setInterval(updateNextChallengeCountdown, 1000);
@@ -644,7 +598,6 @@
         }
 
         function init() {
-            // Check if already completed today
             if (isCompletedToday()) {
                 showCompletedScreen();
                 return;
@@ -668,7 +621,6 @@
             const streak = parseInt(localStorage.getItem('dailyChallengeStreak') || '0');
             document.getElementById('streakCount').textContent = streak;
 
-            // Select color palette based on day
             const seed = getDailySeed();
             const paletteIndex = seed % 5;
             colors = colorPalettes[paletteIndex];
@@ -695,22 +647,66 @@
             }, 1000);
         }
 
-        function initGame() {
-            gameState = [];
+        // SOLVABLE PUZZLE GENERATOR
+        function generateSolvablePuzzle() {
+            const state = [];
+            const usedColors = colors.slice(0, totalCandles);
+            
+            // Start with SOLVED state
+            for(let i = 0; i < totalCandles; i++) {
+                state.push([usedColors[i], usedColors[i], usedColors[i], usedColors[i]]);
+            }
+            for(let i = 0; i < emptyBottles; i++) {
+                state.push([]);
+            }
+            
+            // Shuffle with valid moves (30-50 moves)
             const seed = getDailySeed();
-            let idx = 0;
-            const allLayers = [];
-            colors.slice(0, totalCandles).forEach(c => {
-                for(let i=0;i<4;i++) allLayers.push(c);
-            });
-            for(let i = allLayers.length-1; i > 0; i--) {
-                const j = Math.floor(seededRandom(seed + idx++) * (i+1));
-                [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
+            const numMoves = 30 + Math.floor(seededRandom(seed) * 20);
+            
+            for(let move = 0; move < numMoves; move++) {
+                const validMoves = [];
+                
+                // Find all valid moves
+                for(let from = 0; from < state.length; from++) {
+                    if(state[from].length === 0) continue;
+                    
+                    for(let to = 0; to < state.length; to++) {
+                        if(from === to) continue;
+                        if(state[to].length >= 4) continue;
+                        
+                        const topFrom = state[from][state[from].length - 1];
+                        
+                        if(state[to].length === 0 || state[to][state[to].length - 1] === topFrom) {
+                            validMoves.push({from, to});
+                        }
+                    }
+                }
+                
+                if(validMoves.length > 0) {
+                    const moveIndex = Math.floor(seededRandom(seed + move * 1000) * validMoves.length);
+                    const {from, to} = validMoves[moveIndex];
+                    
+                    // Pour colors
+                    const topColor = state[from][state[from].length - 1];
+                    let count = 1;
+                    for(let i = state[from].length - 2; i >= 0; i--) {
+                        if(state[from][i] === topColor) count++;
+                        else break;
+                    }
+                    count = Math.min(count, 4 - state[to].length);
+                    
+                    for(let i = 0; i < count; i++) {
+                        state[to].push(state[from].pop());
+                    }
+                }
             }
-            for(let i=0;i<totalCandles;i++) {
-                gameState.push([allLayers[i*4],allLayers[i*4+1],allLayers[i*4+2],allLayers[i*4+3]]);
-            }
-            for(let i=0;i<emptyBottles;i++) gameState.push([]);
+            
+            return state;
+        }
+
+        function initGame() {
+            gameState = generateSolvablePuzzle();
             moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
             renderCandles();
             updateStats();
@@ -725,12 +721,15 @@
                 w.className = 'candle-wrapper';
                 if(isCandleComplete(candle)) w.classList.add('lit');
                 w.onclick = () => selectCandle(idx);
+                
                 const f = document.createElement('div');
                 f.className = 'flame';
                 w.appendChild(f);
+                
                 const wk = document.createElement('div');
                 wk.className = 'wick';
                 w.appendChild(wk);
+                
                 const b = document.createElement('div');
                 b.className = 'candle-body';
                 candle.forEach((color, li) => {
@@ -777,7 +776,9 @@
             if(fC.length === 0 || tC.length >= 4) return;
             const topF = fC[fC.length-1];
             if(tC.length > 0 && tC[tC.length-1] !== topF) return;
+            
             playSoundPour();
+            
             let cnt = 1;
             for(let i=fC.length-2;i>=0;i--) {
                 if(fC[i]===topF) cnt++; else break;
@@ -877,14 +878,9 @@
             document.getElementById('finalStreak').textContent = streak;
             document.getElementById('streakCount').textContent = streak;
             
-            // Save completion data
             saveCompletionData(moveCount, timeStr, rank, streak);
             
             document.getElementById('celebrationOverlay').classList.add('show');
-        }
-
-        function hideCelebration() {
-            // Can't hide - must go back to menu!
         }
 
         function shareChallenge() {
@@ -904,7 +900,6 @@
 
         function goBackAfterWin() {
             playSoundClick();
-            // After winning, go back to menu (will show completed screen next time)
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
 
