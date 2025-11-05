@@ -74,6 +74,23 @@ export default function Home({ onStartGame }: HomeProps) {
           ▶️ START GAME
         </button>
 
+        {/* 🕯️ CANDLE CHALLENGE BUTTON - NEW! */}
+        <button onClick={() => window.location.href = '/candle-challenge.html?difficulty=medium'} style={{
+          padding: '18px 35px',
+          fontSize: '1.3rem',
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          border: 'none',
+          borderRadius: '15px',
+          color: 'white',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          boxShadow: '0 8px 30px rgba(240, 147, 251, 0.5)',
+          transition: 'all 0.3s',
+          animation: 'pulse 2s ease-in-out infinite'
+        }}>
+          🕯️ CANDLE CHALLENGE
+        </button>
+
         <button onClick={() => setShowLevelSelect(true)} style={{
           padding: '15px 30px',
           fontSize: '1.2rem',
@@ -141,6 +158,25 @@ export default function Home({ onStartGame }: HomeProps) {
           📱 QR Code
         </button>
       </div>
+
+      {/* Add pulse animation for Candle Challenge button */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 8px 30px rgba(240, 147, 251, 0.5);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(240, 147, 251, 0.8);
+          }
+        }
+
+        button:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.1);
+        }
+      `}</style>
     </div>
   );
 }
