@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Challenge</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at top, #1a0d2e 0%, #000000 100%);
+            transition: background 3s ease;
+        }
+        body.universe-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a0d2e 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .intro-screen.hidden {
+            animation: fadeOut 1s ease forwards;
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; pointer-events: none; }
+        }
+        .portal {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #667eea 0%, #764ba2 50%, transparent 70%);
+            animation: portalSpin 4s linear infinite;
+            margin-bottom: 40px;
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.8);
+        }
+        @keyframes portalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .intro-text {
+            color: white;
+            text-align: center;
+        }
+        .intro-text h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 1);
+        }
+        .intro-text .date {
+            font-size: 1.3em;
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+        .intro-text .difficulty {
+            font-size: 1.8em;
+            color: #ffd700;
+            margin: 20px 0;
+        }
+        .intro-text .players {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+        .start-btn {
+            padding: 20px 60px;
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+        }
+        .start-btn:hover {
+            transform: scale(1.05);
+        }
+        .game-container {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            display: none;
+            color: white;
+        }
+        .game-container.visible {
+            display: block;
+            animation: fadeIn 1s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 1);
+        }
+        .countdown-container {
+            text-align: center;
+            padding: 15px;
+            background: rgba(26, 13, 46, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 20px;
+            margin: 15px auto;
+            max-width: 500px;
+        }
+        .countdown-timer {
+            font-size: 2em;
+            color: #f093fb;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .stat {
+            background: rgba(26, 13, 46, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 15px;
+            padding: 15px 25px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        .candles-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        .candle-wrapper {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .candle-wrapper:hover {
+            transform: translateY(-10px);
+        }
+        .candle-wrapper.selected {
+            transform: translateY(-15px) scale(1.1);
+        }
+        .flame {
+            width: 25px;
+            height: 40px;
+            background: radial-gradient(ellipse at center, #3a3a3a 0%, #1a1a1a 60%, transparent 100%);
+            border-radius: 50% 50% 20% 20%;
+            margin-bottom: 5px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .candle-wrapper.lit .flame {
+            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
+            box-shadow: 0 0 30px rgba(255, 165, 0, 1);
+            animation: flicker 0.15s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { transform: scaleY(1); }
+            100% { transform: scaleY(0.95); }
+        }
+        .wick {
+            width: 4px;
+            height: 10px;
+            background: #1a1a1a;
+            margin: 0 auto 2px;
+        }
+        .candle-wrapper.lit .wick {
+            background: linear-gradient(180deg, #ff6347 0%, #1a1a1a 100%);
+        }
+        .candle-body {
+            width: 60px;
+            height: 130px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-radius: 8px 8px 4px 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .color-layer {
+            width: 100%;
+            height: 25%;
+            transition: all 0.6s ease;
+        }
+        .color-layer.revealed {
+            animation: colorReveal 1s ease-out;
+        }
+        @keyframes colorReveal {
+            0% { filter: brightness(0.1); }
+            100% { filter: brightness(1); }
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .celebration-overlay.show {
+            display: flex;
+        }
+        .celebration-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            color: white;
+            max-width: 90%;
+        }
+        .celebration-card h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .rank-display {
+            font-size: 2em;
+            color: #ffd700;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .back-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            background: rgba(26, 13, 46, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+        .back-fixed:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+    
+    <div class="intro-screen" id="introScreen">
+        <div class="portal"></div>
+        <div class="intro-text">
+            <h1>⭐ DAILY CHALLENGE ⭐</h1>
+            <div class="date" id="todayDate"></div>
+            <div class="difficulty">⭐⭐⭐⭐⭐ LEGENDARY</div>
+            <div class="players" id="playersCount"></div>
+            <button class="start-btn" onclick="startChallenge()">✨ ENTER THE CHALLENGE ✨</button>
+        </div>
+    </div>
+
+    <button class="back-fixed" onclick="goBack()" id="backBtn">← Back</button>
+
+    <div class="game-container" id="gameContainer">
+        <div class="header">
+            <h1>⭐ DAILY CHALLENGE ⭐</h1>
+        </div>
+
+        <div class="countdown-container">
+            <div>NEXT CHALLENGE IN</div>
+            <div class="countdown-timer" id="countdown">23:45:32</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="moveCount">0</div>
+                <div class="stat-label">Moves</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="streakCount">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="flamesLit">0/10</div>
+                <div class="stat-label">Flames</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="timeDisplay">0:00</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+
+        <div class="candles-container" id="candlesContainer"></div>
+
+        <div class="controls">
+            <button class="btn btn-success" onclick="checkProgress()">✓ Check</button>
+            <button class="btn btn-primary" onclick="undoMove()">↶ Undo</button>
+            <button class="btn btn-warning" onclick="resetGame()">🔄 Reset</button>
+        </div>
+    </div>
+
+    <div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
+        <div class="celebration-card">
+            <h2>🌌 CHALLENGE COMPLETE! 🌌</h2>
+            <div>🏆 COSMIC MASTER 🏆</div>
+            <div style="margin: 20px 0;">
+                Moves: <span id="finalMoves">0</span><br>
+                Time: <span id="finalTime">0:00</span>
+            </div>
+            <div class="rank-display">RANK: #<span id="userRank">156</span></div>
+            <div>🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
+            <div style="margin-top: 25px;">
+                <button class="btn btn-warning" onclick="shareChallenge()">📱 Share</button>
+                <button class="btn btn-primary" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const colors = ['#8B4D5C','#4A7C8E','#6B5B95','#4A6741','#A0666F','#3D5A80','#B8860B','#6C7A89','#8B6F47','#556B2F'];
+        let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
+        let revealedLayers = new Set(), totalCandles = 10, emptyBottles = 2;
+
+        function getDailySeed() {
+            const d = new Date();
+            return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+        }
+
+        function seededRandom(seed) {
+            const x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        function init() {
+            for(let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                document.getElementById('starsContainer').appendChild(star);
+            }
+            const d = new Date();
+            document.getElementById('todayDate').textContent = d.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+            const p = 500 + Math.floor(seededRandom(getDailySeed()) * 2000);
+            document.getElementById('playersCount').textContent = p.toLocaleString() + ' players attempted today';
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            const streak = parseInt(localStorage.getItem('dailyStreak') || '0');
+            document.getElementById('streakCount').textContent = streak;
+        }
+
+        function updateCountdown() {
+            const now = new Date(), tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0,0,0,0);
+            const diff = tomorrow - now;
+            const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+            document.getElementById('countdown').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function startChallenge() {
+            document.getElementById('introScreen').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('introScreen').style.display = 'none';
+                document.getElementById('gameContainer').classList.add('visible');
+                document.getElementById('backBtn').style.display = 'block';
+                initGame();
+            }, 1000);
+        }
+
+        function initGame() {
+            gameState = [];
+            const seed = getDailySeed();
+            let idx = 0;
+            const allLayers = [];
+            colors.slice(0, totalCandles).forEach(c => {
+                for(let i=0;i<4;i++) allLayers.push(c);
+            });
+            for(let i = allLayers.length-1; i > 0; i--) {
+                const j = Math.floor(seededRandom(seed + idx++) * (i+1));
+                [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
+            }
+            for(let i=0;i<totalCandles;i++) {
+                gameState.push([allLayers[i*4],allLayers[i*4+1],allLayers[i*4+2],allLayers[i*4+3]]);
+            }
+            for(let i=0;i<emptyBottles;i++) gameState.push([]);
+            moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
+            renderCandles();
+            updateStats();
+            startTimer();
+        }
+
+        function renderCandles() {
+            const c = document.getElementById('candlesContainer');
+            c.innerHTML = '';
+            gameState.forEach((candle, idx) => {
+                const w = document.createElement('div');
+                w.className = 'candle-wrapper';
+                if(isCandleComplete(candle)) w.classList.add('lit');
+                w.onclick = () => selectCandle(idx);
+                const f = document.createElement('div');
+                f.className = 'flame';
+                w.appendChild(f);
+                const wk = document.createElement('div');
+                wk.className = 'wick';
+                w.appendChild(wk);
+                const b = document.createElement('div');
+                b.className = 'candle-body';
+                candle.forEach((color, li) => {
+                    const l = document.createElement('div');
+                    l.className = 'color-layer';
+                    const k = `${idx}-${li}`;
+                    if(revealedLayers.has(k)) {
+                        l.style.backgroundColor = color;
+                        l.classList.add('revealed');
+                    } else {
+                        l.style.backgroundColor = '#0a0a0a';
+                    }
+                    b.appendChild(l);
+                });
+                w.appendChild(b);
+                c.appendChild(w);
+            });
+        }
+
+        function selectCandle(idx) {
+            const candle = gameState[idx];
+            if(selectedCandle === null) {
+                if(candle.length > 0) {
+                    selectedCandle = idx;
+                    document.querySelectorAll('.candle-wrapper')[idx].classList.add('selected');
+                    candle.forEach((_,li) => revealedLayers.add(`${idx}-${li}`));
+                    renderCandles();
+                }
+            } else {
+                if(selectedCandle === idx) {
+                    document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
+                    selectedCandle = null;
+                } else {
+                    pourIntoCandle(selectedCandle, idx);
+                    document.querySelectorAll('.candle-wrapper')[selectedCandle].classList.remove('selected');
+                    selectedCandle = null;
+                }
+            }
+        }
+
+        function pourIntoCandle(from, to) {
+            const fC = gameState[from], tC = gameState[to];
+            if(fC.length === 0 || tC.length >= 4) return;
+            const topF = fC[fC.length-1];
+            if(tC.length > 0 && tC[tC.length-1] !== topF) return;
+            let cnt = 1;
+            for(let i=fC.length-2;i>=0;i--) {
+                if(fC[i]===topF) cnt++; else break;
+            }
+            cnt = Math.min(cnt, 4-tC.length);
+            moveHistory.push(JSON.parse(JSON.stringify(gameState)));
+            for(let i=0;i<cnt;i++) {
+                const c = fC.pop();
+                tC.push(c);
+                revealedLayers.add(`${to}-${tC.length-1}`);
+            }
+            gameState[to].forEach((_,li) => revealedLayers.add(`${to}-${li}`));
+            moveCount++;
+            updateStats();
+            renderCandles();
+            checkCompletion();
+        }
+
+        function isCandleComplete(c) {
+            return c.length === 4 && c.every(x => x === c[0]);
+        }
+
+        function checkCompletion() {
+            const comp = gameState.filter(isCandleComplete).length;
+            if(comp > litCandles) {
+                litCandles = comp;
+                updateStats();
+                if(comp === totalCandles) {
+                    setTimeout(() => {
+                        document.body.classList.add('universe-mode');
+                        setTimeout(showCelebration, 1500);
+                    }, 800);
+                }
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('moveCount').textContent = moveCount;
+            document.getElementById('flamesLit').textContent = `${litCandles}/${totalCandles}`;
+        }
+
+        let startTime = Date.now(), timerInterval;
+        function startTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const e = Math.floor((Date.now()-startTime)/1000);
+                const m = Math.floor(e/60), s = e%60;
+                document.getElementById('timeDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        function checkProgress() {
+            alert(litCandles === 0 ? '🕯️ No flames lit yet!' : litCandles === totalCandles ? '🌌 Challenge complete!' : `🔥 ${litCandles}/${totalCandles} flames lit!`);
+        }
+
+        function undoMove() {
+            if(moveHistory.length > 0) {
+                gameState = moveHistory.pop();
+                moveCount = Math.max(0, moveCount-1);
+                litCandles = gameState.filter(isCandleComplete).length;
+                if(litCandles < totalCandles) document.body.classList.remove('universe-mode');
+                renderCandles();
+                updateStats();
+            }
+        }
+
+        function resetGame() {
+            if(confirm('Reset? You will lose progress!')) {
+                document.body.classList.remove('universe-mode');
+                initGame();
+            }
+        }
+
+        function showCelebration() {
+            clearInterval(timerInterval);
+            const today = new Date().toDateString();
+            const last = localStorage.getItem('dailyLastCompleted');
+            let streak = parseInt(localStorage.getItem('dailyStreak')||'0');
+            if(last !== today) {
+                const yesterday = new Date(Date.now()-86400000).toDateString();
+                streak = last === yesterday ? streak+1 : 1;
+                localStorage.setItem('dailyStreak', streak);
+                localStorage.setItem('dailyLastCompleted', today);
+            }
+            const rank = Math.floor(seededRandom(getDailySeed()+moveCount)*500)+1;
+            document.getElementById('finalMoves').textContent = moveCount;
+            document.getElementById('finalTime').textContent = document.getElementById('timeDisplay').textContent;
+            document.getElementById('userRank').textContent = rank;
+            document.getElementById('finalStreak').textContent = streak;
+            document.getElementById('streakCount').textContent = streak;
+            document.getElementById('celebrationOverlay').classList.add('show');
+        }
+
+        function hideCelebration() {
+            document.getElementById('celebrationOverlay').classList.remove('show');
+        }
+
+        function shareChallenge() {
+            const text = `I completed today's COSMIC DAILY CHALLENGE! 🌌\n\nRank: #${document.getElementById('userRank').textContent}\nStreak: ${document.getElementById('finalStreak').textContent} days 🔥\n\n@orouk.sami #DailyChallenge`;
+            if(navigator.share) {
+                navigator.share({title:'Daily Challenge',text:text,url:window.location.href}).catch(()=>{});
+            } else {
+                alert('📱 Share this:\n\n'+text);
+            }
+        }
+
+        function goBack() {
+            window.history.length > 1 ? window.history.back() : window.location.href = '/';
+        }
+
+        init();
+    </script>
+</body>
+</html>
