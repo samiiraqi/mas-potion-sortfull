@@ -35,7 +35,6 @@ export default function Home({ onStartGame }: HomeProps) {
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Animated background stars */}
       <div style={{
         position: 'absolute',
         top: 0,
@@ -111,7 +110,6 @@ export default function Home({ onStartGame }: HomeProps) {
           ▶️ START GAME
         </button>
 
-        {/* 🌟 DAILY CHALLENGE BUTTON - EPIC! */}
         <button 
           onClick={() => window.location.href = '/daily-challenge.html'} 
           style={{
@@ -126,40 +124,12 @@ export default function Home({ onStartGame }: HomeProps) {
             boxShadow: '0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4)',
             transition: 'all 0.3s',
             position: 'relative',
-            overflow: 'hidden',
-            animation: 'cosmicPulse 3s ease-in-out infinite'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 0 50px rgba(102, 126, 234, 1), 0 12px 40px rgba(0, 0, 0, 0.5)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-            e.currentTarget.style.boxShadow = '0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4)';
+            overflow: 'hidden'
           }}
         >
-          <span style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }}>
-            ⭐ DAILY CHALLENGE ⭐
-          </span>
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: '100%',
-            height: '100%',
-            background: 'radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%)',
-            transform: 'translate(-50%, -50%)',
-            animation: 'glow 2s ease-in-out infinite',
-            pointerEvents: 'none'
-          }}></div>
+          ⭐ DAILY CHALLENGE ⭐
         </button>
 
-        {/* 🕯️ CANDLE CHALLENGE BUTTON */}
         <button onClick={() => window.location.href = '/candle-challenge.html?difficulty=medium'} style={{
           padding: '18px 35px',
           fontSize: '1.3rem',
@@ -170,8 +140,7 @@ export default function Home({ onStartGame }: HomeProps) {
           fontWeight: 'bold',
           cursor: 'pointer',
           boxShadow: '0 8px 30px rgba(240, 147, 251, 0.5)',
-          transition: 'all 0.3s',
-          animation: 'pulse 2s ease-in-out infinite'
+          transition: 'all 0.3s'
         }}>
           🕯️ CANDLE CHALLENGE
         </button>
@@ -244,39 +213,7 @@ export default function Home({ onStartGame }: HomeProps) {
         </button>
       </div>
 
-      {/* Animations */}
       <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 8px 30px rgba(240, 147, 251, 0.5);
-          }
-          50% {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(240, 147, 251, 0.8);
-          }
-        }
-
-        @keyframes cosmicPulse {
-          0%, 100% {
-            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6), 0 8px 30px rgba(0, 0, 0, 0.4);
-          }
-          50% {
-            box-shadow: 0 0 50px rgba(102, 126, 234, 1), 0 0 80px rgba(118, 75, 162, 0.6), 0 12px 40px rgba(0, 0, 0, 0.5);
-          }
-        }
-
-        @keyframes glow {
-          0%, 100% {
-            opacity: 0.3;
-            transform: translate(-50%, -50%) scale(1);
-          }
-          50% {
-            opacity: 0.6;
-            transform: translate(-50%, -50%) scale(1.2);
-          }
-        }
-
         @keyframes twinkle {
           0%, 100% {
             opacity: 0.3;
