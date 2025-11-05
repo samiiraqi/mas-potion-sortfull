@@ -56,6 +56,62 @@
         @keyframes fadeOut {
             to { opacity: 0; pointer-events: none; }
         }
+        
+        /* ALREADY COMPLETED SCREEN */
+        .completed-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a0d2e 0%, #000000 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .completed-screen.show {
+            display: flex;
+        }
+        .completed-badge {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .completed-title {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+        .completed-stats {
+            font-size: 1.5em;
+            margin: 20px 0;
+            background: rgba(26, 13, 46, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+        }
+        .completed-countdown {
+            font-size: 2em;
+            margin: 30px 0;
+            color: #f093fb;
+        }
+        .completed-message {
+            font-size: 1.8em;
+            color: #aaa;
+            margin: 20px 0;
+        }
+        
         .portal {
             width: 300px;
             height: 300px;
@@ -130,8 +186,6 @@
             font-size: 2.5em;
             text-shadow: 0 0 30px rgba(102, 126, 234, 1);
         }
-        
-        /* SOUND CONTROLS */
         .sound-controls {
             position: fixed;
             top: 20px;
@@ -170,7 +224,6 @@
             font-size: 0.9em;
             color: #aaa;
         }
-        
         .countdown-container {
             text-align: center;
             padding: 15px;
@@ -354,18 +407,40 @@
 <body>
     <div class="stars" id="starsContainer"></div>
     
+    <!-- ALREADY COMPLETED SCREEN -->
+    <div class="completed-screen" id="completedScreen">
+        <div class="completed-badge">🏆</div>
+        <div class="completed-title">CHALLENGE COMPLETED!</div>
+        <div class="completed-stats" id="todayStats">
+            <div>Today's Results:</div>
+            <div style="margin: 15px 0;">
+                <strong>Moves:</strong> <span id="savedMoves">0</span><br>
+                <strong>Time:</strong> <span id="savedTime">0:00</span><br>
+                <strong>Rank:</strong> #<span id="savedRank">0</span>
+            </div>
+            <div style="margin-top: 15px;">
+                🔥 <span id="savedStreak">0</span> Day Streak!
+            </div>
+        </div>
+        <div class="completed-message">See you tomorrow, Cosmic Master! 🌟</div>
+        <div class="completed-countdown">
+            <div style="font-size: 0.6em; margin-bottom: 10px;">Next Challenge In:</div>
+            <div id="nextChallengeCountdown">23:45:32</div>
+        </div>
+        <button class="btn btn-primary" onclick="goBack()" style="margin-top: 20px;">← Back to Menu</button>
+    </div>
+    
     <div class="intro-screen" id="introScreen">
         <div class="portal"></div>
         <div class="intro-text">
             <h1>⭐ DAILY CHALLENGE ⭐</h1>
             <div class="date" id="todayDate"></div>
-            <div class="difficulty">⭐⭐⭐⭐ CHALLENGING</div>
+            <div class="difficulty">⭐⭐⭐⭐⭐ HARD</div>
             <div class="players" id="playersCount"></div>
             <button class="start-btn" onclick="startChallenge()">✨ ENTER THE CHALLENGE ✨</button>
         </div>
     </div>
 
-    <!-- SOUND CONTROLS -->
     <div class="sound-controls">
         <div class="sound-toggle" onclick="toggleSound()">
             <span id="soundIcon">🔊</span>
@@ -400,7 +475,7 @@
                 <div class="stat-label">Streak</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="flamesLit">0/7</div>
+                <div class="stat-value" id="flamesLit">0/8</div>
                 <div class="stat-label">Flames</div>
             </div>
             <div class="stat">
@@ -430,13 +505,26 @@
             <div>🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
             <div style="margin-top: 25px;">
                 <button class="btn btn-warning" onclick="shareChallenge()">📱 Share</button>
-                <button class="btn btn-primary" onclick="goBack()">← Back</button>
+                <button class="btn btn-primary" onclick="goBackAfterWin()">← Back to Menu</button>
             </div>
         </div>
     </div>
 
     <script>
-        // SOUND SYSTEM (NO AMBIENT MUSIC!)
+        // 5 ROTATING COLOR PALETTES (Different each day!)
+        const colorPalettes = [
+            // Palette 1: Reds & Purples
+            ['#8B2626', '#6B1F3D', '#4A235A', '#7B2D3E', '#5A1F4E', '#8B3A62', '#6B2D52', '#9B2D5A'],
+            // Palette 2: Blues & Greens
+            ['#1E4D7B', '#2D5016', '#1A5F7A', '#2E5D3A', '#1B3B6F', '#2F6E4E', '#1C4966', '#2A5E42'],
+            // Palette 3: Oranges & Browns
+            ['#A04000', '#8B6F47', '#9B5500', '#7A5230', '#B04500', '#6E4F2C', '#9A4500', '#8A6038'],
+            // Palette 4: Pinks & Yellows
+            ['#9B4F6B', '#9B7E28', '#8B3E5A', '#8B7020', '#A04566', '#A07528', '#8E4058', '#957525'],
+            // Palette 5: Mixed Dark
+            ['#5D3A3A', '#3A5D5D', '#5D5D3A', '#5D3A5D', '#3A3A5D', '#5D4F3A', '#4F3A5D', '#3A5D4F']
+        ];
+
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
@@ -450,70 +538,49 @@
 
         function playTone(frequency, duration, type = 'sine') {
             if (!soundEnabled || !audioCtx) return;
-            
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            
             oscillator.frequency.value = frequency;
             oscillator.type = type;
-            
             gainNode.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + duration);
         }
 
-        // Click sound
-        function playSoundClick() {
-            playTone(800, 0.1, 'square');
-        }
-
-        // Pour sound (water pouring effect)
+        function playSoundClick() { playTone(800, 0.1, 'square'); }
         function playSoundPour() {
             if (!soundEnabled || !audioCtx) return;
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    playTone(400 - i * 20, 0.05, 'sine');
-                }, i * 30);
+                setTimeout(() => playTone(400 - i * 20, 0.05, 'sine'), i * 30);
             }
         }
-
-        // Candle light sound (whoosh + fire)
         function playSoundLight() {
             if (!soundEnabled || !audioCtx) return;
             playTone(1000, 0.2, 'sawtooth');
             setTimeout(() => playTone(600, 0.3, 'triangle'), 100);
         }
-
-        // Victory fanfare
         function playSoundVictory() {
             if (!soundEnabled || !audioCtx) return;
             const notes = [523, 659, 784, 1047];
             notes.forEach((freq, i) => {
-                setTimeout(() => {
-                    playTone(freq, 0.4, 'square');
-                }, i * 200);
+                setTimeout(() => playTone(freq, 0.4, 'square'), i * 200);
             });
         }
 
-        // Toggle sound
         function toggleSound() {
             soundEnabled = !soundEnabled;
             localStorage.setItem('soundEnabled', soundEnabled);
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
             document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
-            
             if (soundEnabled) {
                 initAudio();
                 playSoundClick();
             }
         }
 
-        // Change volume
         function changeVolume(val) {
             volume = val / 100;
             localStorage.setItem('soundVolume', volume);
@@ -521,25 +588,14 @@
             playSoundClick();
         }
 
-        // Initialize sound controls
         document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
         document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
         document.getElementById('volumeSlider').value = volume * 100;
         document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
 
-        // GAME CODE
-        const colors = [
-            '#8B2626',  // Deep Red
-            '#1E4D7B',  // Royal Blue
-            '#2D5016',  // Forest Green
-            '#9B7E28',  // Golden Brown
-            '#4A235A',  // Deep Purple
-            '#A04000',  // Burnt Orange
-            '#4E342E'   // Chocolate Brown
-        ];
-        
         let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
-        let revealedLayers = new Set(), totalCandles = 7, emptyBottles = 2;
+        let revealedLayers = new Set(), totalCandles = 8, emptyBottles = 2;
+        let colors = [];
 
         function getDailySeed() {
             const d = new Date();
@@ -551,7 +607,49 @@
             return x - Math.floor(x);
         }
 
+        function getTodayDate() {
+            return new Date().toDateString();
+        }
+
+        function isCompletedToday() {
+            const lastCompleted = localStorage.getItem('dailyChallengeDate');
+            return lastCompleted === getTodayDate();
+        }
+
+        function saveCompletionData(moves, time, rank, streak) {
+            localStorage.setItem('dailyChallengeDate', getTodayDate());
+            localStorage.setItem('dailyChallengeMoves', moves);
+            localStorage.setItem('dailyChallengeTime', time);
+            localStorage.setItem('dailyChallengeRank', rank);
+            localStorage.setItem('dailyChallengeStreak', streak);
+        }
+
+        function showCompletedScreen() {
+            document.getElementById('savedMoves').textContent = localStorage.getItem('dailyChallengeMoves') || '0';
+            document.getElementById('savedTime').textContent = localStorage.getItem('dailyChallengeTime') || '0:00';
+            document.getElementById('savedRank').textContent = localStorage.getItem('dailyChallengeRank') || '0';
+            document.getElementById('savedStreak').textContent = localStorage.getItem('dailyChallengeStreak') || '0';
+            document.getElementById('completedScreen').classList.add('show');
+            updateNextChallengeCountdown();
+            setInterval(updateNextChallengeCountdown, 1000);
+        }
+
+        function updateNextChallengeCountdown() {
+            const now = new Date(), tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0,0,0,0);
+            const diff = tomorrow - now;
+            const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+            document.getElementById('nextChallengeCountdown').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
         function init() {
+            // Check if already completed today
+            if (isCompletedToday()) {
+                showCompletedScreen();
+                return;
+            }
+
             for(let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -559,14 +657,21 @@
                 star.style.top = Math.random() * 100 + '%';
                 document.getElementById('starsContainer').appendChild(star);
             }
+            
             const d = new Date();
             document.getElementById('todayDate').textContent = d.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
             const p = 500 + Math.floor(seededRandom(getDailySeed()) * 2000);
             document.getElementById('playersCount').textContent = p.toLocaleString() + ' players attempted today';
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            const streak = parseInt(localStorage.getItem('dailyStreak') || '0');
+            
+            const streak = parseInt(localStorage.getItem('dailyChallengeStreak') || '0');
             document.getElementById('streakCount').textContent = streak;
+
+            // Select color palette based on day
+            const seed = getDailySeed();
+            const paletteIndex = seed % 5;
+            colors = colorPalettes[paletteIndex];
         }
 
         function updateCountdown() {
@@ -581,7 +686,6 @@
         function startChallenge() {
             initAudio();
             playSoundClick();
-            
             document.getElementById('introScreen').classList.add('hidden');
             setTimeout(() => {
                 document.getElementById('introScreen').style.display = 'none';
@@ -595,23 +699,18 @@
             gameState = [];
             const seed = getDailySeed();
             let idx = 0;
-            
             const allLayers = [];
             colors.slice(0, totalCandles).forEach(c => {
                 for(let i=0;i<4;i++) allLayers.push(c);
             });
-            
             for(let i = allLayers.length-1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + idx++) * (i+1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
-            
             for(let i=0;i<totalCandles;i++) {
                 gameState.push([allLayers[i*4],allLayers[i*4+1],allLayers[i*4+2],allLayers[i*4+3]]);
             }
-            
             for(let i=0;i<emptyBottles;i++) gameState.push([]);
-            
             moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
             renderCandles();
             updateStats();
@@ -678,9 +777,7 @@
             if(fC.length === 0 || tC.length >= 4) return;
             const topF = fC[fC.length-1];
             if(tC.length > 0 && tC[tC.length-1] !== topF) return;
-            
             playSoundPour();
-            
             let cnt = 1;
             for(let i=fC.length-2;i>=0;i--) {
                 if(fC[i]===topF) cnt++; else break;
@@ -709,7 +806,6 @@
                 litCandles = comp;
                 updateStats();
                 playSoundLight();
-                
                 if(comp === totalCandles) {
                     setTimeout(() => {
                         document.body.classList.add('universe-mode');
@@ -763,27 +859,32 @@
 
         function showCelebration() {
             clearInterval(timerInterval);
-            const today = new Date().toDateString();
-            const last = localStorage.getItem('dailyLastCompleted');
-            let streak = parseInt(localStorage.getItem('dailyStreak')||'0');
+            const today = getTodayDate();
+            const last = localStorage.getItem('dailyChallengeDate');
+            let streak = parseInt(localStorage.getItem('dailyChallengeStreak')||'0');
+            
             if(last !== today) {
                 const yesterday = new Date(Date.now()-86400000).toDateString();
                 streak = last === yesterday ? streak+1 : 1;
-                localStorage.setItem('dailyStreak', streak);
-                localStorage.setItem('dailyLastCompleted', today);
             }
+            
             const rank = Math.floor(seededRandom(getDailySeed()+moveCount)*500)+1;
+            const timeStr = document.getElementById('timeDisplay').textContent;
+            
             document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = document.getElementById('timeDisplay').textContent;
+            document.getElementById('finalTime').textContent = timeStr;
             document.getElementById('userRank').textContent = rank;
             document.getElementById('finalStreak').textContent = streak;
             document.getElementById('streakCount').textContent = streak;
+            
+            // Save completion data
+            saveCompletionData(moveCount, timeStr, rank, streak);
+            
             document.getElementById('celebrationOverlay').classList.add('show');
         }
 
         function hideCelebration() {
-            playSoundClick();
-            document.getElementById('celebrationOverlay').classList.remove('show');
+            // Can't hide - must go back to menu!
         }
 
         function shareChallenge() {
@@ -798,6 +899,12 @@
 
         function goBack() {
             playSoundClick();
+            window.history.length > 1 ? window.history.back() : window.location.href = '/';
+        }
+
+        function goBackAfterWin() {
+            playSoundClick();
+            // After winning, go back to menu (will show completed screen next time)
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
 
