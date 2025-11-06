@@ -3,238 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Challenge</title>
+    <title>🕯️ Candle Challenge - 70 Levels</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
-            overflow: hidden;
-            background: radial-gradient(ellipse at top, #0a0a1a 0%, #000000 100%);
-            transition: background 3s ease;
-        }
-        body.universe-mode {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            animation: universeGlow 3s ease-in-out infinite alternate;
+            transition: background 1s ease;
+            overflow-x: hidden;
         }
-        @keyframes universeGlow {
-            0% { filter: brightness(1); }
-            100% { filter: brightness(1.2); }
+        body.dark-mode {
+            background: radial-gradient(ellipse at top, #0a0a1a 0%, #000000 100%);
         }
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        
+        /* LEVEL SELECT SCREEN */
+        .level-select {
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .level-select.hidden {
+            display: none;
+        }
+        .level-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .level-header h1 {
+            font-size: 3em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .level-progress {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .level-progress-bar {
+            background: rgba(0,0,0,0.3);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .level-progress-fill {
+            background: linear-gradient(90deg, #11998e, #38ef7d);
             height: 100%;
-            pointer-events: none;
-            z-index: 1;
+            transition: width 0.5s ease;
         }
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s ease-in-out infinite;
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 12px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.5); }
-        }
-        .intro-screen, .completed-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, #1a0d2e 0%, #000000 100%);
+        .level-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            gap: 3px;
+        }
+        .level-btn.unlocked {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
             color: white;
-            text-align: center;
-            padding: 20px;
         }
-        .intro-screen.hidden {
-            animation: fadeOut 1s ease forwards;
+        .level-btn.unlocked:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        @keyframes fadeOut {
-            to { opacity: 0; pointer-events: none; }
+        .level-btn.locked {
+            background: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
         }
-        .completed-screen {
-            display: none;
+        .level-btn.completed {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
         }
-        .completed-screen.show {
+        .stars {
             display: flex;
+            gap: 1px;
+            font-size: 0.5em;
         }
-        .completed-badge {
-            font-size: 5em;
-            margin-bottom: 20px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        .completed-title {
-            font-size: 3em;
-            margin-bottom: 20px;
-            color: #ffd700;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-        }
-        .completed-stats {
-            font-size: 1.5em;
-            margin: 20px 0;
-            background: rgba(26, 13, 46, 0.8);
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-        }
-        .completed-countdown {
-            font-size: 2em;
-            margin: 30px 0;
-            color: #f093fb;
-        }
-        .completed-message {
-            font-size: 1.8em;
-            color: #aaa;
-            margin: 20px 0;
-        }
-        .portal {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #667eea 0%, #764ba2 50%, transparent 70%);
-            animation: portalSpin 4s linear infinite;
-            margin-bottom: 40px;
-            box-shadow: 0 0 50px rgba(102, 126, 234, 0.8);
-        }
-        @keyframes portalSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .intro-text h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(102, 126, 234, 1);
-        }
-        .intro-text .date {
-            font-size: 1.3em;
-            color: #f093fb;
-            margin-bottom: 10px;
-        }
-        .intro-text .difficulty {
-            font-size: 1.8em;
-            color: #ffd700;
-            margin: 20px 0;
-        }
-        .intro-text .players {
-            font-size: 1.1em;
-            color: #aaa;
-            margin-bottom: 40px;
-        }
-        .start-btn, .btn {
-            padding: 20px 60px;
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
-            transition: all 0.3s ease;
-        }
-        .start-btn:hover, .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(102, 126, 234, 1);
-        }
-        .game-container {
-            position: relative;
-            z-index: 10;
-            padding: 20px;
-            display: none;
-            color: white;
-        }
-        .game-container.visible {
-            display: block;
-            animation: fadeIn 1s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 2.5em;
-            text-shadow: 0 0 30px rgba(102, 126, 234, 1);
-        }
-        .sound-controls {
+        .back-btn {
             position: fixed;
             top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(26, 13, 46, 0.9);
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 15px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-        }
-        .sound-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
             color: white;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        .sound-toggle:hover {
-            color: #f093fb;
-        }
-        .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-        }
-        .volume-slider {
-            width: 80px;
-            cursor: pointer;
-        }
-        .countdown-container {
-            text-align: center;
-            padding: 12px;
-            background: rgba(26, 13, 46, 0.8);
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 20px;
-            margin: 15px auto;
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-        }
-        .countdown-timer {
-            font-size: 1.8em;
-            color: #f093fb;
             font-weight: bold;
-            font-family: monospace;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 0.9em;
+        }
+        .back-btn:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        /* GAME SCREEN */
+        .game-screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .game-screen.active {
+            display: block;
+        }
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-header h2 {
+            font-size: 2.5em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .difficulty-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.2);
+        }
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 80px;
+            backdrop-filter: blur(10px);
+        }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .stat-label {
+            font-size: 0.85em;
+            margin-top: 5px;
+            color: rgba(255,255,255,0.9);
         }
         .candles-container {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 20px;
+            gap: 35px 20px;
             flex-wrap: wrap;
-            margin: 50px auto;
+            margin: 30px auto;
             max-width: 95%;
+            row-gap: 35px;
         }
         
         /* ANIMATED CANDLE WRAPPER */
@@ -255,40 +197,21 @@
             animation: selectedBounce 0.6s ease-in-out infinite;
         }
         
-        /* Gentle breathing animation for idle candles */
         @keyframes gentleSway {
-            0%, 100% { 
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-3px) rotate(-0.5deg);
-            }
-            50% { 
-                transform: translateY(0) rotate(0deg);
-            }
-            75% {
-                transform: translateY(-3px) rotate(0.5deg);
-            }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(-0.5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-3px) rotate(0.5deg); }
         }
         
-        /* Hover sway */
         @keyframes hoverSway {
-            0%, 100% { 
-                transform: translateY(-15px) scale(1.05) rotate(-1deg);
-            }
-            50% { 
-                transform: translateY(-15px) scale(1.05) rotate(1deg);
-            }
+            0%, 100% { transform: translateY(-15px) scale(1.05) rotate(-1deg); }
+            50% { transform: translateY(-15px) scale(1.05) rotate(1deg); }
         }
         
-        /* Selected bounce */
         @keyframes selectedBounce {
-            0%, 100% { 
-                transform: translateY(-20px) scale(1.12);
-            }
-            50% { 
-                transform: translateY(-23px) scale(1.13);
-            }
+            0%, 100% { transform: translateY(-20px) scale(1.12); }
+            50% { transform: translateY(-23px) scale(1.13); }
         }
         
         /* BEAUTIFUL TEARDROP FLAME */
@@ -305,32 +228,12 @@
         
         .candle-wrapper.lit .flame {
             background: 
-                radial-gradient(ellipse 50% 40% at 50% 30%, 
-                    rgba(255, 255, 255, 1) 0%, 
-                    transparent 50%),
-                radial-gradient(ellipse 70% 60% at 50% 40%, 
-                    #ffeb3b 0%, 
-                    #ffc107 30%,
-                    transparent 70%),
-                radial-gradient(ellipse 85% 75% at 50% 45%, 
-                    #ff9800 0%, 
-                    #ff6f00 40%,
-                    transparent 80%),
-                radial-gradient(ellipse 100% 100% at 50% 50%, 
-                    #ff5722 0%,
-                    #f4511e 30%,
-                    #e64a19 50%,
-                    #d84315 70%,
-                    transparent 100%);
-            box-shadow: 
-                0 0 20px 5px rgba(255, 152, 0, 0.7),
-                0 0 35px 8px rgba(255, 87, 34, 0.5),
-                0 0 50px 10px rgba(244, 81, 30, 0.3),
-                0 -8px 15px 3px rgba(255, 235, 59, 0.4);
-            animation: 
-                flameFlicker 0.2s ease-in-out infinite,
-                flameSway 2.5s ease-in-out infinite,
-                flameGrow 1.8s ease-in-out infinite alternate;
+                radial-gradient(ellipse 50% 40% at 50% 30%, rgba(255, 255, 255, 1) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 60% at 50% 40%, #ffeb3b 0%, #ffc107 30%, transparent 70%),
+                radial-gradient(ellipse 85% 75% at 50% 45%, #ff9800 0%, #ff6f00 40%, transparent 80%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, #ff5722 0%, #f4511e 30%, #e64a19 50%, #d84315 70%, transparent 100%);
+            box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.7), 0 0 35px 8px rgba(255, 87, 34, 0.5), 0 0 50px 10px rgba(244, 81, 30, 0.3), 0 -8px 15px 3px rgba(255, 235, 59, 0.4);
+            animation: flameFlicker 0.2s ease-in-out infinite, flameSway 2.5s ease-in-out infinite, flameGrow 1.8s ease-in-out infinite alternate;
             filter: drop-shadow(0 5px 10px rgba(255, 87, 34, 0.4));
         }
         
@@ -342,10 +245,7 @@
             transform: translateX(-50%);
             width: 20px;
             height: 25px;
-            background: radial-gradient(ellipse at center, 
-                rgba(255, 255, 200, 0.6) 0%,
-                rgba(255, 235, 59, 0.4) 40%,
-                transparent 80%);
+            background: radial-gradient(ellipse at center, rgba(255, 255, 200, 0.6) 0%, rgba(255, 235, 59, 0.4) 40%, transparent 80%);
             border-radius: 50%;
             animation: innerGlow 1.5s ease-in-out infinite alternate;
         }
@@ -358,43 +258,23 @@
             transform: translateX(-50%);
             width: 55px;
             height: 55px;
-            background: radial-gradient(circle, 
-                rgba(255, 200, 50, 0.25) 0%,
-                rgba(255, 152, 0, 0.15) 40%,
-                transparent 70%);
+            background: radial-gradient(circle, rgba(255, 200, 50, 0.25) 0%, rgba(255, 152, 0, 0.15) 40%, transparent 70%);
             border-radius: 50%;
             filter: blur(12px);
             animation: haloGlow 2s ease-in-out infinite;
         }
         
         @keyframes flameFlicker {
-            0%, 100% { 
-                transform: scaleY(1) scaleX(1) skewX(0deg);
-                opacity: 1;
-            }
-            33% { 
-                transform: scaleY(0.97) scaleX(1.03) skewX(-1deg);
-                opacity: 0.98;
-            }
-            66% { 
-                transform: scaleY(1.03) scaleX(0.97) skewX(1deg);
-                opacity: 0.96;
-            }
+            0%, 100% { transform: scaleY(1) scaleX(1) skewX(0deg); opacity: 1; }
+            33% { transform: scaleY(0.97) scaleX(1.03) skewX(-1deg); opacity: 0.98; }
+            66% { transform: scaleY(1.03) scaleX(0.97) skewX(1deg); opacity: 0.96; }
         }
         
         @keyframes flameSway {
-            0%, 100% { 
-                transform: translateX(-2px) rotate(-1.5deg);
-            }
-            25% {
-                transform: translateX(0px) rotate(0deg);
-            }
-            50% { 
-                transform: translateX(2px) rotate(1.5deg);
-            }
-            75% {
-                transform: translateX(0px) rotate(0deg);
-            }
+            0%, 100% { transform: translateX(-2px) rotate(-1.5deg); }
+            25% { transform: translateX(0px) rotate(0deg); }
+            50% { transform: translateX(2px) rotate(1.5deg); }
+            75% { transform: translateX(0px) rotate(0deg); }
         }
         
         @keyframes flameGrow {
@@ -408,14 +288,8 @@
         }
         
         @keyframes haloGlow {
-            0%, 100% { 
-                opacity: 0.5;
-                transform: translateX(-50%) scale(1);
-            }
-            50% { 
-                opacity: 0.7;
-                transform: translateX(-50%) scale(1.05);
-            }
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
         }
         
         .wick {
@@ -428,44 +302,20 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .candle-wrapper.lit .wick {
-            background: linear-gradient(180deg, 
-                #ff6347 0%, 
-                #ff7f50 20%,
-                #ff8c00 40%, 
-                #2a2a2a 60%,
-                #1a1a1a 100%);
-            box-shadow: 
-                0 0 8px rgba(255, 99, 71, 0.6),
-                0 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(180deg, #ff6347 0%, #ff7f50 20%, #ff8c00 40%, #2a2a2a 60%, #1a1a1a 100%);
+            box-shadow: 0 0 8px rgba(255, 99, 71, 0.6), 0 2px 4px rgba(0,0,0,0.3);
         }
         
-        /* ELEGANT CANDLE DESIGN */
+        /* ELEGANT CANDLE DESIGN - NO WHITE MARKS */
         .candle-body {
             width: 65px;
             height: 150px;
             position: relative;
             display: flex;
             flex-direction: column-reverse;
-            background: 
-                linear-gradient(to right, 
-                    rgba(0,0,0,0.08) 0%, 
-                    transparent 15%, 
-                    transparent 60%,
-                    rgba(0,0,0,0.05) 100%
-                ),
-                linear-gradient(180deg, 
-                    #fffef9 0%,
-                    #faf8f0 30%,
-                    #f5f3ea 50%,
-                    #f0ede3 70%,
-                    #ebe7dc 100%
-                );
-            border-radius: 32px 32px 10px 10px;
-            box-shadow: 
-                inset -3px 0 8px rgba(0,0,0,0.15),
-                inset 3px 0 8px rgba(100,100,100,0.2),
-                0 8px 25px rgba(0,0,0,0.4),
-                0 4px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 15%, transparent 60%, rgba(0,0,0,0.05) 100%), linear-gradient(180deg, #fffef9 0%, #faf8f0 30%, #f5f3ea 50%, #f0ede3 70%, #ebe7dc 100%);
+            border-radius: 8px 8px 4px 4px;
+            box-shadow: inset -3px 0 8px rgba(0,0,0,0.15), inset 3px 0 8px rgba(100,100,100,0.2), 0 8px 25px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.2);
             overflow: visible;
         }
         
@@ -477,13 +327,7 @@
             transform: translateX(-50%);
             width: 68px;
             height: 10px;
-            background: 
-                radial-gradient(ellipse at 50% 50%, 
-                    rgba(235,231,220,0.8) 0%, 
-                    rgba(230,226,215,0.7) 20%,
-                    rgba(220,216,205,0.6) 50%,
-                    rgba(210,206,195,0.4) 70%,
-                    transparent 100%);
+            background: radial-gradient(ellipse at 50% 50%, rgba(235,231,220,0.8) 0%, rgba(230,226,215,0.7) 20%, rgba(220,216,205,0.6) 50%, rgba(210,206,195,0.4) 70%, transparent 100%);
             border-radius: 50%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             z-index: 10;
@@ -496,17 +340,9 @@
             right: 6px;
             width: 8px;
             height: 30px;
-            background: 
-                linear-gradient(180deg, 
-                    rgba(250,248,240,0.95) 0%, 
-                    rgba(245,243,234,0.85) 30%,
-                    rgba(240,237,227,0.7) 60%,
-                    rgba(235,231,220,0.5) 80%,
-                    transparent 100%);
+            background: linear-gradient(180deg, rgba(250,248,240,0.95) 0%, rgba(245,243,234,0.85) 30%, rgba(240,237,227,0.7) 60%, rgba(235,231,220,0.5) 80%, transparent 100%);
             border-radius: 50% 30% 40% 50% / 40% 50% 60% 50%;
-            box-shadow: 
-                inset -1px 0 2px rgba(0,0,0,0.1),
-                1px 2px 4px rgba(0,0,0,0.15);
+            box-shadow: inset -1px 0 2px rgba(0,0,0,0.1), 1px 2px 4px rgba(0,0,0,0.15);
             filter: blur(0.3px);
         }
         
@@ -522,28 +358,20 @@
         }
         
         .color-layer:first-child {
-            border-radius: 0 0 10px 10px;
+            border-radius: 0 0 4px 4px;
         }
         
         .color-layer.revealed {
-            animation: colorReveal 1.2s ease-out;
+            animation: colorReveal 1s ease-out;
         }
         
         @keyframes colorReveal {
-            0% { 
-                filter: brightness(0.4) saturate(0.5);
-                transform: scaleY(0.9);
-            }
-            50% {
-                filter: brightness(1.3) saturate(1.2);
-            }
-            100% { 
-                filter: brightness(1) saturate(1);
-                transform: scaleY(1);
-            }
+            0% { filter: brightness(0.5) saturate(0.7); transform: scaleY(0.95); }
+            50% { filter: brightness(1.3) saturate(1.2); }
+            100% { filter: brightness(1.1) saturate(1); transform: scaleY(1); }
         }
         
-        /* VERY SMALL BUTTONS */
+        /* SMALL BUTTONS */
         .controls {
             display: flex;
             justify-content: center;
@@ -562,367 +390,246 @@
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        .btn-primary { 
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-        .btn-success { 
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-        }
-        .btn-warning { 
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .btn-warning { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .btn-small:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
-        .btn-small:active {
-            transform: translateY(0);
-        }
         
-        .celebration-overlay {
+        /* VICTORY SCREEN */
+        .victory-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 10000;
         }
-        .celebration-overlay.show {
+        .victory-overlay.show {
             display: flex;
             animation: fadeIn 0.5s ease;
         }
-        .celebration-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .victory-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             padding: 50px;
             border-radius: 30px;
             text-align: center;
             color: white;
             max-width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         @keyframes popIn {
             0% { transform: scale(0.3); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .celebration-card h2 {
-            font-size: 3em;
+        .victory-card h2 {
+            font-size: 2.5em;
             margin-bottom: 20px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .rank-display {
-            font-size: 2em;
-            color: #ffd700;
+        .victory-stars {
+            font-size: 3em;
             margin: 20px 0;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(255,215,0,0.8);
-        }
-        .back-fixed {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            padding: 10px 20px;
-            background: rgba(26, 13, 46, 0.9);
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 25px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            display: none;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-        }
-        .back-fixed:hover {
-            background: rgba(102, 126, 234, 0.9);
-            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="starsContainer"></div>
-    
-    <div class="completed-screen" id="completedScreen">
-        <div class="completed-badge">🏆</div>
-        <div class="completed-title">CHALLENGE COMPLETED!</div>
-        <div class="completed-stats" id="todayStats"></div>
-        <div class="completed-message">See you tomorrow, Cosmic Master! 🌟</div>
-        <div class="completed-countdown">
-            <div style="font-size: 0.6em; margin-bottom: 10px;">Next Challenge In:</div>
-            <div id="nextChallengeCountdown">23:45:32</div>
-        </div>
-        <button class="btn" onclick="goBack()" style="margin-top: 20px; padding: 15px 40px; font-size: 1.2em;">← Back to Menu</button>
-    </div>
-    
-    <div class="intro-screen" id="introScreen">
-        <div class="portal"></div>
-        <div class="intro-text">
-            <h1>⭐ DAILY CHALLENGE ⭐</h1>
-            <div class="date" id="todayDate"></div>
-            <div class="difficulty">⭐⭐⭐⭐⭐ EXPERT</div>
-            <div class="players" id="playersCount"></div>
-            <button class="start-btn" onclick="startChallenge()">✨ ENTER THE CHALLENGE ✨</button>
-        </div>
-    </div>
-
-    <div class="sound-controls">
-        <div class="sound-toggle" onclick="toggleSound()">
-            <span id="soundIcon">🔊</span>
-            <span id="soundText">Sound</span>
-        </div>
-        <div class="volume-control">
-            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" onchange="changeVolume(this.value)">
-            <span id="volumeValue" style="font-size: 0.85em;">50%</span>
-        </div>
-    </div>
-
-    <button class="back-fixed" onclick="goBack()" id="backBtn">← Back</button>
-
-    <div class="game-container" id="gameContainer">
-        <div class="header">
-            <h1>⭐ DAILY CHALLENGE ⭐</h1>
-        </div>
-
-        <div class="countdown-container">
-            <div style="font-size: 0.9em;">NEXT CHALLENGE IN</div>
-            <div class="countdown-timer" id="countdown">23:45:32</div>
-        </div>
-
-        <div class="candles-container" id="candlesContainer"></div>
-
-        <div class="controls">
-            <button class="btn-small btn-success" onclick="checkProgress()">✓ Check</button>
-            <button class="btn-small btn-primary" onclick="undoMove()">↶ Undo</button>
-            <button class="btn-small btn-warning" onclick="resetGame()">🔄 Reset</button>
-        </div>
-    </div>
-
-    <div class="celebration-overlay" id="celebrationOverlay">
-        <div class="celebration-card">
-            <h2>🌌 CHALLENGE COMPLETE! 🌌</h2>
-            <div>🏆 COSMIC MASTER 🏆</div>
-            <div style="margin: 20px 0; font-size: 1.3em;">
-                Moves: <span id="finalMoves">0</span>
+    <!-- INTRO SCREEN -->
+    <div class="level-select" id="levelSelect">
+        <button class="back-btn" onclick="goHome()">← Back</button>
+        
+        <div class="level-header">
+            <h1>🕯️ DAILY CHALLENGE 🕯️</h1>
+            <p style="font-size: 1.2em; margin: 10px 0;">Today's Expert Puzzle</p>
+            
+            <div class="level-progress">
+                <div id="todayDate" style="margin-bottom: 10px; font-size: 1.3em;"></div>
+                <div style="font-size: 1.5em; margin: 20px 0;">⭐⭐⭐⭐⭐⭐ EXPERT</div>
+                <div style="margin-top: 10px;">9 Candles - One Challenge Per Day!</div>
             </div>
-            <div class="rank-display">RANK: #<span id="userRank">156</span></div>
-            <div style="font-size: 1.5em;">🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
+        </div>
+        
+        <button class="level-btn unlocked" onclick="startChallenge()" style="width: 250px; height: 90px; font-size: 1.6em; margin: 30px auto; display: block;">
+            ✨ START CHALLENGE ✨
+        </button>
+    </div>
+    
+    <!-- GAME SCREEN -->
+    <div class="game-screen" id="gameScreen">
+        <button class="back-btn" onclick="backToLevels()">← Levels</button>
+        
+        <div class="game-header">
+            <h2 id="levelTitle">DAILY CHALLENGE</h2>
+            <div class="difficulty-badge" id="difficultyBadge">⭐⭐⭐⭐⭐⭐ EXPERT</div>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat">
+                <div class="stat-value" id="moveCount">0</div>
+                <div class="stat-label">Moves</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="litCount">0/9</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        
+        <div class="candles-container" id="candlesContainer"></div>
+        
+        <div class="controls">
+            <button class="btn-small btn-success" onclick="checkVictory()">✓ Check</button>
+            <button class="btn-small btn-primary" onclick="undoMove()">↶ Undo</button>
+            <button class="btn-small btn-warning" onclick="resetLevel()">🔄 Reset</button>
+        </div>
+    </div>
+    
+    <!-- VICTORY OVERLAY -->
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-card">
+            <h2>🎉 DAILY CHALLENGE COMPLETE! 🎉</h2>
+            <div class="victory-stars" id="earnedStars">🎉</div>
+            <div style="font-size: 1.3em; margin: 20px 0;">
+                Completed in <span id="finalMoves">0</span> moves!
+            </div>
             <div style="margin-top: 30px;">
-                <button class="btn" onclick="shareChallenge()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">📱 Share</button>
-                <button class="btn" onclick="goBackAfterWin()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">← Back</button>
+                <button class="btn-small btn-primary" onclick="backToLevels()" style="padding: 10px 25px; font-size: 1.1em; margin: 5px;">← Back</button>
             </div>
         </div>
     </div>
 
     <script>
-        const colorPalettes = [
-            ['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA', '#00ACC1', '#FFB300', '#5E35B1', '#C62828', '#0277BD'],
-            ['#D32F2F', '#303F9F', '#388E3C', '#F57C00', '#7B1FA2', '#0097A7', '#FFA000', '#512DA8', '#C62828', '#0288D1'],
-            ['#C62828', '#1976D2', '#00796B', '#EF6C00', '#6A1B9A', '#00838F', '#FF8F00', '#4527A0', '#B71C1C', '#01579B'],
-            ['#B71C1C', '#0D47A1', '#004D40', '#E65100', '#4A148C', '#006064', '#FF6F00', '#311B92', '#AD1457', '#1A237E'],
-            ['#880E4F', '#1A237E', '#1B5E20', '#BF360C', '#4A148C', '#004D40', '#F57F17', '#311B92', '#B71C1C', '#006064']
-        ];
-
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-        let volume = parseFloat(localStorage.getItem('soundVolume') || '0.5');
+        // DAILY CHALLENGE - LOCK SYSTEM
+        const allColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B500'];  // Added 9th color
         
-        function initAudio() {
-            if (!audioCtx) audioCtx = new AudioContext();
+        let gameState = [];
+        let selectedCandle = null;
+        let moveCount = 0;
+        let moveHistory = [];
+        let totalCandles = 9;  // Increased to 9 for EXPERT difficulty
+        
+        // Daily challenge functions
+        function getTodayDateString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
         }
-
-        function playTone(frequency, duration, type = 'sine') {
-            if (!soundEnabled || !audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = frequency;
-            osc.type = type;
-            gain.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + duration);
+        
+        function isCompletedToday() {
+            const lastCompleted = localStorage.getItem('dailyChallengeCompleted');
+            return lastCompleted === getTodayDateString();
         }
-
-        function playSoundClick() { playTone(800, 0.1, 'square'); }
-        function playSoundPour() {
-            if (!soundEnabled || !audioCtx) return;
-            for (let i = 0; i < 5; i++) setTimeout(() => playTone(400 - i * 20, 0.05, 'sine'), i * 30);
+        
+        function saveCompletion() {
+            localStorage.setItem('dailyChallengeCompleted', getTodayDateString());
+            localStorage.setItem('dailyChallengeMoves', moveCount);
         }
-        function playSoundLight() {
-            if (!soundEnabled || !audioCtx) return;
-            playTone(1000, 0.2, 'sawtooth');
-            setTimeout(() => playTone(600, 0.3, 'triangle'), 100);
+        
+        function getTimeUntilNextChallenge() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            const diff = tomorrow - now;
+            
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
-        function playSoundVictory() {
-            if (!soundEnabled || !audioCtx) return;
-            [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.4, 'square'), i * 200));
-        }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            localStorage.setItem('soundEnabled', soundEnabled);
-            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-            document.getElementById('soundText').textContent = soundEnabled ? 'Sound' : 'Mute';
-            if (soundEnabled) {
-                initAudio();
-                playSoundClick();
+        
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                countdownEl.textContent = getTimeUntilNextChallenge();
             }
         }
-
-        function changeVolume(val) {
-            volume = val / 100;
-            localStorage.setItem('soundVolume', volume);
-            document.getElementById('volumeValue').textContent = val + '%';
-            playSoundClick();
+        
+        // Show today's date
+        const dateEl = document.getElementById('todayDate');
+        if (dateEl) {
+            dateEl.textContent = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         }
-
-        document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-        document.getElementById('soundText').textContent = soundEnabled ? 'Sound' : 'Mute';
-        document.getElementById('volumeSlider').value = volume * 100;
-        document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
-
-        let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
-        let totalCandles = 10, emptyBottles = 2;
-        let colors = [];
-
+        
         function getDailySeed() {
             const d = new Date();
             return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
         }
-
+        
         function seededRandom(seed) {
             const x = Math.sin(seed++) * 10000;
             return x - Math.floor(x);
         }
-
-        function getTodayDate() {
-            return new Date().toDateString();
-        }
-
-        function isCompletedToday() {
-            return localStorage.getItem('dailyChallengeDate') === getTodayDate();
-        }
-
-        function saveCompletionData(moves, rank, streak) {
-            localStorage.setItem('dailyChallengeDate', getTodayDate());
-            localStorage.setItem('dailyChallengeMoves', moves);
-            localStorage.setItem('dailyChallengeRank', rank);
-            localStorage.setItem('dailyChallengeStreak', streak);
-        }
-
-        function showCompletedScreen() {
-            document.getElementById('todayStats').innerHTML = `
-                <div>Today's Results:</div>
-                <div style="margin: 15px 0;">
-                    <strong>Moves:</strong> ${localStorage.getItem('dailyChallengeMoves') || '0'}<br>
-                    <strong>Rank:</strong> #${localStorage.getItem('dailyChallengeRank') || '0'}
-                </div>
-                <div style="margin-top: 15px;">
-                    🔥 ${localStorage.getItem('dailyChallengeStreak') || '0'} Day Streak!
-                </div>
-            `;
-            document.getElementById('completedScreen').classList.add('show');
-            updateNextChallengeCountdown();
-            setInterval(updateNextChallengeCountdown, 1000);
-        }
-
-        function updateNextChallengeCountdown() {
-            const now = new Date(), tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0,0,0,0);
-            const diff = tomorrow - now;
-            const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-            document.getElementById('nextChallengeCountdown').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        function init() {
-            if (isCompletedToday()) {
-                showCompletedScreen();
-                return;
-            }
-
-            for(let i = 0; i < 150; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                document.getElementById('starsContainer').appendChild(star);
-            }
-            
-            const d = new Date();
-            document.getElementById('todayDate').textContent = d.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-            const p = 500 + Math.floor(seededRandom(getDailySeed()) * 2000);
-            document.getElementById('playersCount').textContent = p.toLocaleString() + ' players attempted today';
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-
-            const seed = getDailySeed();
-            const paletteIndex = seed % 5;
-            colors = colorPalettes[paletteIndex];
-        }
-
-        function updateCountdown() {
-            const now = new Date(), tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0,0,0,0);
-            const diff = tomorrow - now;
-            const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-            document.getElementById('countdown').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        function startChallenge() {
-            initAudio();
-            playSoundClick();
-            document.getElementById('introScreen').classList.add('hidden');
-            setTimeout(() => {
-                document.getElementById('introScreen').style.display = 'none';
-                document.getElementById('gameContainer').classList.add('visible');
-                document.getElementById('backBtn').style.display = 'block';
-                initGame();
-            }, 1000);
-        }
-
+        
         function generateSolvablePuzzle() {
-            const state = [];
-            const usedColors = colors.slice(0, totalCandles);
-            const allLayers = [];
-            for(let i = 0; i < totalCandles; i++) {
-                for(let j = 0; j < 4; j++) {
-                    allLayers.push(usedColors[i]);
-                }
-            }
             const seed = getDailySeed();
+            const candles = 9;  // Increased to 9 candles - EXPERT!
+            const empty = 2;
+            const colors = allColors.slice(0, candles);
+            const allLayers = [];
+            for(let i = 0; i < candles; i++) {
+                for(let j = 0; j < 4; j++) allLayers.push(colors[i]);
+            }
             for(let i = allLayers.length - 1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + i) * (i + 1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
-            for(let i = 0; i < totalCandles; i++) {
+            const state = [];
+            for(let i = 0; i < candles; i++) {
                 const candle = [];
-                for(let j = 0; j < 4; j++) {
-                    candle.push(allLayers[i * 4 + j]);
-                }
+                for(let j = 0; j < 4; j++) candle.push(allLayers[i * 4 + j]);
                 state.push(candle);
             }
-            for(let i = 0; i < emptyBottles; i++) {
-                state.push([]);
-            }
+            for(let i = 0; i < empty; i++) state.push([]);
             return state;
         }
-
-        function initGame() {
+        
+        function startChallenge() {
+            if (isCompletedToday()) {
+                // Show completed message with countdown
+                document.getElementById('levelSelect').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: white;">
+                        <h1 style="font-size: 3em; margin-bottom: 20px;">✅ Challenge Completed!</h1>
+                        <p style="font-size: 1.5em; margin-bottom: 30px;">You've completed today's challenge!</p>
+                        <p style="font-size: 1.8em; margin: 30px 0; color: #ffd700;">Next challenge in:</p>
+                        <div id="countdown" style="font-size: 3em; font-weight: bold; color: #f093fb; margin: 20px 0;"></div>
+                        <p style="font-size: 1.2em; margin-top: 30px;">Come back tomorrow for a new puzzle! 🕯️</p>
+                        <button class="level-btn unlocked" onclick="location.reload()" style="width: 200px; height: 70px; font-size: 1.2em; margin: 30px auto; display: block;">
+                            🏠 HOME
+                        </button>
+                    </div>
+                `;
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+                return;
+            }
+            
+            document.getElementById('levelSelect').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('active');
+            document.body.classList.add('dark-mode');
+            
             gameState = generateSolvablePuzzle();
-            moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null;
+            moveCount = 0;
+            moveHistory = [];
+            selectedCandle = null;
+            
             renderCandles();
+            updateStats();
         }
-
+        
         function renderCandles() {
             const container = document.getElementById('candlesContainer');
             container.innerHTML = '';
@@ -943,6 +650,7 @@
                 
                 const body = document.createElement('div');
                 body.className = 'candle-body';
+                // ALL candles get the same cream style - no special treatment for empty ones
                 
                 candle.forEach(color => {
                     const layer = document.createElement('div');
@@ -951,13 +659,20 @@
                     body.appendChild(layer);
                 });
                 
+                // Fill remaining empty space with transparent layers
+                for(let i = candle.length; i < 4; i++) {
+                    const layer = document.createElement('div');
+                    layer.className = 'color-layer revealed';
+                    layer.style.backgroundColor = 'transparent';
+                    body.appendChild(layer);
+                }
+                
                 wrapper.appendChild(body);
                 container.appendChild(wrapper);
             });
         }
-
+        
         function selectCandle(idx) {
-            playSoundClick();
             if(selectedCandle === null) {
                 if(gameState[idx].length > 0) {
                     selectedCandle = idx;
@@ -974,15 +689,12 @@
                 }
             }
         }
-
+        
         function pourIntoCandle(from, to) {
             const fC = gameState[from], tC = gameState[to];
             if(fC.length === 0 || tC.length >= 4) return;
-            
             const topF = fC[fC.length - 1];
             if(tC.length > 0 && tC[tC.length - 1] !== topF) return;
-            
-            playSoundPour();
             
             let cnt = 1;
             for(let i = fC.length - 2; i >= 0; i--) {
@@ -990,105 +702,75 @@
                 else break;
             }
             cnt = Math.min(cnt, 4 - tC.length);
-            
             moveHistory.push(JSON.parse(JSON.stringify(gameState)));
-            
-            for(let i = 0; i < cnt; i++) {
-                tC.push(fC.pop());
-            }
-            
+            for(let i = 0; i < cnt; i++) tC.push(fC.pop());
             moveCount++;
             renderCandles();
-            checkCompletion();
+            updateStats();
+            if(isLevelComplete()) setTimeout(showVictory, 800);
         }
-
+        
         function isCandleComplete(c) {
             return c.length === 4 && c.every(x => x === c[0]);
         }
-
-        function checkCompletion() {
-            const comp = gameState.filter(c => isCandleComplete(c)).length;
-            if(comp > litCandles) {
-                litCandles = comp;
-                playSoundLight();
-                
-                if(comp === totalCandles) {
-                    setTimeout(() => {
-                        document.body.classList.add('universe-mode');
-                        playSoundVictory();
-                        setTimeout(showCelebration, 1500);
-                    }, 800);
-                }
-            }
+        
+        function isLevelComplete() {
+            return gameState.filter(c => isCandleComplete(c)).length === totalCandles;
         }
-
-        function checkProgress() {
-            playSoundClick();
-            const comp = gameState.filter(c => isCandleComplete(c)).length;
-            alert(comp === 0 ? '🕯️ No candles complete yet!' : comp === totalCandles ? '🌌 Challenge complete!' : `🔥 ${comp}/${totalCandles} candles complete!`);
+        
+        function updateStats() {
+            document.getElementById('moveCount').textContent = moveCount;
+            const completed = gameState.filter(c => isCandleComplete(c)).length;
+            document.getElementById('litCount').textContent = `${completed}/${totalCandles}`;
         }
-
+        
         function undoMove() {
-            playSoundClick();
             if(moveHistory.length > 0) {
                 gameState = moveHistory.pop();
                 moveCount = Math.max(0, moveCount - 1);
-                litCandles = gameState.filter(c => isCandleComplete(c)).length;
-                if(litCandles < totalCandles) document.body.classList.remove('universe-mode');
                 renderCandles();
+                updateStats();
             }
         }
-
-        function resetGame() {
-            playSoundClick();
-            if(confirm('Reset? You will lose progress!')) {
-                document.body.classList.remove('universe-mode');
-                initGame();
-            }
+        
+        function resetLevel() {
+            if(confirm('Reset level?')) startLevel(currentLevel);
         }
-
-        function showCelebration() {
-            const today = getTodayDate();
-            const last = localStorage.getItem('dailyChallengeDate');
-            let streak = parseInt(localStorage.getItem('dailyChallengeStreak')||'0');
-            
-            if(last !== today) {
-                const yesterday = new Date(Date.now()-86400000).toDateString();
-                streak = last === yesterday ? streak+1 : 1;
-            }
-            
-            const rank = Math.floor(seededRandom(getDailySeed()+moveCount)*500)+1;
-            
-            document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('userRank').textContent = rank;
-            document.getElementById('finalStreak').textContent = streak;
-            
-            saveCompletionData(moveCount, rank, streak);
-            
-            document.getElementById('celebrationOverlay').classList.add('show');
-        }
-
-        function shareChallenge() {
-            playSoundClick();
-            const text = `I completed today's COSMIC DAILY CHALLENGE! 🌌\n\nRank: #${document.getElementById('userRank').textContent}\nStreak: ${document.getElementById('finalStreak').textContent} days 🔥\nMoves: ${moveCount}\n\n@orouk.sami #DailyChallenge`;
-            if(navigator.share) {
-                navigator.share({title:'Daily Challenge',text:text,url:window.location.href}).catch(()=>{});
+        
+        function checkVictory() {
+            if(isLevelComplete()) {
+                showVictory();
             } else {
-                alert('📱 Share this:\n\n'+text);
+                const completed = gameState.filter(c => isCandleComplete(c)).length;
+                alert(`${completed}/${totalCandles} candles complete!`);
             }
         }
-
-        function goBack() {
-            playSoundClick();
+        
+        function showVictory() {
+            document.body.classList.remove('dark-mode');
+            
+            // SAVE COMPLETION - LOCK UNTIL TOMORROW!
+            saveCompletion();
+            
+            document.getElementById('earnedStars').textContent = '🎉';
+            document.getElementById('finalMoves').textContent = moveCount;
+            const targetEl = document.getElementById('finalTarget');
+            if (targetEl) targetEl.parentElement.style.display = 'none';
+            const nextBtn = document.getElementById('nextLevelBtn');
+            if (nextBtn) nextBtn.style.display = 'none';
+            document.getElementById('victoryOverlay').classList.add('show');
+        }
+        
+        function backToLevels() {
+            document.getElementById('victoryOverlay').classList.remove('show');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('levelSelect').classList.remove('hidden');
+            document.body.classList.remove('dark-mode');
+        }
+        
+        function goHome() {
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
-
-        function goBackAfterWin() {
-            playSoundClick();
-            window.history.length > 1 ? window.history.back() : window.location.href = '/';
-        }
-
-        init();
     </script>
 </body>
 </html>
