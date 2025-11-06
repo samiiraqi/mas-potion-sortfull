@@ -10,11 +10,16 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             overflow: hidden;
-            background: radial-gradient(ellipse at top, #1a0d2e 0%, #000000 100%);
+            background: radial-gradient(ellipse at top, #0a0a1a 0%, #000000 100%);
             transition: background 3s ease;
         }
         body.universe-mode {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: universeGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes universeGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
         }
         .stars {
             position: fixed;
@@ -34,8 +39,8 @@
             animation: twinkle 3s ease-in-out infinite;
         }
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
         }
         .intro-screen, .completed-screen {
             position: fixed;
@@ -142,9 +147,11 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+            transition: all 0.3s ease;
         }
         .start-btn:hover, .btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 1);
         }
         .game-container {
             position: relative;
@@ -177,18 +184,19 @@
             background: rgba(26, 13, 46, 0.9);
             border: 2px solid rgba(102, 126, 234, 0.5);
             border-radius: 15px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            backdrop-filter: blur(10px);
         }
         .sound-toggle {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: white;
             cursor: pointer;
-            font-size: 1.2em;
+            font-size: 1em;
         }
         .sound-toggle:hover {
             color: #f093fb;
@@ -196,134 +204,381 @@
         .volume-control {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: white;
         }
         .volume-slider {
-            width: 100px;
+            width: 80px;
             cursor: pointer;
         }
-        .countdown-container, .stats-bar {
+        .countdown-container {
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             background: rgba(26, 13, 46, 0.8);
             border: 2px solid rgba(102, 126, 234, 0.5);
             border-radius: 20px;
             margin: 15px auto;
-            max-width: 900px;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
         }
         .countdown-timer {
-            font-size: 2em;
+            font-size: 1.8em;
             color: #f093fb;
             font-weight: bold;
             font-family: monospace;
-        }
-        .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .stat {
-            text-align: center;
-            min-width: 80px;
-        }
-        .stat-value {
-            font-size: 2em;
-            color: #ffd700;
-            font-weight: bold;
-        }
-        .stat-label {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-top: 5px;
         }
         .candles-container {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
-            margin: 30px 0;
+            margin: 50px auto;
+            max-width: 95%;
         }
+        
+        /* ANIMATED CANDLE WRAPPER */
         .candle-wrapper {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 15px 35px rgba(0,0,0,0.5));
+            animation: gentleSway 4s ease-in-out infinite;
         }
         .candle-wrapper:hover {
-            transform: translateY(-10px);
+            transform: translateY(-15px) scale(1.05);
+            filter: drop-shadow(0 20px 45px rgba(0,0,0,0.7));
+            animation: hoverSway 2s ease-in-out infinite;
         }
         .candle-wrapper.selected {
-            transform: translateY(-15px) scale(1.1);
+            transform: translateY(-20px) scale(1.12);
+            filter: drop-shadow(0 25px 55px rgba(102, 126, 234, 0.8));
+            animation: selectedBounce 0.6s ease-in-out infinite;
         }
+        
+        /* Gentle breathing animation for idle candles */
+        @keyframes gentleSway {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-3px) rotate(-0.5deg);
+            }
+            50% { 
+                transform: translateY(0) rotate(0deg);
+            }
+            75% {
+                transform: translateY(-3px) rotate(0.5deg);
+            }
+        }
+        
+        /* Hover sway */
+        @keyframes hoverSway {
+            0%, 100% { 
+                transform: translateY(-15px) scale(1.05) rotate(-1deg);
+            }
+            50% { 
+                transform: translateY(-15px) scale(1.05) rotate(1deg);
+            }
+        }
+        
+        /* Selected bounce */
+        @keyframes selectedBounce {
+            0%, 100% { 
+                transform: translateY(-20px) scale(1.12);
+            }
+            50% { 
+                transform: translateY(-23px) scale(1.13);
+            }
+        }
+        
+        /* BEAUTIFUL TEARDROP FLAME */
         .flame {
-            width: 25px;
-            height: 40px;
-            background: radial-gradient(ellipse at center, #3a3a3a 0%, #1a1a1a 60%, transparent 100%);
-            border-radius: 50% 50% 20% 20%;
-            margin: 0 auto 5px;
+            width: 35px;
+            height: 60px;
+            margin: 0 auto 3px;
+            position: relative;
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+            background: radial-gradient(ellipse at center, #333 0%, #222 50%, transparent 100%);
+            transform-origin: 50% 100%;
+            transition: all 0.3s ease;
         }
+        
         .candle-wrapper.lit .flame {
-            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
-            box-shadow: 0 0 30px rgba(255, 165, 0, 1);
-            animation: flicker 0.15s infinite alternate;
+            background: 
+                radial-gradient(ellipse 50% 40% at 50% 30%, 
+                    rgba(255, 255, 255, 1) 0%, 
+                    transparent 50%),
+                radial-gradient(ellipse 70% 60% at 50% 40%, 
+                    #ffeb3b 0%, 
+                    #ffc107 30%,
+                    transparent 70%),
+                radial-gradient(ellipse 85% 75% at 50% 45%, 
+                    #ff9800 0%, 
+                    #ff6f00 40%,
+                    transparent 80%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, 
+                    #ff5722 0%,
+                    #f4511e 30%,
+                    #e64a19 50%,
+                    #d84315 70%,
+                    transparent 100%);
+            box-shadow: 
+                0 0 20px 5px rgba(255, 152, 0, 0.7),
+                0 0 35px 8px rgba(255, 87, 34, 0.5),
+                0 0 50px 10px rgba(244, 81, 30, 0.3),
+                0 -8px 15px 3px rgba(255, 235, 59, 0.4);
+            animation: 
+                flameFlicker 0.2s ease-in-out infinite,
+                flameSway 2.5s ease-in-out infinite,
+                flameGrow 1.8s ease-in-out infinite alternate;
+            filter: drop-shadow(0 5px 10px rgba(255, 87, 34, 0.4));
         }
-        @keyframes flicker {
-            0% { transform: scaleY(1); }
-            100% { transform: scaleY(0.95); }
+        
+        .candle-wrapper.lit .flame::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 25px;
+            background: radial-gradient(ellipse at center, 
+                rgba(255, 255, 200, 0.6) 0%,
+                rgba(255, 235, 59, 0.4) 40%,
+                transparent 80%);
+            border-radius: 50%;
+            animation: innerGlow 1.5s ease-in-out infinite alternate;
         }
+        
+        .candle-wrapper.lit .flame::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 55px;
+            background: radial-gradient(circle, 
+                rgba(255, 200, 50, 0.25) 0%,
+                rgba(255, 152, 0, 0.15) 40%,
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(12px);
+            animation: haloGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes flameFlicker {
+            0%, 100% { 
+                transform: scaleY(1) scaleX(1) skewX(0deg);
+                opacity: 1;
+            }
+            33% { 
+                transform: scaleY(0.97) scaleX(1.03) skewX(-1deg);
+                opacity: 0.98;
+            }
+            66% { 
+                transform: scaleY(1.03) scaleX(0.97) skewX(1deg);
+                opacity: 0.96;
+            }
+        }
+        
+        @keyframes flameSway {
+            0%, 100% { 
+                transform: translateX(-2px) rotate(-1.5deg);
+            }
+            25% {
+                transform: translateX(0px) rotate(0deg);
+            }
+            50% { 
+                transform: translateX(2px) rotate(1.5deg);
+            }
+            75% {
+                transform: translateX(0px) rotate(0deg);
+            }
+        }
+        
+        @keyframes flameGrow {
+            0% { height: 58px; }
+            100% { height: 63px; }
+        }
+        
+        @keyframes innerGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes haloGlow {
+            0%, 100% { 
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+        
         .wick {
-            width: 4px;
-            height: 10px;
-            background: #1a1a1a;
-            margin: 0 auto 2px;
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            margin: 0 auto 3px;
+            border-radius: 2px 2px 0 0;
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .candle-wrapper.lit .wick {
-            background: linear-gradient(180deg, #ff6347 0%, #1a1a1a 100%);
+            background: linear-gradient(180deg, 
+                #ff6347 0%, 
+                #ff7f50 20%,
+                #ff8c00 40%, 
+                #2a2a2a 60%,
+                #1a1a1a 100%);
+            box-shadow: 
+                0 0 8px rgba(255, 99, 71, 0.6),
+                0 2px 4px rgba(0,0,0,0.3);
         }
+        
+        /* ELEGANT CANDLE DESIGN */
         .candle-body {
-            width: 60px;
-            height: 130px;
-            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
-            border-radius: 8px 8px 4px 4px;
-            overflow: hidden;
+            width: 65px;
+            height: 150px;
+            position: relative;
             display: flex;
             flex-direction: column-reverse;
+            background: 
+                linear-gradient(to right, 
+                    rgba(0,0,0,0.08) 0%, 
+                    transparent 15%, 
+                    transparent 60%,
+                    rgba(0,0,0,0.05) 100%
+                ),
+                linear-gradient(180deg, 
+                    #fffef9 0%,
+                    #faf8f0 30%,
+                    #f5f3ea 50%,
+                    #f0ede3 70%,
+                    #ebe7dc 100%
+                );
+            border-radius: 32px 32px 10px 10px;
+            box-shadow: 
+                inset -3px 0 8px rgba(0,0,0,0.15),
+                inset 3px 0 8px rgba(100,100,100,0.2),
+                0 8px 25px rgba(0,0,0,0.4),
+                0 4px 10px rgba(0,0,0,0.2);
+            overflow: visible;
         }
+        
+        .candle-body::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 68px;
+            height: 10px;
+            background: 
+                radial-gradient(ellipse at 50% 50%, 
+                    rgba(235,231,220,0.8) 0%, 
+                    rgba(230,226,215,0.7) 20%,
+                    rgba(220,216,205,0.6) 50%,
+                    rgba(210,206,195,0.4) 70%,
+                    transparent 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        
+        .candle-body::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            right: 6px;
+            width: 8px;
+            height: 30px;
+            background: 
+                linear-gradient(180deg, 
+                    rgba(250,248,240,0.95) 0%, 
+                    rgba(245,243,234,0.85) 30%,
+                    rgba(240,237,227,0.7) 60%,
+                    rgba(235,231,220,0.5) 80%,
+                    transparent 100%);
+            border-radius: 50% 30% 40% 50% / 40% 50% 60% 50%;
+            box-shadow: 
+                inset -1px 0 2px rgba(0,0,0,0.1),
+                1px 2px 4px rgba(0,0,0,0.15);
+            filter: blur(0.3px);
+        }
+        
         .color-layer {
             width: 100%;
             height: 25%;
+            position: relative;
             transition: all 0.6s ease;
+            border-radius: 0;
+            opacity: 1;
+            background-clip: padding-box;
+            z-index: 5;
         }
+        
+        .color-layer:first-child {
+            border-radius: 0 0 10px 10px;
+        }
+        
         .color-layer.revealed {
-            animation: colorReveal 1s ease-out;
+            animation: colorReveal 1.2s ease-out;
         }
+        
         @keyframes colorReveal {
-            0% { filter: brightness(0.1); }
-            100% { filter: brightness(1); }
+            0% { 
+                filter: brightness(0.4) saturate(0.5);
+                transform: scaleY(0.9);
+            }
+            50% {
+                filter: brightness(1.3) saturate(1.2);
+            }
+            100% { 
+                filter: brightness(1) saturate(1);
+                transform: scaleY(1);
+            }
         }
+        
+        /* VERY SMALL BUTTONS */
         .controls {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 30px;
+            margin-top: 25px;
         }
         .btn-small {
-            padding: 12px 30px;
-            font-size: 1.1em;
+            padding: 6px 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
             font-weight: bold;
             cursor: pointer;
             color: white;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-        .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .btn-primary { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .btn-success { 
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        .btn-warning { 
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
         .btn-small:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
+        .btn-small:active {
+            transform: translateY(0);
+        }
+        
         .celebration-overlay {
             position: fixed;
             top: 0;
@@ -338,6 +593,7 @@
         }
         .celebration-overlay.show {
             display: flex;
+            animation: fadeIn 0.5s ease;
         }
         .celebration-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -346,33 +602,45 @@
             text-align: center;
             color: white;
             max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
         .celebration-card h2 {
             font-size: 3em;
             margin-bottom: 20px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .rank-display {
             font-size: 2em;
             color: #ffd700;
             margin: 20px 0;
             font-weight: bold;
+            text-shadow: 0 0 20px rgba(255,215,0,0.8);
         }
         .back-fixed {
             position: fixed;
             top: 20px;
             left: 20px;
             z-index: 1000;
-            padding: 12px 24px;
-            background: rgba(26, 13, 46, 0.8);
+            padding: 10px 20px;
+            background: rgba(26, 13, 46, 0.9);
             border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 30px;
+            border-radius: 25px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             display: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 0.9em;
         }
         .back-fixed:hover {
-            background: rgba(102, 126, 234, 0.8);
+            background: rgba(102, 126, 234, 0.9);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -405,12 +673,11 @@
     <div class="sound-controls">
         <div class="sound-toggle" onclick="toggleSound()">
             <span id="soundIcon">🔊</span>
-            <span id="soundText">Sound ON</span>
+            <span id="soundText">Sound</span>
         </div>
         <div class="volume-control">
-            <span style="font-size: 0.9em; color: #aaa;">Vol:</span>
             <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" onchange="changeVolume(this.value)">
-            <span id="volumeValue">50%</span>
+            <span id="volumeValue" style="font-size: 0.85em;">50%</span>
         </div>
     </div>
 
@@ -422,27 +689,8 @@
         </div>
 
         <div class="countdown-container">
-            <div>NEXT CHALLENGE IN</div>
+            <div style="font-size: 0.9em;">NEXT CHALLENGE IN</div>
             <div class="countdown-timer" id="countdown">23:45:32</div>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat">
-                <div class="stat-value" id="moveCount">0</div>
-                <div class="stat-label">Moves</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" id="streakCount">0</div>
-                <div class="stat-label">Streak</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" id="flamesLit">0/10</div>
-                <div class="stat-label">Flames</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" id="timeDisplay">0:00</div>
-                <div class="stat-label">Time</div>
-            </div>
         </div>
 
         <div class="candles-container" id="candlesContainer"></div>
@@ -458,13 +706,12 @@
         <div class="celebration-card">
             <h2>🌌 CHALLENGE COMPLETE! 🌌</h2>
             <div>🏆 COSMIC MASTER 🏆</div>
-            <div style="margin: 20px 0;">
-                Moves: <span id="finalMoves">0</span><br>
-                Time: <span id="finalTime">0:00</span>
+            <div style="margin: 20px 0; font-size: 1.3em;">
+                Moves: <span id="finalMoves">0</span>
             </div>
             <div class="rank-display">RANK: #<span id="userRank">156</span></div>
-            <div>🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
-            <div style="margin-top: 25px;">
+            <div style="font-size: 1.5em;">🔥 <span id="finalStreak">5</span> Day Streak! 🔥</div>
+            <div style="margin-top: 30px;">
                 <button class="btn" onclick="shareChallenge()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">📱 Share</button>
                 <button class="btn" onclick="goBackAfterWin()" style="padding: 12px 30px; font-size: 1.1em; margin: 5px;">← Back</button>
             </div>
@@ -473,11 +720,11 @@
 
     <script>
         const colorPalettes = [
-            ['#8B2626', '#6B1F3D', '#4A235A', '#7B2D3E', '#5A1F4E', '#8B3A62', '#6B2D52', '#9B2D5A', '#7A2848', '#5B2F47'],
-            ['#1E4D7B', '#2D5016', '#1A5F7A', '#2E5D3A', '#1B3B6F', '#2F6E4E', '#1C4966', '#2A5E42', '#1D4A72', '#2C5840'],
-            ['#A04000', '#8B6F47', '#9B5500', '#7A5230', '#B04500', '#6E4F2C', '#9A4500', '#8A6038', '#A54200', '#7E5834'],
-            ['#9B4F6B', '#9B7E28', '#8B3E5A', '#8B7020', '#A04566', '#A07528', '#8E4058', '#957525', '#944860', '#8E7222'],
-            ['#5D3A3A', '#3A5D5D', '#5D5D3A', '#5D3A5D', '#3A3A5D', '#5D4F3A', '#4F3A5D', '#3A5D4F', '#553838', '#385555']
+            ['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA', '#00ACC1', '#FFB300', '#5E35B1', '#C62828', '#0277BD'],
+            ['#D32F2F', '#303F9F', '#388E3C', '#F57C00', '#7B1FA2', '#0097A7', '#FFA000', '#512DA8', '#C62828', '#0288D1'],
+            ['#C62828', '#1976D2', '#00796B', '#EF6C00', '#6A1B9A', '#00838F', '#FF8F00', '#4527A0', '#B71C1C', '#01579B'],
+            ['#B71C1C', '#0D47A1', '#004D40', '#E65100', '#4A148C', '#006064', '#FF6F00', '#311B92', '#AD1457', '#1A237E'],
+            ['#880E4F', '#1A237E', '#1B5E20', '#BF360C', '#4A148C', '#004D40', '#F57F17', '#311B92', '#B71C1C', '#006064']
         ];
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -522,7 +769,7 @@
             soundEnabled = !soundEnabled;
             localStorage.setItem('soundEnabled', soundEnabled);
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-            document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
+            document.getElementById('soundText').textContent = soundEnabled ? 'Sound' : 'Mute';
             if (soundEnabled) {
                 initAudio();
                 playSoundClick();
@@ -537,12 +784,12 @@
         }
 
         document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-        document.getElementById('soundText').textContent = soundEnabled ? 'Sound ON' : 'Sound OFF';
+        document.getElementById('soundText').textContent = soundEnabled ? 'Sound' : 'Mute';
         document.getElementById('volumeSlider').value = volume * 100;
         document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
 
         let gameState = [], selectedCandle = null, moveCount = 0, litCandles = 0, moveHistory = [];
-        let revealedLayers = new Set(), totalCandles = 10, emptyBottles = 2;
+        let totalCandles = 10, emptyBottles = 2;
         let colors = [];
 
         function getDailySeed() {
@@ -563,10 +810,9 @@
             return localStorage.getItem('dailyChallengeDate') === getTodayDate();
         }
 
-        function saveCompletionData(moves, time, rank, streak) {
+        function saveCompletionData(moves, rank, streak) {
             localStorage.setItem('dailyChallengeDate', getTodayDate());
             localStorage.setItem('dailyChallengeMoves', moves);
-            localStorage.setItem('dailyChallengeTime', time);
             localStorage.setItem('dailyChallengeRank', rank);
             localStorage.setItem('dailyChallengeStreak', streak);
         }
@@ -576,7 +822,6 @@
                 <div>Today's Results:</div>
                 <div style="margin: 15px 0;">
                     <strong>Moves:</strong> ${localStorage.getItem('dailyChallengeMoves') || '0'}<br>
-                    <strong>Time:</strong> ${localStorage.getItem('dailyChallengeTime') || '0:00'}<br>
                     <strong>Rank:</strong> #${localStorage.getItem('dailyChallengeRank') || '0'}
                 </div>
                 <div style="margin-top: 15px;">
@@ -603,11 +848,12 @@
                 return;
             }
 
-            for(let i = 0; i < 100; i++) {
+            for(let i = 0; i < 150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
                 document.getElementById('starsContainer').appendChild(star);
             }
             
@@ -617,9 +863,6 @@
             document.getElementById('playersCount').textContent = p.toLocaleString() + ' players attempted today';
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            
-            const streak = parseInt(localStorage.getItem('dailyChallengeStreak') || '0');
-            document.getElementById('streakCount').textContent = streak;
 
             const seed = getDailySeed();
             const paletteIndex = seed % 5;
@@ -647,27 +890,20 @@
             }, 1000);
         }
 
-        // SOLVABLE PUZZLE GENERATOR - SHUFFLE INDIVIDUAL LAYERS
         function generateSolvablePuzzle() {
             const state = [];
             const usedColors = colors.slice(0, totalCandles);
-            
-            // Create array of ALL individual layers
             const allLayers = [];
             for(let i = 0; i < totalCandles; i++) {
                 for(let j = 0; j < 4; j++) {
                     allLayers.push(usedColors[i]);
                 }
             }
-            
-            // Shuffle the individual layers using seeded random
             const seed = getDailySeed();
             for(let i = allLayers.length - 1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + i) * (i + 1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
-            
-            // Distribute shuffled layers into candles (4 layers per candle)
             for(let i = 0; i < totalCandles; i++) {
                 const candle = [];
                 for(let j = 0; j < 4; j++) {
@@ -675,68 +911,57 @@
                 }
                 state.push(candle);
             }
-            
-            // Add empty bottles
             for(let i = 0; i < emptyBottles; i++) {
                 state.push([]);
             }
-            
             return state;
         }
 
         function initGame() {
             gameState = generateSolvablePuzzle();
-            moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null; revealedLayers.clear();
+            moveCount = 0; litCandles = 0; moveHistory = []; selectedCandle = null;
             renderCandles();
-            updateStats();
-            startTimer();
         }
 
         function renderCandles() {
-            const c = document.getElementById('candlesContainer');
-            c.innerHTML = '';
+            const container = document.getElementById('candlesContainer');
+            container.innerHTML = '';
+            
             gameState.forEach((candle, idx) => {
-                const w = document.createElement('div');
-                w.className = 'candle-wrapper';
-                if(isCandleComplete(candle)) w.classList.add('lit');
-                w.onclick = () => selectCandle(idx);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'candle-wrapper';
+                if(isCandleComplete(candle)) wrapper.classList.add('lit');
+                wrapper.onclick = () => selectCandle(idx);
                 
-                const f = document.createElement('div');
-                f.className = 'flame';
-                w.appendChild(f);
+                const flame = document.createElement('div');
+                flame.className = 'flame';
+                wrapper.appendChild(flame);
                 
-                const wk = document.createElement('div');
-                wk.className = 'wick';
-                w.appendChild(wk);
+                const wick = document.createElement('div');
+                wick.className = 'wick';
+                wrapper.appendChild(wick);
                 
-                const b = document.createElement('div');
-                b.className = 'candle-body';
-                candle.forEach((color, li) => {
-                    const l = document.createElement('div');
-                    l.className = 'color-layer';
-                    const k = `${idx}-${li}`;
-                    if(revealedLayers.has(k)) {
-                        l.style.backgroundColor = color;
-                        l.classList.add('revealed');
-                    } else {
-                        l.style.backgroundColor = '#0a0a0a';
-                    }
-                    b.appendChild(l);
+                const body = document.createElement('div');
+                body.className = 'candle-body';
+                
+                candle.forEach(color => {
+                    const layer = document.createElement('div');
+                    layer.className = 'color-layer revealed';
+                    layer.style.backgroundColor = color;
+                    body.appendChild(layer);
                 });
-                w.appendChild(b);
-                c.appendChild(w);
+                
+                wrapper.appendChild(body);
+                container.appendChild(wrapper);
             });
         }
 
         function selectCandle(idx) {
             playSoundClick();
-            const candle = gameState[idx];
             if(selectedCandle === null) {
-                if(candle.length > 0) {
+                if(gameState[idx].length > 0) {
                     selectedCandle = idx;
                     document.querySelectorAll('.candle-wrapper')[idx].classList.add('selected');
-                    candle.forEach((_,li) => revealedLayers.add(`${idx}-${li}`));
-                    renderCandles();
                 }
             } else {
                 if(selectedCandle === idx) {
@@ -753,25 +978,26 @@
         function pourIntoCandle(from, to) {
             const fC = gameState[from], tC = gameState[to];
             if(fC.length === 0 || tC.length >= 4) return;
-            const topF = fC[fC.length-1];
-            if(tC.length > 0 && tC[tC.length-1] !== topF) return;
+            
+            const topF = fC[fC.length - 1];
+            if(tC.length > 0 && tC[tC.length - 1] !== topF) return;
             
             playSoundPour();
             
             let cnt = 1;
-            for(let i=fC.length-2;i>=0;i--) {
-                if(fC[i]===topF) cnt++; else break;
+            for(let i = fC.length - 2; i >= 0; i--) {
+                if(fC[i] === topF) cnt++;
+                else break;
             }
-            cnt = Math.min(cnt, 4-tC.length);
+            cnt = Math.min(cnt, 4 - tC.length);
+            
             moveHistory.push(JSON.parse(JSON.stringify(gameState)));
-            for(let i=0;i<cnt;i++) {
-                const c = fC.pop();
-                tC.push(c);
-                revealedLayers.add(`${to}-${tC.length-1}`);
+            
+            for(let i = 0; i < cnt; i++) {
+                tC.push(fC.pop());
             }
-            gameState[to].forEach((_,li) => revealedLayers.add(`${to}-${li}`));
+            
             moveCount++;
-            updateStats();
             renderCandles();
             checkCompletion();
         }
@@ -781,11 +1007,11 @@
         }
 
         function checkCompletion() {
-            const comp = gameState.filter(isCandleComplete).length;
+            const comp = gameState.filter(c => isCandleComplete(c)).length;
             if(comp > litCandles) {
                 litCandles = comp;
-                updateStats();
                 playSoundLight();
+                
                 if(comp === totalCandles) {
                     setTimeout(() => {
                         document.body.classList.add('universe-mode');
@@ -796,36 +1022,20 @@
             }
         }
 
-        function updateStats() {
-            document.getElementById('moveCount').textContent = moveCount;
-            document.getElementById('flamesLit').textContent = `${litCandles}/${totalCandles}`;
-        }
-
-        let startTime = Date.now(), timerInterval;
-        function startTimer() {
-            if(timerInterval) clearInterval(timerInterval);
-            startTime = Date.now();
-            timerInterval = setInterval(() => {
-                const e = Math.floor((Date.now()-startTime)/1000);
-                const m = Math.floor(e/60), s = e%60;
-                document.getElementById('timeDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-            }, 1000);
-        }
-
         function checkProgress() {
             playSoundClick();
-            alert(litCandles === 0 ? '🕯️ No flames lit yet!' : litCandles === totalCandles ? '🌌 Challenge complete!' : `🔥 ${litCandles}/${totalCandles} flames lit!`);
+            const comp = gameState.filter(c => isCandleComplete(c)).length;
+            alert(comp === 0 ? '🕯️ No candles complete yet!' : comp === totalCandles ? '🌌 Challenge complete!' : `🔥 ${comp}/${totalCandles} candles complete!`);
         }
 
         function undoMove() {
             playSoundClick();
             if(moveHistory.length > 0) {
                 gameState = moveHistory.pop();
-                moveCount = Math.max(0, moveCount-1);
-                litCandles = gameState.filter(isCandleComplete).length;
+                moveCount = Math.max(0, moveCount - 1);
+                litCandles = gameState.filter(c => isCandleComplete(c)).length;
                 if(litCandles < totalCandles) document.body.classList.remove('universe-mode');
                 renderCandles();
-                updateStats();
             }
         }
 
@@ -838,7 +1048,6 @@
         }
 
         function showCelebration() {
-            clearInterval(timerInterval);
             const today = getTodayDate();
             const last = localStorage.getItem('dailyChallengeDate');
             let streak = parseInt(localStorage.getItem('dailyChallengeStreak')||'0');
@@ -849,15 +1058,12 @@
             }
             
             const rank = Math.floor(seededRandom(getDailySeed()+moveCount)*500)+1;
-            const timeStr = document.getElementById('timeDisplay').textContent;
             
             document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = timeStr;
             document.getElementById('userRank').textContent = rank;
             document.getElementById('finalStreak').textContent = streak;
-            document.getElementById('streakCount').textContent = streak;
             
-            saveCompletionData(moveCount, timeStr, rank, streak);
+            saveCompletionData(moveCount, rank, streak);
             
             document.getElementById('celebrationOverlay').classList.add('show');
         }
