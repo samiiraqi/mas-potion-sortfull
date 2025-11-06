@@ -379,6 +379,10 @@
             flex-wrap: wrap;
             margin-top: 25px;
         }
+        .controls.hidden-permanently {
+            display: none !important;
+            visibility: hidden !important;
+        }
         .btn-small {
             padding: 6px 16px;
             border: none;
@@ -486,9 +490,7 @@
         <div class="candles-container" id="candlesContainer"></div>
         
         <div class="controls">
-            <button class="btn-small btn-success" onclick="checkVictory()">✓ Check</button>
             <button class="btn-small btn-primary" onclick="undoMove()">↶ Undo</button>
-            <button class="btn-small btn-warning" onclick="resetLevel()">🔄 Reset</button>
         </div>
     </div>
     
@@ -734,15 +736,18 @@
         }
         
         function resetLevel() {
-            if(confirm('Reset level?')) startLevel(currentLevel);
+            // Reset the current challenge
+            gameState = generateSolvablePuzzle();
+            moveCount = 0;
+            moveHistory = [];
+            selectedCandle = null;
+            renderCandles();
+            updateStats();
         }
         
         function checkVictory() {
             if(isLevelComplete()) {
                 showVictory();
-            } else {
-                const completed = gameState.filter(c => isCandleComplete(c)).length;
-                alert(`${completed}/${totalCandles} candles complete!`);
             }
         }
         
@@ -751,6 +756,20 @@
             
             // SAVE COMPLETION - LOCK UNTIL TOMORROW!
             saveCompletion();
+            
+            // Hide ALL control buttons so they can't replay - FORCE HIDE
+            const controlsDiv = document.querySelector('.controls');
+            if (controlsDiv) {
+                controlsDiv.style.display = 'none';
+                controlsDiv.style.visibility = 'hidden';
+                controlsDiv.classList.add('hidden-permanently');
+            }
+            
+            // Also hide individual buttons
+            document.querySelectorAll('.controls button').forEach(btn => {
+                btn.style.display = 'none';
+                btn.disabled = true;
+            });
             
             document.getElementById('earnedStars').textContent = '🎉';
             document.getElementById('finalMoves').textContent = moveCount;
@@ -763,8 +782,30 @@
         
         function backToLevels() {
             document.getElementById('victoryOverlay').classList.remove('show');
-            document.getElementById('gameScreen').classList.remove('active');
-            document.getElementById('levelSelect').classList.remove('hidden');
+            
+            // Check if completed today - if yes, show locked screen
+            if (isCompletedToday()) {
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('levelSelect').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: white;">
+                        <h1 style="font-size: 3em; margin-bottom: 20px;">✅ Challenge Completed!</h1>
+                        <p style="font-size: 1.5em; margin-bottom: 30px;">You've completed today's challenge!</p>
+                        <p style="font-size: 1.8em; margin: 30px 0; color: #ffd700;">Next challenge in:</p>
+                        <div id="countdown" style="font-size: 3em; font-weight: bold; color: #f093fb; margin: 20px 0;"></div>
+                        <p style="font-size: 1.2em; margin-top: 30px;">Come back tomorrow for a new puzzle! 🕯️</p>
+                        <button class="level-btn unlocked" onclick="location.reload()" style="width: 200px; height: 70px; font-size: 1.2em; margin: 30px auto; display: block;">
+                            🏠 HOME
+                        </button>
+                    </div>
+                `;
+                document.getElementById('levelSelect').classList.remove('hidden');
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            } else {
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('levelSelect').classList.remove('hidden');
+            }
+            
             document.body.classList.remove('dark-mode');
         }
         
