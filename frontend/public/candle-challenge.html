@@ -10,14 +10,11 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: background 3s ease;
+            transition: background 1s ease;
             overflow-x: hidden;
         }
         body.dark-mode {
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f1623 100%);
-        }
-        body.bright-mode {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(ellipse at top, #0a0a1a 0%, #000000 100%);
         }
         
         /* LEVEL SELECT SCREEN */
@@ -25,6 +22,9 @@
             min-height: 100vh;
             padding: 20px;
             color: white;
+        }
+        .level-select.hidden {
+            display: none;
         }
         .level-header {
             text-align: center;
@@ -42,6 +42,7 @@
             margin: 20px auto;
             max-width: 600px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
         .level-progress-bar {
             background: rgba(0,0,0,0.3);
@@ -57,26 +58,25 @@
         }
         .levels-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 12px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
         .level-btn {
             aspect-ratio: 1;
             border: none;
-            border-radius: 15px;
-            font-size: 1.5em;
+            border-radius: 12px;
+            font-size: 1.3em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 3px;
         }
         .level-btn.unlocked {
             background: linear-gradient(135deg, #11998e, #38ef7d);
@@ -96,21 +96,22 @@
         }
         .stars {
             display: flex;
-            gap: 2px;
-            font-size: 0.6em;
+            gap: 1px;
+            font-size: 0.5em;
         }
         .back-btn {
             position: fixed;
             top: 20px;
             left: 20px;
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: rgba(0,0,0,0.5);
             border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 30px;
+            border-radius: 25px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
+            font-size: 0.9em;
         }
         .back-btn:hover {
             background: rgba(0,0,0,0.7);
@@ -134,29 +135,38 @@
             font-size: 2.5em;
             text-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
+        .difficulty-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.2);
+        }
         .game-stats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             margin: 20px 0;
         }
         .stat {
             background: rgba(255,255,255,0.2);
-            padding: 15px 25px;
-            border-radius: 15px;
+            padding: 12px 20px;
+            border-radius: 12px;
             text-align: center;
-            min-width: 100px;
+            min-width: 80px;
+            backdrop-filter: blur(10px);
         }
         .stat-value {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #ffd700;
         }
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             margin-top: 5px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
         }
         .candles-container {
             display: flex;
@@ -165,102 +175,226 @@
             gap: 15px;
             flex-wrap: wrap;
             margin: 30px auto;
-            max-width: 100%;
+            max-width: 95%;
         }
+        
+        /* ANIMATED CANDLE WRAPPER */
         .candle-wrapper {
             cursor: pointer;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 15px 35px rgba(0,0,0,0.5));
+            animation: gentleSway 4s ease-in-out infinite;
         }
         .candle-wrapper:hover {
-            transform: translateY(-10px);
+            transform: translateY(-15px) scale(1.05);
+            filter: drop-shadow(0 20px 45px rgba(0,0,0,0.7));
+            animation: hoverSway 2s ease-in-out infinite;
         }
         .candle-wrapper.selected {
-            transform: translateY(-15px) scale(1.1);
+            transform: translateY(-20px) scale(1.12);
+            filter: drop-shadow(0 25px 55px rgba(102, 126, 234, 0.8));
+            animation: selectedBounce 0.6s ease-in-out infinite;
         }
+        
+        @keyframes gentleSway {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(-0.5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-3px) rotate(0.5deg); }
+        }
+        
+        @keyframes hoverSway {
+            0%, 100% { transform: translateY(-15px) scale(1.05) rotate(-1deg); }
+            50% { transform: translateY(-15px) scale(1.05) rotate(1deg); }
+        }
+        
+        @keyframes selectedBounce {
+            0%, 100% { transform: translateY(-20px) scale(1.12); }
+            50% { transform: translateY(-23px) scale(1.13); }
+        }
+        
+        /* BEAUTIFUL TEARDROP FLAME */
         .flame {
-            width: 25px;
-            height: 40px;
-            background: radial-gradient(ellipse at center, #3a3a3a 0%, #1a1a1a 60%, transparent 100%);
-            border-radius: 50% 50% 20% 20%;
-            margin: 0 auto 5px;
-            filter: blur(0.5px);
-            transition: all 0.8s ease;
+            width: 35px;
+            height: 60px;
+            margin: 0 auto 3px;
+            position: relative;
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+            background: radial-gradient(ellipse at center, #333 0%, #222 50%, transparent 100%);
+            transform-origin: 50% 100%;
+            transition: all 0.3s ease;
         }
+        
         .candle-wrapper.lit .flame {
-            background: radial-gradient(ellipse at center, #fff 0%, #ffeb3b 15%, #ff9800 40%, #ff5722 70%, transparent 100%);
-            box-shadow: 0 0 30px rgba(255, 165, 0, 1);
-            animation: flicker 0.15s infinite alternate;
+            background: 
+                radial-gradient(ellipse 50% 40% at 50% 30%, rgba(255, 255, 255, 1) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 60% at 50% 40%, #ffeb3b 0%, #ffc107 30%, transparent 70%),
+                radial-gradient(ellipse 85% 75% at 50% 45%, #ff9800 0%, #ff6f00 40%, transparent 80%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, #ff5722 0%, #f4511e 30%, #e64a19 50%, #d84315 70%, transparent 100%);
+            box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.7), 0 0 35px 8px rgba(255, 87, 34, 0.5), 0 0 50px 10px rgba(244, 81, 30, 0.3), 0 -8px 15px 3px rgba(255, 235, 59, 0.4);
+            animation: flameFlicker 0.2s ease-in-out infinite, flameSway 2.5s ease-in-out infinite, flameGrow 1.8s ease-in-out infinite alternate;
+            filter: drop-shadow(0 5px 10px rgba(255, 87, 34, 0.4));
         }
-        @keyframes flicker {
-            0% { transform: scaleY(1); }
-            100% { transform: scaleY(0.95); }
+        
+        .candle-wrapper.lit .flame::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 25px;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 200, 0.6) 0%, rgba(255, 235, 59, 0.4) 40%, transparent 80%);
+            border-radius: 50%;
+            animation: innerGlow 1.5s ease-in-out infinite alternate;
         }
+        
+        .candle-wrapper.lit .flame::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 55px;
+            background: radial-gradient(circle, rgba(255, 200, 50, 0.25) 0%, rgba(255, 152, 0, 0.15) 40%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(12px);
+            animation: haloGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes flameFlicker {
+            0%, 100% { transform: scaleY(1) scaleX(1) skewX(0deg); opacity: 1; }
+            33% { transform: scaleY(0.97) scaleX(1.03) skewX(-1deg); opacity: 0.98; }
+            66% { transform: scaleY(1.03) scaleX(0.97) skewX(1deg); opacity: 0.96; }
+        }
+        
+        @keyframes flameSway {
+            0%, 100% { transform: translateX(-2px) rotate(-1.5deg); }
+            25% { transform: translateX(0px) rotate(0deg); }
+            50% { transform: translateX(2px) rotate(1.5deg); }
+            75% { transform: translateX(0px) rotate(0deg); }
+        }
+        
+        @keyframes flameGrow {
+            0% { height: 58px; }
+            100% { height: 63px; }
+        }
+        
+        @keyframes innerGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes haloGlow {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
+        }
+        
         .wick {
-            width: 4px;
-            height: 10px;
-            background: #1a1a1a;
-            margin: 0 auto 2px;
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            margin: 0 auto 3px;
+            border-radius: 2px 2px 0 0;
             transition: all 0.8s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .candle-wrapper.lit .wick {
-            background: linear-gradient(180deg, #ff6347 0%, #1a1a1a 100%);
+            background: linear-gradient(180deg, #ff6347 0%, #ff7f50 20%, #ff8c00 40%, #2a2a2a 60%, #1a1a1a 100%);
+            box-shadow: 0 0 8px rgba(255, 99, 71, 0.6), 0 2px 4px rgba(0,0,0,0.3);
         }
+        
+        /* ELEGANT CANDLE DESIGN - NO WHITE MARKS */
         .candle-body {
-            width: 60px;
-            height: 130px;
-            background: linear-gradient(180deg, #c9a961 0%, #b8975a 50%, #a68650 100%);
-            border-radius: 8px 8px 4px 4px;
-            overflow: hidden;
+            width: 65px;
+            height: 150px;
+            position: relative;
             display: flex;
             flex-direction: column-reverse;
-            box-shadow: inset -3px 0 10px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 15%, transparent 60%, rgba(0,0,0,0.05) 100%), linear-gradient(180deg, #fffef9 0%, #faf8f0 30%, #f5f3ea 50%, #f0ede3 70%, #ebe7dc 100%);
+            border-radius: 8px 8px 4px 4px;
+            box-shadow: inset -3px 0 8px rgba(0,0,0,0.15), inset 3px 0 8px rgba(100,100,100,0.2), 0 8px 25px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.2);
+            overflow: visible;
         }
+        
         .candle-body::before {
             content: '';
             position: absolute;
-            top: -2px;
-            width: 100%;
-            height: 6px;
-            background: radial-gradient(ellipse, #d4b574, #a68650);
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 68px;
+            height: 10px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(235,231,220,0.8) 0%, rgba(230,226,215,0.7) 20%, rgba(220,216,205,0.6) 50%, rgba(210,206,195,0.4) 70%, transparent 100%);
             border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 10;
         }
+        
+        .candle-body::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            right: 6px;
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(180deg, rgba(250,248,240,0.95) 0%, rgba(245,243,234,0.85) 30%, rgba(240,237,227,0.7) 60%, rgba(235,231,220,0.5) 80%, transparent 100%);
+            border-radius: 50% 30% 40% 50% / 40% 50% 60% 50%;
+            box-shadow: inset -1px 0 2px rgba(0,0,0,0.1), 1px 2px 4px rgba(0,0,0,0.15);
+            filter: blur(0.3px);
+        }
+        
         .color-layer {
             width: 100%;
             height: 25%;
-            transition: all 0.6s ease;
             position: relative;
+            transition: all 0.6s ease;
+            border-radius: 0;
+            opacity: 1;
+            background-clip: padding-box;
+            z-index: 5;
         }
+        
+        .color-layer:first-child {
+            border-radius: 0 0 4px 4px;
+        }
+        
         .color-layer.revealed {
             animation: colorReveal 1s ease-out;
         }
+        
         @keyframes colorReveal {
-            0% { filter: brightness(0.5); }
-            100% { filter: brightness(1); }
+            0% { filter: brightness(0.5) saturate(0.7); transform: scaleY(0.95); }
+            50% { filter: brightness(1.3) saturate(1.2); }
+            100% { filter: brightness(1.1) saturate(1); transform: scaleY(1); }
         }
+        
+        /* SMALL BUTTONS */
         .controls {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 30px;
+            margin-top: 25px;
         }
-        .btn {
-            padding: 12px 30px;
+        .btn-small {
+            padding: 6px 16px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1em;
+            border-radius: 8px;
+            font-size: 0.85em;
             font-weight: bold;
             cursor: pointer;
             color: white;
             transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
         .btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
         .btn-warning { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .btn:hover {
+        .btn-small:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         
         /* VICTORY SCREEN */
@@ -270,7 +404,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
@@ -298,24 +432,12 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .victory-card h2 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 20px;
         }
         .victory-stars {
             font-size: 3em;
             margin: 20px 0;
-        }
-        .victory-stats {
-            font-size: 1.3em;
-            margin: 20px 0;
-        }
-        .difficulty-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            margin: 10px 0;
-            background: rgba(255,255,255,0.2);
         }
     </style>
 </head>
@@ -367,9 +489,9 @@
         <div class="candles-container" id="candlesContainer"></div>
         
         <div class="controls">
-            <button class="btn btn-success" onclick="checkVictory()">✓ Check</button>
-            <button class="btn btn-primary" onclick="undoMove()">↶ Undo</button>
-            <button class="btn btn-warning" onclick="resetLevel()">🔄 Reset</button>
+            <button class="btn-small btn-success" onclick="checkVictory()">✓ Check</button>
+            <button class="btn-small btn-primary" onclick="undoMove()">↶ Undo</button>
+            <button class="btn-small btn-warning" onclick="resetLevel()">🔄 Reset</button>
         </div>
     </div>
     
@@ -378,57 +500,42 @@
         <div class="victory-card">
             <h2>🎉 LEVEL COMPLETE! 🎉</h2>
             <div class="victory-stars" id="earnedStars">⭐⭐⭐</div>
-            <div class="victory-stats">
+            <div style="font-size: 1.3em; margin: 20px 0;">
                 Moves: <span id="finalMoves">0</span><br>
                 Target: <span id="finalTarget">0</span>
             </div>
             <div style="margin-top: 30px;">
-                <button class="btn btn-success" onclick="nextLevel()" id="nextLevelBtn">Next Level →</button>
-                <button class="btn btn-primary" onclick="backToLevels()">← Levels</button>
+                <button class="btn-small btn-success" onclick="nextLevel()" id="nextLevelBtn" style="padding: 10px 25px; font-size: 1.1em; margin: 5px;">Next Level →</button>
+                <button class="btn-small btn-primary" onclick="backToLevels()" style="padding: 10px 25px; font-size: 1.1em; margin: 5px;">← Levels</button>
             </div>
         </div>
     </div>
 
     <script>
-        // LEVEL CONFIGURATIONS
+        // 70 LEVELS WITH PROGRESSIVE DIFFICULTY
         const levels = [];
-        
-        // Generate 70 levels with progressive difficulty
         function generateLevels() {
-            const difficulties = [
-                {name: 'Easy', candles: 3, empty: 2, targetMultiplier: 1.5},
-                {name: 'Easy', candles: 4, empty: 2, targetMultiplier: 1.6},
-                {name: 'Medium', candles: 5, empty: 2, targetMultiplier: 1.7},
-                {name: 'Medium', candles: 6, empty: 2, targetMultiplier: 1.8},
-                {name: 'Hard', candles: 7, empty: 2, targetMultiplier: 1.9},
-                {name: 'Hard', candles: 8, empty: 2, targetMultiplier: 2.0},
-                {name: 'Very Hard', candles: 9, empty: 2, targetMultiplier: 2.1},
-                {name: 'Expert', candles: 10, empty: 2, targetMultiplier: 2.2},
-                {name: 'Expert', candles: 11, empty: 2, targetMultiplier: 2.3},
-                {name: 'Master', candles: 12, empty: 2, targetMultiplier: 2.5}
+            const configs = [
+                {name: 'Easy', candles: 3, empty: 2, target: 1.5},
+                {name: 'Easy', candles: 4, empty: 2, target: 1.6},
+                {name: 'Medium', candles: 5, empty: 2, target: 1.7},
+                {name: 'Medium', candles: 6, empty: 2, target: 1.8},
+                {name: 'Hard', candles: 7, empty: 2, target: 1.9},
+                {name: 'Hard', candles: 8, empty: 2, target: 2.0},
+                {name: 'Very Hard', candles: 9, empty: 2, target: 2.1},
+                {name: 'Expert', candles: 10, empty: 2, target: 2.2},
+                {name: 'Expert', candles: 11, empty: 2, target: 2.3},
+                {name: 'Master', candles: 12, empty: 2, target: 2.5}
             ];
-            
             for(let i = 0; i < 70; i++) {
-                const diffIndex = Math.min(Math.floor(i / 7), 9);
-                const config = difficulties[diffIndex];
-                levels.push({
-                    level: i + 1,
-                    ...config,
-                    seed: 1000 + i * 123
-                });
+                const cfg = configs[Math.min(Math.floor(i / 7), 9)];
+                levels.push({level: i + 1, ...cfg, seed: 1000 + i * 123});
             }
         }
-        
         generateLevels();
         
-        // COLORS
-        const allColors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B500', '#E74C3C',
-            '#3498DB', '#2ECC71'
-        ];
+        const allColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B500', '#E74C3C', '#3498DB', '#2ECC71'];
         
-        // GAME STATE
         let currentLevel = 1;
         let gameState = [];
         let selectedCandle = null;
@@ -437,7 +544,6 @@
         let targetMoves = 0;
         let totalCandles = 0;
         
-        // SAVE SYSTEM
         function getSaveData() {
             const saved = localStorage.getItem('candleChallengeProgress');
             return saved ? JSON.parse(saved) : {};
@@ -462,18 +568,14 @@
             return data[level] ? data[level].stars : 0;
         }
         
-        // RENDER LEVEL SELECT
         function renderLevelSelect() {
             const grid = document.getElementById('levelsGrid');
             grid.innerHTML = '';
-            
-            let completed = 0;
-            let totalStars = 0;
+            let completed = 0, totalStars = 0;
             
             levels.forEach(levelData => {
                 const btn = document.createElement('button');
                 btn.className = 'level-btn';
-                
                 const stars = getLevelStars(levelData.level);
                 const unlocked = isLevelUnlocked(levelData.level);
                 
@@ -487,15 +589,8 @@
                     btn.classList.add('locked');
                 }
                 
-                btn.innerHTML = `
-                    <div>${levelData.level}</div>
-                    ${stars > 0 ? `<div class="stars">${'⭐'.repeat(stars)}</div>` : ''}
-                `;
-                
-                if(unlocked) {
-                    btn.onclick = () => startLevel(levelData.level);
-                }
-                
+                btn.innerHTML = `<div>${levelData.level}</div>${stars > 0 ? `<div class="stars">${'⭐'.repeat(stars)}</div>` : ''}`;
+                if(unlocked) btn.onclick = () => startLevel(levelData.level);
                 grid.appendChild(btn);
             });
             
@@ -504,7 +599,6 @@
             document.getElementById('progressBar').style.width = (completed / 70 * 100) + '%';
         }
         
-        // SOLVABLE PUZZLE GENERATOR - SHUFFLE INDIVIDUAL LAYERS
         function seededRandom(seed) {
             const x = Math.sin(seed++) * 10000;
             return x - Math.floor(x);
@@ -513,54 +607,37 @@
         function generateSolvablePuzzle(levelData) {
             const {candles, empty, seed} = levelData;
             const colors = allColors.slice(0, candles);
-            const state = [];
-            
-            // Create array of ALL individual layers
             const allLayers = [];
             for(let i = 0; i < candles; i++) {
-                for(let j = 0; j < 4; j++) {
-                    allLayers.push(colors[i]);
-                }
+                for(let j = 0; j < 4; j++) allLayers.push(colors[i]);
             }
-            
-            // Shuffle the individual layers using seeded random
             for(let i = allLayers.length - 1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + i) * (i + 1));
                 [allLayers[i], allLayers[j]] = [allLayers[j], allLayers[i]];
             }
-            
-            // Distribute shuffled layers into candles (4 layers per candle)
+            const state = [];
             for(let i = 0; i < candles; i++) {
                 const candle = [];
-                for(let j = 0; j < 4; j++) {
-                    candle.push(allLayers[i * 4 + j]);
-                }
+                for(let j = 0; j < 4; j++) candle.push(allLayers[i * 4 + j]);
                 state.push(candle);
             }
-            
-            // Add empty bottles
-            for(let i = 0; i < empty; i++) {
-                state.push([]);
-            }
-            
+            for(let i = 0; i < empty; i++) state.push([]);
             return state;
         }
         
-        // START LEVEL
         function startLevel(level) {
             currentLevel = level;
             const levelData = levels[level - 1];
             
-            document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('levelSelect').classList.add('hidden');
             document.getElementById('gameScreen').classList.add('active');
-            document.body.classList.remove('bright-mode');
             document.body.classList.add('dark-mode');
             
             document.getElementById('levelTitle').textContent = `Level ${level}`;
             document.getElementById('difficultyBadge').textContent = levelData.name;
             
             totalCandles = levelData.candles;
-            targetMoves = Math.ceil(levelData.candles * 4 * levelData.targetMultiplier);
+            targetMoves = Math.ceil(levelData.candles * 4 * levelData.target);
             document.getElementById('targetMoves').textContent = targetMoves;
             
             gameState = generateSolvablePuzzle(levelData);
@@ -572,7 +649,6 @@
             updateStats();
         }
         
-        // RENDER CANDLES
         function renderCandles() {
             const container = document.getElementById('candlesContainer');
             container.innerHTML = '';
@@ -593,6 +669,7 @@
                 
                 const body = document.createElement('div');
                 body.className = 'candle-body';
+                // ALL candles get the same cream style - no special treatment for empty ones
                 
                 candle.forEach(color => {
                     const layer = document.createElement('div');
@@ -600,6 +677,14 @@
                     layer.style.backgroundColor = color;
                     body.appendChild(layer);
                 });
+                
+                // Fill remaining empty space with transparent layers
+                for(let i = candle.length; i < 4; i++) {
+                    const layer = document.createElement('div');
+                    layer.className = 'color-layer revealed';
+                    layer.style.backgroundColor = 'transparent';
+                    body.appendChild(layer);
+                }
                 
                 wrapper.appendChild(body);
                 container.appendChild(wrapper);
@@ -627,7 +712,6 @@
         function pourIntoCandle(from, to) {
             const fC = gameState[from], tC = gameState[to];
             if(fC.length === 0 || tC.length >= 4) return;
-            
             const topF = fC[fC.length - 1];
             if(tC.length > 0 && tC[tC.length - 1] !== topF) return;
             
@@ -637,20 +721,12 @@
                 else break;
             }
             cnt = Math.min(cnt, 4 - tC.length);
-            
             moveHistory.push(JSON.parse(JSON.stringify(gameState)));
-            
-            for(let i = 0; i < cnt; i++) {
-                tC.push(fC.pop());
-            }
-            
+            for(let i = 0; i < cnt; i++) tC.push(fC.pop());
             moveCount++;
             renderCandles();
             updateStats();
-            
-            if(isLevelComplete()) {
-                setTimeout(showVictory, 800);
-            }
+            if(isLevelComplete()) setTimeout(showVictory, 800);
         }
         
         function isCandleComplete(c) {
@@ -677,9 +753,7 @@
         }
         
         function resetLevel() {
-            if(confirm('Reset level? You will lose progress!')) {
-                startLevel(currentLevel);
-            }
+            if(confirm('Reset level?')) startLevel(currentLevel);
         }
         
         function checkVictory() {
@@ -687,15 +761,12 @@
                 showVictory();
             } else {
                 const completed = gameState.filter(c => isCandleComplete(c)).length;
-                alert(`${completed}/${totalCandles} candles complete! Keep going!`);
+                alert(`${completed}/${totalCandles} candles complete!`);
             }
         }
         
         function showVictory() {
             document.body.classList.remove('dark-mode');
-            document.body.classList.add('bright-mode');
-            
-            // Calculate stars
             let stars = 1;
             if(moveCount <= targetMoves) stars = 3;
             else if(moveCount <= targetMoves * 1.3) stars = 2;
@@ -717,17 +788,14 @@
         
         function nextLevel() {
             document.getElementById('victoryOverlay').classList.remove('show');
-            if(currentLevel < 70) {
-                startLevel(currentLevel + 1);
-            }
+            if(currentLevel < 70) startLevel(currentLevel + 1);
         }
         
         function backToLevels() {
             document.getElementById('victoryOverlay').classList.remove('show');
             document.getElementById('gameScreen').classList.remove('active');
-            document.getElementById('levelSelect').style.display = 'block';
+            document.getElementById('levelSelect').classList.remove('hidden');
             document.body.classList.remove('dark-mode');
-            document.body.classList.add('bright-mode');
             renderLevelSelect();
         }
         
@@ -735,7 +803,6 @@
             window.history.length > 1 ? window.history.back() : window.location.href = '/';
         }
         
-        // Initialize
         renderLevelSelect();
     </script>
 </body>
